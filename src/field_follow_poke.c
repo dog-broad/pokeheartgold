@@ -1925,8 +1925,8 @@ static LocalMapObject *CreateFollowingSpriteFieldObject(MapObjectMan *mapObjectM
     MapObject_SetScript(ret, std_following_mon);
     MapObject_SetParam(ret, 0, 2);
     FollowPokeMapObjectSetParams(ret, species, forme, shiny);
-    MapObject_SetXRange(ret, 10);
-    MapObject_SetYRange(ret, 10);
+    MapObject_SetXRange(ret, -1);
+    MapObject_SetYRange(ret, -1);
     MapObject_SetFlagsBits(ret, MAPOBJECTFLAG_UNK13 | MAPOBJECTFLAG_UNK10);
     MapObject_ClearFlagsBits(ret, MAPOBJECTFLAG_UNK8 | MAPOBJECTFLAG_UNK7);
     MapObject_SetFlag29(ret, TRUE);
