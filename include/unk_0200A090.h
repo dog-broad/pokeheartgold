@@ -38,6 +38,7 @@ typedef enum GF_GraphicsResourceType {
     GF_GFX_RES_TYPE_ANIM = 3,
     GF_GFX_RES_TYPE_MCEL = 4,
     GF_GFX_RES_TYPE_MANM = 5,
+    GF_GFX_RES_TYPE_MAX  = 6,
 } GfGfxResType;
 
 typedef struct _2DGfxResObj {
@@ -68,6 +69,11 @@ struct _2DGfxResHeaderNarc {
     int extra[2];
 };
 
+typedef struct _2DGfxResHeaderNarcList {
+    GfGfxResType type;
+    struct _2DGfxResHeaderNarc internal[];  // arbitrary length
+} _2DGfxResHeaderNarcList;
+
 struct _2DGfxResHeader {
     void *table;
     int num;
@@ -75,18 +81,18 @@ struct _2DGfxResHeader {
     u8 isNarc;
 };
 
-struct _2DGfxResObjList {
+typedef struct _2DGfxResObjList {
     struct _2DGfxResObj **obj;
     int max;
     int num;
-};
+} _2DGfxResObjList;
 
 struct _2DGfxResMan *Create2DGfxResObjMan(int num, GfGfxResType type, HeapID heapId);
 void Destroy2DGfxResObjMan(struct _2DGfxResMan *mgr);
 struct _2DGfxResObj *Add2DGfxResObjFromHeader(struct _2DGfxResMan *mgr, const struct _2DGfxResHeader *header, int idx, HeapID heapId);
 struct _2DGfxResObj *AddCharResObjFromNarc(struct _2DGfxResMan *mgr, NarcId narcId, int fileId, BOOL compressed, int id, int vram, HeapID heapId);
 struct _2DGfxResObj *AddPlttResObjFromNarc(struct _2DGfxResMan *mgr, NarcId narcId, int fileId, BOOL compressed, int id, int vram, int pltt_num, HeapID heapId);
-struct _2DGfxResObj *AddCellOrAnimResObjFromNarc(struct _2DGfxResMan *mgr, NarcId narcId, int fileId, BOOL compressed, int id, int type, HeapID heapId);
+struct _2DGfxResObj *AddCellOrAnimResObjFromNarc(struct _2DGfxResMan *mgr, NarcId narcId, int fileId, BOOL compressed, int id, GfGfxResType type, HeapID heapId);
 void ReplaceCharResObjFromNarc(struct _2DGfxResMan *mgr, struct _2DGfxResObj *obj, NarcId narcId, int fileId, BOOL compressed, HeapID heapId);
 void ReplacePlttResObjFromNarc(struct _2DGfxResMan *mgr, struct _2DGfxResObj *obj, NarcId narcId, int fileId, BOOL compressed, HeapID heapId);
 struct _2DGfxResObj *AddCharResObjFromOpenNarc(struct _2DGfxResMan *mgr, NARC *narc, int fileId, BOOL compressed, int id, int vram, HeapID heapId);
@@ -115,7 +121,7 @@ int sub_0200A8B0(struct _2DGfxResObj *obj);
 int sub_0200A8DC(struct _2DGfxResObj *obj);
 u32 sub_0200A8FC(void);
 struct _2DGfxResHeader *sub_0200A900(struct _2DGfxResHeader *headers, int num);
-void sub_0200A908(const void *a0, struct _2DGfxResHeader *header, HeapID heapId);
+void sub_0200A908(const _2DGfxResHeaderNarcList *a0, struct _2DGfxResHeader *header, HeapID heapId);
 void sub_0200A954(struct _2DGfxResHeader *header);
 int sub_0200A96C(const struct _2DGfxResHeader *header);
 int sub_0200A97C(struct _2DGfxResHeader *header, int idx);

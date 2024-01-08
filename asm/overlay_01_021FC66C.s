@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021FC66C.inc"
 	.include "global.inc"
 
 	.text
@@ -42,10 +43,10 @@ _021FC680:
 Task_OverworldFish: ; 0x021FC698
 	push {r3, r4, r5, r6, r7, lr}
 	add r6, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 	ldr r0, [r5]
 	cmp r0, #0
@@ -55,7 +56,7 @@ Task_OverworldFish: ; 0x021FC698
 	b _021FC742
 _021FC6B6:
 	ldr r0, [r4, #0x3c]
-	bl MapObjectMan_PauseAllMovement
+	bl MapObjectManager_PauseAllMovement
 	mov r0, #0
 	str r0, [r5, #0x10]
 	add r2, r5, #0
@@ -86,10 +87,10 @@ _021FC6E2:
 	cmp r7, #1
 	bne _021FC728
 	add r0, r4, #0
-	bl Fsys_GetGearPhoneRingManager
+	bl FieldSystem_GetGearPhoneRingManager
 	bl sub_02092FA8
 	ldr r0, [r4, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0xb
 	bl GameStats_Inc
 	ldr r2, [r5, #0x10]
@@ -104,10 +105,10 @@ _021FC728:
 	ldr r0, [r5, #0x10]
 	cmp r0, #0
 	beq _021FC732
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 _021FC732:
 	ldr r0, [r4, #0x3c]
-	bl MapObjectMan_UnpauseAllMovement
+	bl MapObjectManager_UnpauseAllMovement
 	add r0, r5, #0
 	bl FreeToHeap
 	mov r0, #1
@@ -220,9 +221,9 @@ ov01_021FC7DC: ; 0x021FC7DC
 	bl MapObject_ClearHeldMovementIfActive
 	add r0, r4, #0
 	mov r1, #0x20
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	add r0, r4, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	add r0, r6, #0
 	mov r1, #1
 	bl sub_0205F328
@@ -485,7 +486,7 @@ ov01_021FC9AC: ; 0x021FC9AC
 	str r0, [r4, #0xc]
 	ldr r0, [r4, #0x20]
 	ldr r0, [r0, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0x65
 	bl GameStats_Inc
 	mov r0, #1
@@ -584,9 +585,9 @@ _021FCA68:
 	bl PlayerAvatar_GetTransitionBits
 	add r1, r0, #0
 	add r0, r5, #0
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	add r0, r5, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	mov r0, #0
 	str r0, [r4, #0x10]
 	mov r0, #0x10
@@ -692,17 +693,17 @@ ov01_021FCB14: ; 0x021FCB14
 	mov r0, #1
 	lsl r0, r0, #0xa
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x2c]
 	mov r0, #1
 	lsl r0, r0, #0xa
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x30]
 	mov r0, #8
 	mov r1, #0x40
 	mov r2, #4
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r4, #0x34]
 	pop {r4, pc}
 	thumb_func_end ov01_021FCB14
@@ -712,11 +713,11 @@ ov01_021FCB4C: ; 0x021FCB4C
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x34]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x30]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x48]
 	bl DestroyMsgData
 	pop {r4, pc}
@@ -734,7 +735,7 @@ ov01_021FCB6C: ; 0x021FCB6C
 	mov r2, #3
 	bl sub_0205B514
 	ldr r0, [r4, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r5, #0x38
 	add r1, r0, #0
 	add r0, r5, #0
@@ -758,7 +759,7 @@ ov01_021FCB90: ; 0x021FCB90
 	ldr r2, [r5, #0x30]
 	bl StringExpandPlaceholders
 	ldr r0, [r4, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r2, r0, #0
 	add r0, r5, #0
 	ldr r1, [r5, #0x2c]
@@ -841,7 +842,7 @@ _021FCC40:
 	beq _021FCC6E
 	ldr r0, [r4, #0x20]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	mov r1, #9
 	mov r2, #0
@@ -909,7 +910,7 @@ ov01_021FCCB0: ; 0x021FCCB0
 	ldr r1, [r4, #0x20]
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
-	bl FsysUnkSub108_GetMonMood
+	bl FieldSystemUnkSub108_GetMonMood
 	mov r1, #9
 	mvn r1, r1
 	cmp r0, r1

@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_34.inc"
 	.include "global.inc"
 
 	.text
@@ -23,9 +24,9 @@ ov34_0225D520: ; 0x0225D520
 	add r2, r4, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -94,7 +95,7 @@ _0225D5C4: ; jump table
 	.short _0225D5F4 - _0225D5C4 - 2 ; case 4
 	.short _0225D5F4 - _0225D5C4 - 2 ; case 5
 _0225D5D0:
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _0225D5E0
 	add r0, r4, #0
@@ -136,7 +137,7 @@ ov34_0225D5F8: ; 0x0225D5F8
 	sub r1, #0xa
 	mov r0, #4
 	strh r2, [r4, r1]
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x18]
 	ldr r2, _0225D64C ; =0x000002E2
 	mov r0, #0
@@ -333,7 +334,7 @@ ov34_0225D7A8: ; 0x0225D7A8
 	ldr r0, _0225D874 ; =ov34_0225D5A0
 	lsl r1, r1, #2
 	add r3, r2, #0
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r6, r0, #0
 	bl sub_0201F988
 	add r4, r0, #0
@@ -349,7 +350,7 @@ ov34_0225D7A8: ; 0x0225D7A8
 	ldr r0, [r0]
 	str r0, [r4, #8]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	str r0, [r4, #0x10]
 	mov r0, #2
 	mov r1, #0xa9
@@ -392,19 +393,19 @@ ov34_0225D7A8: ; 0x0225D7A8
 	bl ov34_0225D520
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r4, #0
 	bl ov34_0225E560
 	add r0, r4, #0
@@ -448,11 +449,11 @@ _0225D8B2:
 	cmp r4, #4
 	blt _0225D8B2
 	ldr r0, [r6, #0x28]
-	bl sub_02024504
+	bl SpriteList_Delete
 	ldr r0, [r6, #0x1c]
 	bl DestroyMsgData
 	ldr r0, [r6, #0x18]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r1, #0x72
 	lsl r1, r1, #2
 	add r0, r6, r1
@@ -466,7 +467,7 @@ _0225D8B2:
 	mov r0, #0xa9
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	pop {r3, r4, r5, r6, r7, pc}
 _0225D8F8:
 	bl GF_AssertFail
@@ -518,7 +519,7 @@ ov34_0225D924: ; 0x0225D924
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r5, _0225DA44 ; =ov34_0225E6F8
 	add r3, sp, #0x48
 	ldmia r5!, {r0, r1}
@@ -539,7 +540,7 @@ ov34_0225D924: ; 0x0225D924
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r5, _0225DA48 ; =ov34_0225E6C0
 	add r3, sp, #0x2c
 	ldmia r5!, {r0, r1}
@@ -560,7 +561,7 @@ ov34_0225D924: ; 0x0225D924
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r5, _0225DA4C ; =ov34_0225E6DC
 	add r3, sp, #0x10
 	ldmia r5!, {r0, r1}
@@ -578,7 +579,7 @@ ov34_0225D924: ; 0x0225D924
 	bl InitBgFromTemplate
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x60
 	mov r1, #0
 	str r0, [sp]
@@ -927,7 +928,7 @@ ov34_0225DC18: ; 0x0225DC18
 	str r3, [sp, #0xc]
 	ldr r2, [r6]
 	add r0, r7, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r3, #0
 	str r3, [sp]
 	mov r0, #0xff
@@ -939,7 +940,7 @@ ov34_0225DC18: ; 0x0225DC18
 	ldr r0, [sp, #0x1c]
 	ldr r2, [r6, #4]
 	add r0, r0, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r7, r4
 	bl ScheduleWindowCopyToVram
 	ldr r0, [sp, #0x1c]
@@ -957,7 +958,7 @@ ov34_0225DC18: ; 0x0225DC18
 	str r0, [sp, #8]
 	add r0, r5, r4
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _0225DCF0:
 	add r0, r5, r4
 	bl ScheduleWindowCopyToVram
@@ -1092,7 +1093,7 @@ _0225DDE8:
 	str r0, [sp, #8]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {r3, r4, pc}
 	thumb_func_end ov34_0225DDB8
@@ -1176,7 +1177,7 @@ ov34_0225DE94: ; 0x0225DE94
 	push {r3, r4, r5, r6, r7, lr}
 	add r4, r0, #0
 	ldr r0, _0225E00C ; =ov34_0225E730
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	add r7, r0, #0
 	add r0, r4, #0
 	bl ov34_0225E5D4
@@ -1375,7 +1376,7 @@ ov34_0225E020: ; 0x0225E020
 	sub sp, #0xc
 	add r7, r0, #0
 	ldr r0, _0225E0E0 ; =ov34_0225E6AC
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	mov r1, #0
 	mvn r1, r1
 	str r0, [sp]
@@ -1388,7 +1389,7 @@ ov34_0225E020: ; 0x0225E020
 	bl ov34_0225E5DC
 	add r0, sp, #8
 	add r1, sp, #4
-	bl sub_02025364
+	bl System_GetTouchHeldCoords
 	mov r0, #0x1a
 	lsl r0, r0, #4
 	ldr r0, [r7, r0]
@@ -1541,7 +1542,7 @@ ov34_0225E164: ; 0x0225E164
 	ldr r0, [r5, #0xc]
 	mov r4, #0
 	mvn r4, r4
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _0225E19A
 	add r0, r5, #0
@@ -1744,7 +1745,7 @@ _0225E2F4:
 	sub r5, r4, #2
 	mov r0, #0xa
 	mov r1, #0x57
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	add r0, r6, #0
 	add r1, r5, #0
@@ -1763,7 +1764,7 @@ _0225E2F4:
 	add r3, r1, #0
 	bl BufferString
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 _0225E332:
 	ldr r1, [sp, #8]
 	add r0, r7, #0
@@ -1811,7 +1812,7 @@ _0225E372:
 	ldr r0, [r0, #4]
 	cmp r0, #0
 	beq _0225E386
-	bl String_dtor
+	bl String_Delete
 _0225E386:
 	ldr r1, [r5]
 	mov r0, #0x1c
@@ -1820,7 +1821,7 @@ _0225E386:
 	ldr r0, [r0, #8]
 	cmp r0, #0
 	beq _0225E398
-	bl String_dtor
+	bl String_Delete
 _0225E398:
 	ldr r0, [sp, #8]
 	bl PlayerProfile_GetNamePtr
@@ -1921,7 +1922,7 @@ _0225E450:
 	bne _0225E464
 	ldr r0, [sp]
 	add r1, #0x14
-	bl MailMsg_compare
+	bl MailMsg_Compare
 	cmp r0, #0
 	bne _0225E478
 _0225E464:
@@ -1956,7 +1957,7 @@ _0225E48E:
 	beq _0225E4A2
 	ldr r0, [sp]
 	add r1, #0x14
-	bl MailMsg_compare
+	bl MailMsg_Compare
 _0225E4A2:
 	mov r0, #1
 	pop {r3, r4, r5, r6, r7, pc}
@@ -2011,7 +2012,7 @@ ov34_0225E4F8: ; 0x0225E4F8
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _0225E55C
 	mov r4, #0
@@ -2164,10 +2165,10 @@ ov34_0225E5EC: ; 0x0225E5EC
 	add r4, r7, r0
 	lsl r6, r5, #2
 	ldr r0, [r4, r6]
-	bl sub_020249F8
+	bl Sprite_GetAnimCtrlCurrentFrame
 	str r0, [sp]
 	ldr r0, [r4, r6]
-	bl sub_020249A8
+	bl Get2dSpriteCurrentAnimSeqNo
 	lsl r0, r0, #0x10
 	lsr r1, r0, #0x10
 	ldr r0, [sp]
@@ -2202,7 +2203,7 @@ _0225E63A:
 	mov r0, #0x66
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020249F8
+	bl Sprite_GetAnimCtrlCurrentFrame
 	mov r0, #0x2a
 	lsl r0, r0, #4
 	ldrh r0, [r4, r0]
@@ -2233,7 +2234,7 @@ _0225E662:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	mov r1, #1
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 _0225E688:
 	add r6, r6, #1
 	add r5, r5, #4

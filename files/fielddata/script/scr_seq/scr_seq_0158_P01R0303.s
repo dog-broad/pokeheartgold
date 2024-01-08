@@ -19,15 +19,15 @@ scr_seq_P01R0303_000:
 	goto_if_eq _009D
 	apply_movement obj_P01R0303_seaman_2, _0120
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_P01R0303_seaman_2, _0144
 	apply_movement obj_player, _01C8
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0261_P01R0303_00005
 	closemsg
 	trainer_battle TRAINER_SAILOR_STANLY, 0, 0, 0
@@ -47,15 +47,15 @@ scr_seq_P01R0303_000:
 _009D:
 	apply_movement obj_P01R0303_seaman_2, _016C
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_P01R0303_seaman_2, _0190
 	apply_movement obj_player, _01DC
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0261_P01R0303_00005
 	closemsg
 	trainer_battle TRAINER_SAILOR_STANLY, 0, 0, 0
@@ -83,8 +83,8 @@ _0112:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _0120:
 	step 75, 1
 	step 63, 1
@@ -96,6 +96,7 @@ _0120:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0144:
 	step 0, 2
 	step 16, 2
@@ -105,11 +106,13 @@ _0144:
 	step 17, 1
 	step_end
 
+	.balign 4, 0
 _0160:
 	step 0, 2
 	step 16, 7
 	step_end
 
+	.balign 4, 0
 _016C:
 	step 75, 1
 	step 63, 1
@@ -121,6 +124,7 @@ _016C:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0190:
 	step 0, 2
 	step 16, 2
@@ -130,6 +134,7 @@ _0190:
 	step 17, 1
 	step_end
 
+	.balign 4, 0
 _01AC:
 	step 0, 2
 	step 16, 3
@@ -139,6 +144,7 @@ _01AC:
 	step 16, 4
 	step_end
 
+	.balign 4, 0
 _01C8:
 	step 65, 1
 	step 3, 2
@@ -146,12 +152,14 @@ _01C8:
 	step 0, 2
 	step_end
 
+	.balign 4, 0
 _01DC:
 	step 65, 1
 	step 2, 2
 	step 14, 1
 	step 0, 2
 	step_end
+
 scr_seq_P01R0303_001:
 	scrcmd_609
 	lockall
@@ -173,17 +181,17 @@ scr_seq_P01R0303_001:
 	scrcmd_729 VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 0
 	goto_if_eq _0247
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 _0247:
 	apply_movement obj_player, _02C4
 	wait_movement
 	compare VAR_TEMP_x4002, 0
 	goto_if_eq _0268
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 _0268:
 	compare VAR_UNK_40CB, 7
 	goto_if_ge _0279
@@ -208,14 +216,15 @@ _02A9:
 _02AD:
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _02B4:
 	step 1, 2
 	step 65, 1
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _02C4:
 	step 3, 2
 	step 55, 1

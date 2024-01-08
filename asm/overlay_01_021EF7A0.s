@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021EF7A0.inc"
 	.include "global.inc"
 
 	.text
@@ -304,7 +305,7 @@ ov01_021EF9A8: ; 0x021EF9A8
 	add r3, #0x30
 	ldrb r3, [r3]
 	add r0, #0x20
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, pc}
 	nop
@@ -331,7 +332,7 @@ ov01_021EF9E0: ; 0x021EF9E0
 	add r4, r0, #0
 	mov r0, #0x16
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x40]
 	add r0, r4, #0
 	add r1, r5, #0
@@ -360,7 +361,7 @@ ov01_021EFA1C: ; 0x021EFA1C
 	add r0, #0x20
 	bl RemoveWindow
 	ldr r0, [r4, #0x40]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}

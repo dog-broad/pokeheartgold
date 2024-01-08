@@ -13,25 +13,26 @@
 scr_seq_T10R0601_001:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0048
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_KI_GASYAN
 	clearflag FLAG_UNK_210
 	show_person obj_T10R0601_babyboy1_11
 	setvar VAR_UNK_40C8, 1
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _0048:
 	step 12, 6
 	step_end
+
 scr_seq_T10R0601_002:
 	setflag FLAG_UNK_210
 	setvar VAR_UNK_40C8, 0
@@ -40,9 +41,9 @@ scr_seq_T10R0601_002:
 scr_seq_T10R0601_000:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_coords VAR_TEMP_x4000, VAR_TEMP_x4001
 	compare VAR_TEMP_x4000, 5
 	goto_if_ne _008B
@@ -59,9 +60,9 @@ _00A6:
 	apply_movement obj_player, _02B0
 _00AE:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	apply_movement obj_T10R0601_wataru, _02C0
 	wait_movement
 	buffer_players_name 0
@@ -130,15 +131,15 @@ _01A1:
 	buffer_players_name 0
 	gender_msgbox msg_0527_T10R0601_00009, msg_0527_T10R0601_00010
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_T10R0601_wataru, _0384
 	apply_movement obj_player, _0394
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_eq _0234
@@ -169,28 +170,32 @@ _0290:
 	white_out
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _0298:
 	step 12, 2
 	step 15, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _02A8:
 	step 12, 2
 	step_end
 
+	.balign 4, 0
 _02B0:
 	step 12, 2
 	step 14, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _02C0:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _02C8:
 	step 1, 1
 	step 75, 0
@@ -199,6 +204,7 @@ _02C8:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _02E0:
 	step 1, 1
 	step 63, 4
@@ -207,12 +213,14 @@ _02E0:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _02F8:
 	step 16, 3
 	step 19, 1
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0308:
 	step 16, 2
 	step 18, 1
@@ -221,6 +229,7 @@ _0308:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0320:
 	step 16, 1
 	step 19, 1
@@ -229,59 +238,70 @@ _0320:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0338:
 	step 16, 12
 	step 1, 1
 	step 37, 3
 	step_end
 
+	.balign 4, 0
 _0348:
 	step 12, 8
 	step_end
 
+	.balign 4, 0
 _0350:
 	step 63, 6
 	step 14, 1
 	step 0, 1
 	step_end
 
+	.balign 4, 0
 _0360:
 	step 36, 4
 	step_end
 
+	.balign 4, 0
 _0368:
 	step 12, 2
 	step 14, 1
 	step 1, 1
 	step_end
 
+	.balign 4, 0
 _0378:
 	step 63, 3
 	step 0, 1
 	step_end
 
+	.balign 4, 0
 _0384:
 	step 62, 1
 	step 12, 2
 	step 69, 1
 	step_end
 
+	.balign 4, 0
 _0394:
 	step 12, 2
 	step 12, 2
 	step 69, 1
 	step_end
 
+	.balign 4, 0
 _03A4:
 	step 69, 1
 	step_end
 
+	.balign 4, 0
 _03AC:
 	step 16, 4
 	step 75, 0
 	step 63, 2
 	step_end
 
+	.balign 4, 0
 _03BC:
 	step 19, 1
 	step 18, 2

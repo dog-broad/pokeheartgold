@@ -32,24 +32,24 @@ _003C:
 scr_seq_D52R0103_001:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _00B4
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_cry SPECIES_RAYQUAZA, 0
 	wait_cry
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _00B4
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	release obj_D52R0103_tsure_poke_static_rayquaza
 	scrcmd_523 obj_D52R0103_tsure_poke_static_rayquaza, 8, 90, 3, 0
 	play_cry SPECIES_RAYQUAZA, 0
@@ -60,12 +60,13 @@ scr_seq_D52R0103_001:
 	setvar VAR_SCENE_EMBEDDED_TOWER, 6
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _00B4:
 	step 12, 8
 	step 63, 2
 	step_end
+
 scr_seq_D52R0103_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -82,7 +83,7 @@ scr_seq_D52R0103_000:
 	check_battle_won VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_eq _0142
-	scrcmd_683 VAR_TEMP_x4002
+	get_static_encounter_outcome VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 3
 	goto_if_eq _0123
 	compare VAR_TEMP_x4002, 4

@@ -1,16 +1,17 @@
+#include "global.h"
 #include "pokewalker.h"
 
 static BOOL pokewalkerHasBoxmon(POKEWALKER *pokeWalker);
 
-POKEWALKER *Sav2_Pokewalker_get(SAVEDATA *saveData) {
-    return SavArray_get(saveData, SAVE_POKEWALKER);
+POKEWALKER *Save_Pokewalker_Get(SaveData *saveData) {
+    return SaveArray_Get(saveData, SAVE_POKEWALKER);
 }
 
 u32 Pokewalker_sizeof(void) {
     return sizeof(POKEWALKER);
 }
 
-void Pokewalker_init(POKEWALKER *pokeWalker) {
+void Pokewalker_Init(POKEWALKER *pokeWalker) {
     MI_CpuClearFast(pokeWalker, sizeof(POKEWALKER));
     Pokewalker_UnlockCourse(pokeWalker, WALKER_COURSE_REFRESHING_FIELD);
     Pokewalker_UnlockCourse(pokeWalker, WALKER_COURSE_NOISY_FOREST);
@@ -18,7 +19,7 @@ void Pokewalker_init(POKEWALKER *pokeWalker) {
 
 void sub_02032624(POKEWALKER *pokeWalker) {
     u32 bak = pokeWalker->unlockedCourses;
-    Pokewalker_init(pokeWalker);
+    Pokewalker_Init(pokeWalker);
     pokeWalker->unlockedCourses = bak;
 }
 
@@ -55,17 +56,17 @@ void sub_020326A4(POKEWALKER *pokeWalker, u16 a1, u16 a2) {
     pokeWalker->unk_002 = a2;
 }
 
-void Pokewalker_SetBoxMon(POKEWALKER *pokeWalker, BOXMON *boxmon) {
-    MI_CpuCopyFast(boxmon, &pokeWalker->pokemon, sizeof(BOXMON));
+void Pokewalker_SetBoxMon(POKEWALKER *pokeWalker, BoxPokemon *boxMon) {
+    MI_CpuCopyFast(boxMon, &pokeWalker->pokemon, sizeof(BoxPokemon));
 }
 
 void Pokewalker_ClearBoxMon(POKEWALKER *pokeWalker) {
-    MI_CpuClearFast(&pokeWalker->pokemon, sizeof(BOXMON));
+    MI_CpuClearFast(&pokeWalker->pokemon, sizeof(BoxPokemon));
 }
 
-BOOL Pokewalker_TryGetBoxMon(POKEWALKER *pokeWalker, BOXMON *boxmon) {
+BOOL Pokewalker_TryGetBoxMon(POKEWALKER *pokeWalker, BoxPokemon *boxMon) {
     if (pokewalkerHasBoxmon(pokeWalker)) {
-        MI_CpuCopyFast(&pokeWalker->pokemon, boxmon, sizeof(BOXMON));
+        MI_CpuCopyFast(&pokeWalker->pokemon, boxMon, sizeof(BoxPokemon));
         return TRUE;
     }
     return FALSE;
@@ -73,16 +74,16 @@ BOOL Pokewalker_TryGetBoxMon(POKEWALKER *pokeWalker, BOXMON *boxmon) {
 
 static BOOL pokewalkerHasBoxmon(POKEWALKER *pokeWalker) {
     // This is an annoying hack to get it matching.
-    // Should just memcmp with (BOXMON){}
+    // Should just memcmp with (BoxPokemon){}
     u8 * ptr = (u8 *)pokeWalker;
     int i;
 
-    for (i = 0; i < (int)sizeof(BOXMON); i++) {
+    for (i = 0; i < (int)sizeof(BoxPokemon); i++) {
         if (ptr[i + offsetof(POKEWALKER, pokemon)] != 0) {
             break;
         }
     }
-    if (i == sizeof(BOXMON)) {
+    if (i == sizeof(BoxPokemon)) {
         return FALSE;
     }
     return TRUE;

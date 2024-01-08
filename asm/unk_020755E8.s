@@ -2,6 +2,7 @@
 #include "constants/moves.h"
 #include "constants/pokemon.h"
 	.include "asm/macros.inc"
+	.include "unk_020755E8.inc"
 	.include "global.inc"
 
 	.rodata
@@ -83,10 +84,10 @@ _020755FA:
 	strh r0, [r1, #6]
 	add r0, r7, #0
 	mov r1, ip
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	mov r1, #1
 	add r4, r0, #0
-	bl sub_0200DC78
+	bl UnkImageStruct_SetSpriteAnimActiveFlag
 	add r0, r4, #0
 	add sp, #0x34
 	pop {r4, r5, r6, r7, pc}
@@ -100,14 +101,14 @@ sub_02075630: ; 0x02075630
 	sub sp, #0x5c
 	add r5, r0, #0
 	ldr r0, [r5, #0x5c]
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	add r1, r5, #0
 	add r1, #0xac
 	str r0, [r1]
 	add r0, r5, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r1, r5, #0
 	add r1, #0xb0
 	add r2, sp, #0x3c
@@ -162,7 +163,7 @@ sub_02075630: ; 0x02075630
 	add r1, #0xb0
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	add r0, r5, #0
 	add r0, #0xac
 	ldr r6, [r0]
@@ -171,7 +172,7 @@ sub_02075630: ; 0x02075630
 	ldr r4, [r0]
 	ldr r1, [r5, #0x5c]
 	mov r0, #0xef
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	mov r1, #0
 	str r1, [sp]
@@ -184,7 +185,7 @@ sub_02075630: ; 0x02075630
 	add r1, r4, #0
 	add r2, r7, #0
 	mov r3, #0xb
-	bl sub_0200D5D4
+	bl SpriteRenderer_LoadPlttResObjFromOpenNarc
 	mov r1, #0
 	str r1, [sp]
 	mov r0, #2
@@ -194,7 +195,7 @@ sub_02075630: ; 0x02075630
 	add r1, r4, #0
 	add r2, r7, #0
 	mov r3, #0xc
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -202,7 +203,7 @@ sub_02075630: ; 0x02075630
 	add r1, r4, #0
 	add r2, r7, #0
 	mov r3, #0xd
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -210,9 +211,9 @@ sub_02075630: ; 0x02075630
 	add r1, r4, #0
 	add r2, r7, #0
 	mov r3, #0xe
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #1
 	str r0, [sp]
 	add r0, r5, #0
@@ -231,7 +232,7 @@ sub_02075630: ; 0x02075630
 	add r0, #0xb4
 	ldr r0, [r0]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	mov r0, #1
 	add r5, #0xb8
 	str r0, [r5]
@@ -265,9 +266,9 @@ _0207578C:
 	bl sub_0200D9DC
 	add r0, r4, #0
 	add r1, r6, #0
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	add r0, r4, #0
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	mov r0, #0
 	add r5, #0xb8
 	str r0, [r5]
@@ -315,7 +316,7 @@ _020757E6:
 	ldrsh r1, [r1, r3]
 	ldrsh r2, [r2, r3]
 	ldr r0, [r5]
-	bl sub_0200DDB8
+	bl UnkImageStruct_SetSpritePositionXY
 	pop {r3, r4, r5, pc}
 	nop
 _020757FC: .word _020FFEC4
@@ -346,11 +347,11 @@ sub_02075804: ; 0x02075804
 	mov r1, #4
 	add r2, r4, #0
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	bl CopyWindowToVram
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -412,7 +413,7 @@ _02075878:
 	add r5, #0xb4
 	ldr r0, [r5]
 	mov r1, #1
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
 _020758C8: .word 0x0000049D
@@ -425,7 +426,7 @@ sub_020758D0: ; 0x020758D0
 	add r5, r0, #0
 	ldr r0, _020759C0 ; =_020FFECC
 	mov r4, #0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r6, r0, #0
 	add r0, r5, #0
 	add r0, #0xb8
@@ -533,7 +534,7 @@ _020759A0:
 	add r5, #0xb4
 	ldr r0, [r5]
 	mov r1, #3
-	bl sub_0200DC4C
+	bl UnkImageStruct_SetSpriteAnimSeqNo
 	ldr r0, _020759C4 ; =0x000005DC
 	bl PlaySE
 _020759BA:
@@ -558,7 +559,7 @@ _020759DC:
 	add r0, r4, #0
 	add r0, #0xb4
 	ldr r0, [r0]
-	bl sub_0200DC64
+	bl UnkImageStruct_GetSpriteCurrentAnimSeqNo
 	cmp r0, #3
 	beq _020759EE
 	bl GF_AssertFail
@@ -627,7 +628,7 @@ _02075A52:
 	add r0, #0xb4
 	ldr r0, [r0]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r4, #0x8b
 	ldrb r0, [r4]
 	pop {r4, pc}
@@ -650,7 +651,7 @@ sub_02075A7C: ; 0x02075A7C
 	str r2, [sp, #0x14]
 	str r3, [sp, #0x18]
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #4
 	add r1, r5, #0
 	bl FontID_Alloc
@@ -701,7 +702,7 @@ sub_02075A7C: ; 0x02075A7C
 	str r0, [r4, #0x38]
 	mov r0, #0xb4
 	add r1, r5, #0
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r4, #0
 	add r1, #0x84
 	str r0, [r1]
@@ -726,7 +727,7 @@ sub_02075A7C: ; 0x02075A7C
 	mov r3, #1
 	bl sub_020729A4
 	add r0, r5, #0
-	bl sub_020030E8
+	bl PaletteData_Init
 	str r0, [r4, #0x14]
 	mov r1, #1
 	bl sub_02003B50
@@ -845,12 +846,12 @@ sub_02075A7C: ; 0x02075A7C
 	bl NewMsgDataFromNarc
 	str r0, [r4, #8]
 	add r0, r5, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0xc]
 	mov r0, #5
 	lsl r0, r0, #6
 	add r1, r5, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x10]
 	add r0, r5, #0
 	mov r1, #0x3c
@@ -976,7 +977,7 @@ sub_02075D4C: ; 0x02075D4C
 	bl sub_02075770
 	ldr r0, [r4, #4]
 	mov r1, #1
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	add r0, r4, #0
 	add r0, #0x8c
 	bl RemoveWindow
@@ -993,7 +994,7 @@ sub_02075D4C: ; 0x02075D4C
 	mov r1, #2
 	bl PaletteData_FreeBuffers
 	ldr r0, [r4, #0x14]
-	bl sub_02003104
+	bl PaletteData_Free
 	ldr r0, [r4, #0x18]
 	bl sub_02008524
 	ldr r0, [r4, #0x44]
@@ -1005,7 +1006,7 @@ sub_02075D4C: ; 0x02075D4C
 	ldr r0, [r4, #8]
 	bl DestroyMsgData
 	ldr r0, [r4, #0xc]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x10]
 	bl FreeToHeap
 	ldr r0, [r4, #0x3c]
@@ -1017,7 +1018,7 @@ sub_02075D4C: ; 0x02075D4C
 	add r0, r4, #0
 	add r0, #0x84
 	ldr r0, [r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	mov r0, #0
@@ -1027,7 +1028,7 @@ sub_02075D4C: ; 0x02075D4C
 	ldr r0, _02075E10 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	pop {r4, pc}
 	nop
 _02075E10: .word gSystem + 0x60
@@ -2130,14 +2131,14 @@ _020766BC:
 	pop {r4, pc}
 _02076748:
 	ldr r0, [r4, #0x38]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #0
 	bne _02076754
 _02076752:
 	b _02076C76
 _02076754:
 	ldr r0, [r4, #0x38]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	mov r0, #0
 	str r0, [r4, #0x38]
 	ldr r1, [r4]
@@ -2796,10 +2797,10 @@ _02076CC4:
 	cmp r0, #0
 	beq _02076CE4
 	ldr r0, [r4, #0x24]
-	bl GetPartyCount
+	bl Party_GetCount
 	add r5, r0, #0
 	ldr r0, [r4, #0x24]
-	bl GetPartyMaxCount
+	bl Party_GetMaxCount
 	cmp r5, r0
 	blt _02076CE6
 _02076CE4:
@@ -2911,7 +2912,7 @@ _02076D62:
 	add r2, sp, #0
 	bl SetMonData
 	ldr r0, [r4, #0x5c]
-	bl Mail_new
+	bl Mail_New
 	add r6, r0, #0
 	add r0, r5, #0
 	mov r1, #0xaa
@@ -2937,7 +2938,7 @@ _02076D62:
 	bl CalcMonLevelAndStats
 	ldr r0, [r4, #0x24]
 	add r1, r5, #0
-	bl AddMonToParty
+	bl Party_AddMon
 	ldr r0, [r4, #0x48]
 	add r1, r5, #0
 	bl Pokedex_SetMonCaughtFlag
@@ -2975,7 +2976,7 @@ sub_02076E64: ; 0x02076E64
 	sub sp, #0xf0
 	add r5, r0, #0
 	add r4, r1, #0
-	bl GX_DisableEngineALayers
+	bl GfGfx_DisableEngineAPlanes
 	ldr r6, _02077180 ; =_020FFF34
 	add r3, sp, #0x20
 	mov r2, #5
@@ -2985,7 +2986,7 @@ _02076E76:
 	sub r2, r2, #1
 	bne _02076E76
 	add r0, sp, #0x20
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -3061,7 +3062,7 @@ _02076ED6:
 	orr r2, r0
 	strh r2, [r1]
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r6, _02077190 ; =_020FFFE4
 	add r3, sp, #0x48
 	mov r2, #0xa
@@ -3218,7 +3219,7 @@ _02076F38:
 	bl PaletteData_LoadNarc
 	ldr r1, [r5, #0x5c]
 	mov r0, #0xef
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0
 	str r1, [sp]
 	str r1, [sp, #4]
@@ -3264,7 +3265,7 @@ _02076F38:
 	mov r3, #5
 	bl GfGfxLoader_LoadScrnDataFromOpenNarc
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #5
 	mov r1, #0
 	bl ToggleBgLayer
@@ -3313,13 +3314,13 @@ _02076F38:
 	mov r1, #0xa0
 	add r0, #0x75
 	strb r1, [r0]
-	bl GX_BothDispOn
+	bl GfGfx_BothDispOn
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _0207719C ; =sub_02077270
 	add r1, r5, #0
 	bl Main_SetVBlankIntrCB
@@ -3342,10 +3343,10 @@ sub_020771A0: ; 0x020771A0
 	add r4, r0, #0
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	mov r1, #1
 	bl FreeBgTilemapBuffer
@@ -3474,13 +3475,13 @@ _020772C0:
 	add r0, #0xb0
 	ldr r0, [r0]
 	bl sub_0200D020
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 _020772CE:
 	bl GF_RunVramTransferTasks
 	ldr r0, [r4, #0x14]
 	bl sub_0200398C
 	ldr r0, [r4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _020772F0 ; =OS_IRQTable
 	ldr r1, _020772F4 ; =0x00003FF8
 	mov r0, #1
@@ -3582,7 +3583,7 @@ sub_02077394: ; 0x02077394
 	ldr r0, _020773A8 ; =_02103A1C
 	ldr r1, [r4, #0x3c]
 	ldr r2, [r4, #0x5c]
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r4, #0x38]
 	pop {r4, pc}
 	nop

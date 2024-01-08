@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
+  workflow_dispatch:
 
 env:
   LM_LICENSE_FILE: "$GITHUB_WORKSPACE/tools/mwccarm/license.dat"
@@ -16,22 +17,25 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Update and Install Software
         run: |
           sudo apt update
           sudo ACCEPT_EULA=Y apt -y --fix-missing --allow-downgrades upgrade
-          sudo apt -y --allow-downgrades install g++-10-multilib linux-libc-dev binutils-arm-none-eabi p7zip-full pkg-config libpugixml-dev
+          sudo apt -y --allow-downgrades install g++-10-multilib linux-libc-dev binutils-arm-none-eabi p7zip-full pkg-config libpugixml-dev ppa-purge
+          sudo ppa-purge -y ppa:ubuntu-toolchain-r/test
           sudo dpkg --add-architecture i386
-          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
+          sudo mkdir -pm755 /etc/apt/keyrings
+          sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
           sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport
-          sudo apt-add-repository "deb https://dl.winehq.org/wine-builds/ubuntu $(lsb_release -cs) main"
+          sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -cs)/winehq-$(lsb_release -cs).sources
+          sudo apt update
           sudo apt -y --allow-downgrades install --install-recommends winehq-stable
 
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Repo
         run: |
@@ -76,8 +80,32 @@ jobs:
 
       - name: Post error upload
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: pokeheartgold-failure-${{ github.run_id }}
           path: failure.tar.gz
           retention-days: 1
+
+      - name: Checkout xMAP
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/checkout@v4
+        with:
+          path: 'xmap'
+          ref: 'xmap'
+
+      - name: Move xMAP
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          mkdir -p xmap
+          cp build/heartgold.us/*.xMAP xmap/heartgoldus.xMAP
+          cp build/soulsilver.us/*.xMAP xmap/soulsilverus.xMAP
+          echo "XMAP_COMMIT_MSG=$( git log --format=%s ${GITHUB_SHA} )" >> $GITHUB_ENV
+
+      - name: Update xMAP
+        if: ${{ github.event_name == 'push' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          cwd: "./xmap"
+          add: "*.xMAP"
+          message: ${{ env.XMAP_COMMIT_MSG }}
+

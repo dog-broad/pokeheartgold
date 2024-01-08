@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_03.inc"
 	.include "global.inc"
 
 	.text
@@ -19,7 +20,7 @@ ov03_02253E20: ; 0x02253E20
 	ldr r0, [r0]
 	add r0, #0x94
 	ldrb r0, [r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _02253E42:
 	cmp r4, #0
 	beq _02253E64
@@ -62,7 +63,7 @@ _02253E90:
 	ldr r0, [r0]
 	ldr r0, [r0, #0x68]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r1, r0, #0
 	ldr r0, _02253ECC ; =ov03_022598A0
 	ldr r0, [r0]
@@ -72,7 +73,7 @@ _02253E90:
 	ldr r4, [r0]
 	ldr r0, [r4, #0x68]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	ldr r1, [r4, #0x14]
@@ -206,13 +207,13 @@ _02253F84:
 	str r0, [r2, #0x74]
 	ldr r0, [r1]
 	ldr r0, [r0, #0x68]
-	bl Fsys_GetSaveDataPtr
-	bl Sav2_PlayerData_GetProfileAddr
+	bl FieldSystem_GetSaveData
+	bl Save_PlayerData_GetProfileAddr
 	ldr r1, _02254050 ; =ov03_022598A0
 	ldr r1, [r1]
 	str r0, [r1, #0x78]
 	mov r0, #4
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	ldr r1, _02254050 ; =ov03_022598A0
 	ldr r2, [r1]
 	str r0, [r2, #0x7c]
@@ -228,17 +229,17 @@ _02253F84:
 	add r0, #0x40
 	bl InitWindow
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	ldr r1, _02254050 ; =ov03_022598A0
 	ldr r1, [r1]
 	str r0, [r1, #0x50]
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	ldr r1, _02254050 ; =ov03_022598A0
 	ldr r1, [r1]
 	str r0, [r1, #0x54]
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	ldr r1, _02254050 ; =ov03_022598A0
 	ldr r2, [r1]
 	str r0, [r2, #0x58]
@@ -261,7 +262,7 @@ _02254026:
 _0225403A:
 	add r0, r7, #0
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	ldr r1, [r6]
 	add r5, r5, #1
 	str r0, [r1, r4]
@@ -282,7 +283,7 @@ ov03_02254054: ; 0x02254054
 _0225405C:
 	ldr r0, [r6]
 	ldr r0, [r0, r5]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #8
@@ -296,7 +297,7 @@ _0225405C:
 	ldr r0, [r0, #0x50]
 	cmp r0, #0
 	beq _0225408C
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, _022540E4 ; =ov03_022598A0
 	mov r1, #0
 	ldr r0, [r0]
@@ -307,7 +308,7 @@ _0225408C:
 	ldr r0, [r0, #0x54]
 	cmp r0, #0
 	beq _022540A2
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, _022540E4 ; =ov03_022598A0
 	mov r1, #0
 	ldr r0, [r0]
@@ -318,7 +319,7 @@ _022540A2:
 	ldr r0, [r0, #0x58]
 	cmp r0, #0
 	beq _022540B8
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, _022540E4 ; =ov03_022598A0
 	mov r1, #0
 	ldr r0, [r0]
@@ -757,7 +758,7 @@ ov03_02254420: ; 0x02254420
 	beq _022544E6
 	mov r0, #0x10
 	mov r1, #4
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	ldr r4, _022544EC ; =ov03_022598A0
 	mov r5, #0
 	ldr r1, [r4]
@@ -1107,7 +1108,7 @@ _02254714:
 	ldr r0, [r0]
 	add r0, #0x94
 	ldrb r0, [r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _02254730:
 	ldr r0, _022547D0 ; =ov03_022598A0
 	mov r1, #2
@@ -1139,7 +1140,7 @@ _0225476A:
 	ldr r0, [r0]
 	ldr r0, [r0, #0x68]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r1, r0, #0
 	ldr r0, _022547D0 ; =ov03_022598A0
 	ldr r0, [r0]
@@ -1270,7 +1271,7 @@ _0225486A:
 	ldr r0, [r0]
 	add r0, #0x94
 	ldrb r0, [r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _022548A6:
 	add r0, r6, #0
 	add r1, r4, #0
@@ -1895,7 +1896,7 @@ ov03_02254D78: ; 0x02254D78
 	beq _02254E52
 	mov r0, #5
 	mov r1, #4
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	ldr r4, _02254E58 ; =ov03_022598A0
 	mov r5, #0
 	ldr r1, [r4]
@@ -3086,7 +3087,7 @@ ov03_0225574C: ; 0x0225574C
 	mov r1, #0
 	bl sub_0200E5D4
 	ldr r0, [r4, #0x64]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r1, #0
 	ldr r0, [r4, #0x5c]
 	add r2, r1, #0
@@ -3313,7 +3314,7 @@ _02255932:
 	ldr r0, [r0]
 	add r0, #0x94
 	ldrb r0, [r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _02255960:
 	bl sub_02037454
 	add r1, r4, #0
@@ -3838,7 +3839,7 @@ ov03_02255CF8: ; 0x02255CF8
 	bl sub_0205B514
 	ldr r0, [r5, #0x10]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r1, r0, #0
 	add r0, r5, #0
 	add r0, #0x54
@@ -3859,7 +3860,7 @@ _02255D3A:
 	bl StringExpandPlaceholders
 	ldr r0, [r5, #0x10]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r2, r0, #0
 	add r0, r5, #0
 	ldr r1, [r5, #0x18]
@@ -3936,7 +3937,7 @@ _02255DD4:
 	bne _02255E66
 	add r0, r6, #2
 	mov r1, #4
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	str r0, [r5, #8]
 	mov r3, #1
 	str r3, [sp]
@@ -4060,7 +4061,7 @@ ov03_02255EBC: ; 0x02255EBC
 	add r0, #0x34
 	bl RemoveWindow
 	ldr r0, [r4, #8]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0
 	str r0, [r4]
 _02255EF6:
@@ -4154,7 +4155,7 @@ ov03_02255F98: ; 0x02255F98
 	mov r0, #3
 	mov r1, #4
 	ldr r4, _0225603C ; =ov03_02259838
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	str r0, [r5, #0xc]
 	mov r0, #0xa
 	str r0, [sp]
@@ -4298,7 +4299,7 @@ _022560AE:
 	add r0, #0x44
 	bl RemoveWindow
 	ldr r0, [r5, #0xc]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0
 	str r0, [r5, #4]
 _022560E4:
@@ -4322,11 +4323,11 @@ ov03_022560EC: ; 0x022560EC
 	str r0, [sp, #0x30]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x2c]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x28]
 	ldr r0, [sp, #0x14]
 	mov r2, #3
@@ -4641,9 +4642,9 @@ _02256348:
 	b _022561C8
 _0225639C:
 	ldr r0, [sp, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x28]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x30]
 	bl DestroyMsgData
 	ldr r0, [sp, #0x24]
@@ -4686,7 +4687,7 @@ ov03_022563F8: ; 0x022563F8
 	add r4, r0, #0
 	ldr r0, [r4, #0x10]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r0, #0
 	ldr r0, [r4, #0x10]
 	ldr r2, [r4, #0x6c]
@@ -4766,9 +4767,9 @@ _022564A4: .word 0x000005F3
 ov03_022564A8: ; 0x022564A8
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #0x7c]
 	cmp r1, #0xb
@@ -4939,17 +4940,17 @@ _022565F6:
 	mov r1, #0
 	bl ov03_02255D68
 	ldr r0, [r4, #0x64]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x68]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x14]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x18]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x1c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x20]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
 	bl sub_0207495C
 	add r0, r4, #0
@@ -4983,7 +4984,7 @@ ov03_02256644: ; 0x02256644
 	add r5, #0xa4
 	str r0, [r5]
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x64]
 	mov r0, #0
 	mov r1, #0x1b
@@ -4993,19 +4994,19 @@ ov03_02256644: ; 0x02256644
 	str r0, [r4, #0x68]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x14]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x18]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x1c]
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x20]
 	mov r0, #0xb
 	bl sub_02074944
@@ -5020,7 +5021,7 @@ ov03_022566B0: ; 0x022566B0
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	add r4, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl ov03_02256644
 	add r2, r0, #0
 	ldr r1, _022566CC ; =ov03_022564A8
@@ -5041,7 +5042,7 @@ ov03_022566D0: ; 0x022566D0
 	mov r0, #0xb4
 	mov r1, #4
 	add r7, r2, #0
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
 	add r1, r7, #0
@@ -5058,7 +5059,7 @@ ov03_022566D0: ; 0x022566D0
 	add r3, r1, #0
 	bl BufferString
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -5132,15 +5133,15 @@ ov03_02256730: ; 0x02256730
 	bl NewMsgDataFromNarc
 	str r0, [sp, #0x30]
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r6, r0, #0
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	mov r0, #0xb4
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x2c]
 	ldr r0, [sp, #0x14]
 	add r1, r6, #0
@@ -5421,11 +5422,11 @@ _02256994:
 	b _022567F0
 _022569EC:
 	ldr r0, [sp, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [sp, #0x30]
 	bl DestroyMsgData
 	ldr r0, [sp, #0x18]
@@ -5450,7 +5451,7 @@ ov03_02256A2C: ; 0x02256A2C
 	ldr r0, [r0, #0xc]
 	str r1, [sp, #0xc]
 	str r2, [sp, #0x10]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r6, r0, #0
 	mov r0, #0xb
 	bl sub_02074944
@@ -5459,7 +5460,7 @@ ov03_02256A2C: ; 0x02256A2C
 	cmp r0, #0xa
 	bne _02256A84
 	add r0, r6, #0
-	bl GetPartyCount
+	bl Party_GetCount
 	add r7, r0, #0
 	add r5, r7, #0
 	mov r4, #0
@@ -5468,7 +5469,7 @@ ov03_02256A2C: ; 0x02256A2C
 _02256A5C:
 	add r0, r6, #0
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0x4c
 	mov r2, #0
 	bl GetMonData
@@ -5667,7 +5668,7 @@ ov03_02256BA8: ; 0x02256BA8
 	pop {r3, r4, r5, r6, r7, pc}
 _02256BCA:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r1, r6, #0
 	bl sub_020669B4
 	add r1, r0, #0
@@ -5883,32 +5884,32 @@ InitMartUI: ; 0x02256D34
 	mov r1, #0xb
 	str r0, [r4]
 	mov r0, #0x60
-	bl String_ctor
+	bl String_New
 	mov r1, #0x9d
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	mov r1, #0x92
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	mov r1, #0x25
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0x97
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #0x26
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl Save_ApricornBox_get
+	bl Save_ApricornBox_Get
 	mov r1, #0x96
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -5933,7 +5934,7 @@ InitMartUI: ; 0x02256D34
 	add r1, #0x40
 	str r0, [r4, r1]
 	ldr r0, [r5, #0xc]
-	bl Save_Pokeathlon_get
+	bl Save_Pokeathlon_Get
 	mov r1, #0x95
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -5957,14 +5958,14 @@ InitMartUI: ; 0x02256D34
 	bhi _02256DF8
 _02256DEA:
 	ldr r0, [r5, #0xc]
-	bl Sav2_Bag_get
+	bl Save_Bag_Get
 	mov r1, #0x93
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	b _02256E04
 _02256DF8:
 	ldr r0, [r5, #0xc]
-	bl Sav2_SealCase_get
+	bl Save_SealCase_Get
 	mov r1, #0x93
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -5991,10 +5992,10 @@ _02256E28: .word ov03_02256E2C
 ov03_02256E2C: ; 0x02256E2C
 	push {r3, r4, r5, r6, r7, lr}
 	add r6, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r1, _02257064 ; =0x00000272
 	add r4, r0, #0
 	ldrb r2, [r4, r1]
@@ -6096,7 +6097,7 @@ _02256EF6:
 _02256EFC:
 	sub r1, #0x52
 	ldr r0, [r4, r1]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	beq _02256F0A
 _02256F08:
@@ -6261,7 +6262,7 @@ _0225703E:
 	beq _0225704C
 	mov r1, #1
 	lsl r1, r1, #0xc
-	bl sub_020249B0
+	bl Sprite_TickCellOrMulticellAnimation
 _0225704C:
 	add r6, r6, #1
 	add r5, r5, #4
@@ -6301,7 +6302,7 @@ ov03_02257074: ; 0x02257074
 	add r1, #0x88
 	str r0, [r1]
 	mov r0, #0xb
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r4, #0x8c
 	str r0, [r4]
 	pop {r4, pc}
@@ -6320,11 +6321,11 @@ ov03_0225709C: ; 0x0225709C
 	add r0, r4, #0
 	add r0, #0x8c
 	ldr r0, [r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r0, #0x9d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x9a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -6360,7 +6361,7 @@ ov03_022570D4: ; 0x022570D4
 	add r0, r4, #0
 	bl ov03_02257134
 	mov r0, #0xb
-	bl GF_Camera_Create
+	bl Camera_New
 	add r1, r4, #0
 	add r1, #0x90
 	str r0, [r1]
@@ -6368,11 +6369,11 @@ ov03_022570D4: ; 0x022570D4
 	add r1, #0x90
 	ldr r0, [r5, #0x24]
 	ldr r1, [r1]
-	bl sub_02023128
+	bl Camera_Copy
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	ldr r0, _02257130 ; =0x00000281
 	mov r1, #0
 	strb r1, [r4, r0]
@@ -6537,7 +6538,7 @@ _02257258: .word 0x00000283
 ov03_0225725C: ; 0x0225725C
 	push {r4, lr}
 	add r4, r0, #0
-	bl GX_EngineAGetLayers
+	bl GfGfx_EngineAGetPlanes
 	mov r1, #0x9f
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -6576,16 +6577,16 @@ ov03_0225725C: ; 0x0225725C
 	bl SetBgPriority
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r4, pc}
 	nop
 _022572E0: .word 0x00000279
@@ -6617,7 +6618,7 @@ ov03_022572EC: ; 0x022572EC
 	mov r0, #0x9f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl GX_EngineASetLayers
+	bl GfGfx_EngineASetPlanes
 	pop {r4, pc}
 	nop
 _02257328: .word 0x00000279
@@ -6685,7 +6686,7 @@ _0225738A:
 	lsl r5, r5, #2
 	ldrb r1, [r1, r5]
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r1, _022573CC ; =ov03_0225949E
 	ldr r2, _022573D0 ; =ov03_0225949F
 	mov r0, #0x22
@@ -6693,7 +6694,7 @@ _0225738A:
 	ldrb r1, [r1, r5]
 	ldrb r2, [r2, r5]
 	ldr r0, [r4, r0]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 _022573C0:
 	pop {r3, r4, r5, pc}
 	nop
@@ -6770,7 +6771,7 @@ _02257414:
 _0225744C:
 	mov r0, #0x82
 	mov r1, #0xb
-	bl String_ctor
+	bl String_New
 	add r1, r5, #0
 	mov r2, #0xb
 	add r6, r0, #0
@@ -6820,9 +6821,9 @@ _022574AA:
 	add r0, #0x18
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r1, r5, #0
 	bl ov03_022585A4
@@ -7310,13 +7311,13 @@ ov03_02257874: ; 0x02257874
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r4, r1, #0
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	mov r1, #0x91
 	lsl r1, r1, #2
 	strh r0, [r5, r1]
 	sub r1, #0x48
 	ldr r0, [r5, r1]
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	ldr r1, _0225793C ; =0x00000246
 	strh r0, [r5, r1]
 	sub r1, #0x4e
@@ -7690,7 +7691,7 @@ _02257B78:
 	sub r1, #0x56
 	ldr r0, [r4, r1]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x23
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -7718,7 +7719,7 @@ _02257BAC:
 	sub r1, #0x52
 	ldr r0, [r4, r1]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x8d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -7747,7 +7748,7 @@ _02257BEA:
 	sub r1, #0x4e
 	ldr r0, [r4, r1]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x8e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -7776,7 +7777,7 @@ _02257C2A:
 	sub r1, #0x4a
 	ldr r0, [r4, r1]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x8f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -8476,13 +8477,13 @@ _0225818C:
 	add r0, #0x90
 	ldr r0, [r0]
 	ldr r1, [r5, #0x24]
-	bl sub_02023128
+	bl Camera_Copy
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl sub_02023120
+	bl Camera_Delete
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add r0, r4, #0
 	bl ov03_02258288
 	mov r0, #0x1b
@@ -8523,12 +8524,12 @@ _022581DA:
 	add r0, #0x34
 	ldr r0, [r7, r0]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	mov r0, #9
 	lsl r0, r0, #6
 	ldr r0, [r7, r0]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	mov r0, #0x22
 	lsl r0, r0, #4
 	ldr r0, [r7, r0]
@@ -8556,10 +8557,10 @@ _022581DA:
 	bl Set2dSpriteVisibleFlag
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r7, #0
 	mov r1, #0
 	bl ov03_022582C0
@@ -8595,7 +8596,7 @@ _02258296:
 	mov r0, #0x7e
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	str r6, [r5, r7]
 	add r4, r4, #1
 	add r5, r5, #4
@@ -8654,7 +8655,7 @@ _022582E0:
 	mov r0, #0x82
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r7, r7, #1
 	add r4, #0x28
 	add r6, r6, #4
@@ -8763,7 +8764,7 @@ _022583D0:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x8b
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -8798,7 +8799,7 @@ _022583FC:
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	add r1, sp, #0xc
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldrb r0, [r4]
 	lsl r0, r0, #2
 	add r1, r5, r0
@@ -8891,7 +8892,7 @@ _022584CE:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	mov r0, #0x8b
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -8923,7 +8924,7 @@ _022584FA:
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldrb r0, [r4]
 	lsl r0, r0, #2
 	add r1, r5, r0
@@ -8966,13 +8967,13 @@ ov03_02258560: ; 0x02258560
 	ldr r0, [r4, r0]
 	mov r1, #0xb1
 	mov r2, #8
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	mov r0, #0x7f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #0xb1
 	mov r2, #0x84
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	pop {r4, pc}
 _02258586:
 	mov r0, #0x7e
@@ -8980,13 +8981,13 @@ _02258586:
 	ldr r0, [r4, r0]
 	mov r1, #0xa2
 	mov r2, #0x6c
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	mov r0, #0x7f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #0xa2
 	mov r2, #0x84
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	pop {r4, pc}
 	thumb_func_end ov03_02258560
 
@@ -9124,11 +9125,11 @@ ov03_02258648: ; 0x02258648
 ov03_022586BC: ; 0x022586BC
 	mov r2, #2
 	lsl r2, r2, #8
-	ldr r3, _022586C8 ; =sub_0200DD08
+	ldr r3, _022586C8 ; =thunk_Sprite_SetPalIndex
 	ldr r0, [r0, r2]
 	bx r3
 	nop
-_022586C8: .word sub_0200DD08
+_022586C8: .word thunk_Sprite_SetPalIndex
 	thumb_func_end ov03_022586BC
 
 	thumb_func_start ov03_022586CC
@@ -9166,7 +9167,7 @@ _022586F8:
 	add r0, r0, r2
 	ldr r0, [r0, r1]
 	mov r1, #7
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldrb r0, [r4, #1]
 	add r0, r0, #1
 	strb r0, [r4, #1]
@@ -9184,7 +9185,7 @@ _02258710:
 	add r0, r0, r2
 	ldr r0, [r0, r1]
 	mov r1, #6
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	mov r0, #0
 	strb r0, [r4, #2]
 	ldrb r0, [r4, #1]
@@ -9228,16 +9229,16 @@ ov03_02258764: ; 0x02258764
 	cmp r0, #0
 	beq _022587C2
 	add r0, r6, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Sav2_Bag_get
+	bl Save_Bag_Get
 	ldr r1, _022587C8 ; =ov03_022597F0
 	mov r2, #0xb
-	bl CreateBagView
+	bl Bag_CreateView
 	str r0, [r4, #4]
 	mov r0, #0x43
 	lsl r0, r0, #2
@@ -9397,7 +9398,7 @@ _02258890: .word 0x000005D8
 	thumb_func_start ov03_02258894
 ov03_02258894: ; 0x02258894
 	push {r3, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r1, [r0]
 	cmp r1, #0
 	bne _022588A8
@@ -9466,7 +9467,7 @@ ov03_02258910: ; 0x02258910
 	bl ov03_02258878
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	str r0, [r4, #4]
 	add r0, r4, #0
 	bl ov03_02258814
@@ -9543,7 +9544,7 @@ ScrCmd_718: ; 0x02258998
 	add r5, #0x80
 	add r1, r0, #0
 	ldr r0, [r5]
-	bl VarGet
+	bl FieldSystem_VarGet
 	add r2, r0, #0
 	lsl r2, r2, #0x18
 	ldr r0, [r6]
@@ -9602,7 +9603,7 @@ ScrCmd_720: ; 0x02258A18
 	add r4, #0x80
 	add r1, r0, #0
 	ldr r0, [r4]
-	bl VarGet
+	bl FieldSystem_VarGet
 	str r0, [sp]
 	ldr r0, [r5, #0x40]
 	bl PlayerAvatar_GetFacingDirection
@@ -9636,7 +9637,7 @@ ScrCmd_720: ; 0x02258A18
 	add r0, r1, r0
 	str r0, [sp, #0x10]
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	mov r1, #0
 	bl SafariZone_GetAreaSet
 	str r0, [sp, #0xc]
@@ -9668,7 +9669,7 @@ ScrCmd_720: ; 0x02258A18
 	lsl r0, r0, #2
 	add r4, r1, r0
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerGender
 	add r2, r0, #0
 	lsl r2, r2, #0x18
@@ -9847,12 +9848,12 @@ ScrCmd_791: ; 0x02258C00
 	bl GetVarPointer
 	str r0, [sp]
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp, #4]
-	bl GetPartyCount
+	bl Party_GetCount
 	add r6, r0, #0
 	ldr r0, [r4, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerID
 	str r0, [sp, #0xc]
 	ldr r0, _02258CD8 ; =0x00000165
@@ -9868,7 +9869,7 @@ ScrCmd_791: ; 0x02258C00
 _02258C62:
 	ldr r0, [sp, #4]
 	add r1, r5, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0x4c
 	mov r2, #0
 	add r4, r0, #0
@@ -9930,10 +9931,10 @@ ScrCmd_792: ; 0x02258CDC
 	add r0, #0x80
 	ldr r5, [r0]
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetIGTAddr
+	bl Save_PlayerData_GetIGTAddr
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_0202F784
@@ -9945,7 +9946,7 @@ ScrCmd_792: ; 0x02258CDC
 ov03_02258CFC: ; 0x02258CFC
 	push {r4, r5, r6, lr}
 	add r6, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	mov r0, #0xb
 	mov r1, #0x40
@@ -9958,7 +9959,7 @@ ov03_02258CFC: ; 0x02258CFC
 	str r0, [r4, #0xc]
 	str r5, [r4, #8]
 	ldr r0, [r5, #0xc]
-	bl Save_Pokeathlon_get
+	bl Save_Pokeathlon_Get
 	str r0, [r4, #0x20]
 	bl sub_0203199C
 	str r0, [r4, #0x24]
@@ -9975,9 +9976,9 @@ _02258D38: .word ov03_02258D3C
 ov03_02258D3C: ; 0x02258D3C
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4]
 	cmp r1, #0
@@ -10106,15 +10107,15 @@ ov03_02258DE8: ; 0x02258DE8
 	mov r0, #3
 	mov r1, #0x10
 	mov r2, #4
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r4, #0x2c]
 	mov r0, #0x80
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x30]
 	mov r0, #0x80
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x34]
 	ldr r0, [r4, #0x28]
 	mov r1, #1
@@ -10135,15 +10136,15 @@ ov03_02258E88: ; 0x02258E88
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x3c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x38]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x34]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x30]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x2c]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x28]
 	bl DestroyMsgData
 	add r0, r4, #0
@@ -10245,7 +10246,7 @@ ov03_02258F48: ; 0x02258F48
 	ldr r2, [r5, #0x3c]
 	add r0, #0x10
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	str r4, [sp]
 	mov r0, #0xff
 	str r0, [sp, #4]
@@ -10257,7 +10258,7 @@ ov03_02258F48: ; 0x02258F48
 	ldr r2, [r5, #0x38]
 	add r0, #0x10
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -10286,7 +10287,7 @@ ov03_02258F8C: ; 0x02258F8C
 	ldr r2, [r5, #0x34]
 	add r0, #0x10
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5, #0x24]
 	add r1, r6, #0
 	bl ov03_02259070
@@ -10362,7 +10363,7 @@ _02259036:
 	ldr r2, [r5, #0x34]
 	add r0, #0x10
 	sub r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	nop

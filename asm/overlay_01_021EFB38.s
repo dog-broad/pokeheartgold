@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021EFB38.inc"
 	.include "global.inc"
 
 	.text
@@ -193,14 +194,14 @@ ov01_021EFC94: ; 0x021EFC94
 	mov r1, #0x24
 	mov r2, #5
 	mov r3, #4
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	add r4, r0, #0
 	str r5, [r4, #0x10]
 	str r6, [r4, #0x14]
 	mov r0, #0x6d
 	mov r1, #4
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [r4, #0x20]
 	ldr r1, [r4, #0x14]
 	cmp r1, #0
@@ -222,12 +223,12 @@ ov01_021EFCDC: ; 0x021EFCDC
 	add r5, r0, #0
 	ldr r0, [r5, #0x20]
 	add r4, r1, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r1, [r5, #0xc]
 	mov r0, #4
 	bl FreeToHeapExplicit
 	add r0, r4, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov01_021EFCDC
 
@@ -1447,7 +1448,7 @@ ov01_021F05F4: ; 0x021F05F4
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
 	ldr r0, [r5]
-	bl sub_02024504
+	bl SpriteList_Delete
 	mov r6, #0x4b
 	mov r4, #0
 	lsl r6, r6, #2
@@ -2565,13 +2566,13 @@ _021F0DFC:
 	ldr r0, [r0]
 	str r4, [r0, #4]
 	mov r0, #2
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	bl GX_ResetBankForBG
 	mov r2, #2
 	ldr r1, _021F0E60 ; =0x06840000
@@ -2746,7 +2747,7 @@ _021F0F64:
 	mov r1, #0xe1
 	lsl r0, r0, #0xc
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	mov r2, #0
 	add r0, r5, #0
 	add r1, r4, #0
@@ -2993,10 +2994,10 @@ _021F1154:
 	sub r2, r2, #1
 	bne _021F1154
 	add r0, sp, #0x44
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r5, _021F11FC ; =ov01_022067FC
 	add r3, sp, #0x34
 	add r2, r3, #0
@@ -3020,7 +3021,7 @@ _021F1154:
 	bl SetBgPriority
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, sp, #0x24
 	bl MTX_Identity22_
 	mov r2, #0
@@ -3055,7 +3056,7 @@ _021F1154:
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add sp, #0x6c
 	pop {r4, r5, pc}
 	.balign 4, 0

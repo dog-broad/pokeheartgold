@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_020850F4.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -49,8 +50,8 @@ _0208512C:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -63,7 +64,7 @@ _0208512C:
 	str r0, [r2]
 	mov r0, #0xbe
 	mov r1, #0x6c
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0xbb
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -73,7 +74,7 @@ _0208512C:
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	mov r0, #0x6c
-	bl sub_020030E8
+	bl PaletteData_Init
 	mov r1, #0xbf
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -201,28 +202,28 @@ _02085294:
 	bl sub_020866CC
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0xbe
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -285,22 +286,22 @@ _02085294:
 	mov r0, #0xbf
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02003104
+	bl PaletteData_Free
 	mov r0, #0xbb
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	bl sub_02021238
 	mov r1, #0x2f
 	lsl r1, r1, #4
 	ldr r0, [r4, r1]
 	add r1, r1, #4
 	ldr r1, [r4, r1]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	mov r0, #0x2f
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	mov r0, #3
 	lsl r0, r0, #8
 	ldr r0, [r4, r0]
@@ -327,7 +328,7 @@ sub_020853B4: ; 0x020853B4
 	ldr r1, [sp]
 	add r0, r6, #1
 	str r6, [r4]
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x1c]
 	str r7, [r4, #0x20]
 	mov r2, #0
@@ -403,7 +404,7 @@ _02085446:
 	bl GF_AssertFail
 _0208544E:
 	ldr r0, [r4, #0x1c]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -414,7 +415,7 @@ sub_0208545C: ; 0x0208545C
 	push {r4, r5, lr}
 	sub sp, #0xec
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
+	bl GfGfx_DisableEngineAPlanes
 	ldr r5, _020855BC ; =_02102630
 	add r3, sp, #0
 	mov r2, #5
@@ -424,7 +425,7 @@ _0208546C:
 	sub r2, r2, #1
 	bne _0208546C
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -485,16 +486,16 @@ _020854B8:
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r5, _020855C4 ; =_021026AC
 	add r3, sp, #0x28
 	mov r2, #0xe
@@ -537,26 +538,26 @@ _02085526:
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _020855C8 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0xec
 	pop {r4, r5, pc}
 	.balign 4, 0
@@ -571,7 +572,7 @@ sub_020855CC: ; 0x020855CC
 	push {r4, lr}
 	add r4, r0, #0
 	bl GF_RunVramTransferTasks
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 	mov r0, #0xbf
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -579,7 +580,7 @@ sub_020855CC: ; 0x020855CC
 	mov r0, #0xbe
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _020855FC ; =OS_IRQTable
 	ldr r1, _02085600 ; =0x00003FF8
 	mov r0, #1

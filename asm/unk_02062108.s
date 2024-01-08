@@ -9,6 +9,7 @@
 #include "fielddata/script/scr_seq/event_D24R0204.h"
 #include "constants/party_menu.h"
 	.include "asm/macros.inc"
+	.include "unk_02062108.inc"
 	.include "global.inc"
 
 	.data
@@ -187,7 +188,7 @@ _02062230:
 	bne _02062230
 	add r0, r5, #0
 	bl MapObject_GetManager
-	bl sub_0205F19C
+	bl MapObjectManager_GetHeapID
 	sub r2, r0, #1
 	ldr r0, _0206225C ; =MovementScriptMachine
 	add r1, r4, #0
@@ -1354,7 +1355,7 @@ _02062992:
 	add r0, r5, #0
 	bl MapObject_IncMovementStep
 	add r0, r5, #0
-	bl MapObject_CheckFlag9
+	bl MapObject_CheckVisible
 	cmp r0, #0
 	bne _020629C2
 	ldr r0, _020629C8 ; =SEQ_SE_DP_DANSA
@@ -1465,7 +1466,7 @@ _02062A68:
 	add r0, r5, #0
 	bl MapObject_IncMovementStep
 	add r0, r5, #0
-	bl MapObject_CheckFlag9
+	bl MapObject_CheckVisible
 	cmp r0, #0
 	bne _02062AAA
 	ldr r0, _02062AB8 ; =SEQ_SE_DP_SUTYA2

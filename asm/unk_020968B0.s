@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_020968B0.inc"
 	.include "global.inc"
 	.public _02108584
 
@@ -23,7 +24,7 @@ sub_020968B0: ; 0x020968B0
 	bl MI_CpuFill8
 	str r6, [r4]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #4]
 	ldr r0, [r5, #0xc]
 	mov r1, #0xe
@@ -49,7 +50,7 @@ sub_020968B0: ; 0x020968B0
 	ldr r1, _0209690C ; =_02108584
 	add r0, r5, #0
 	str r5, [r4, #0x24]
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	add r0, r4, #0
 	pop {r4, r5, r6, pc}
 	nop

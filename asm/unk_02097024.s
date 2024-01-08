@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02097024.inc"
 	.include "global.inc"
 
 	.text
@@ -77,10 +78,10 @@ sub_0209707C: ; 0x0209707C
 	ldr r0, [r0]
 	str r0, [r4, #0x14]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #0x18]
 	ldr r0, [r5, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	str r0, [r4, #0x1c]
 	ldr r0, [r4, #0x18]
 	bl Options_GetFrame
@@ -126,7 +127,7 @@ sub_020970E4: ; 0x020970E4
 	ldr r0, [r4, #0x28]
 	ldr r1, _02097104 ; =_02108EA0
 	ldr r2, [r4, #0x24]
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	mov r0, #0
 	pop {r4, pc}
 	.balign 4, 0
@@ -138,7 +139,7 @@ sub_02097108: ; 0x02097108
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x28]
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02097142
 	ldr r0, [r4, #0x24]
@@ -172,7 +173,7 @@ sub_02097148: ; 0x02097148
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0x28]
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _020971A4
 	ldr r0, [r5, #0x2c]
@@ -205,7 +206,7 @@ _0209718C:
 	str r4, [r0, #4]
 	ldr r0, [r5, #0x28]
 	ldr r2, [r5, #0x24]
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	ldr r0, [r5, #0x24]
 	mov r1, #3
 	str r1, [r0]
@@ -223,7 +224,7 @@ sub_020971AC: ; 0x020971AC
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x28]
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _020971CE
 	ldr r0, [r4, #0x30]
@@ -245,7 +246,7 @@ sub_020971D4: ; 0x020971D4
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x28]
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _020971E6
 	mov r0, #5

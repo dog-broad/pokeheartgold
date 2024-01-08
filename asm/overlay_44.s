@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_44.inc"
 	.include "global.inc"
 
 	.text
@@ -9,10 +10,10 @@ ov44_02229EE0: ; 0x02229EE0
 	mov r1, #0x16
 	lsl r1, r1, #4
 	ldr r0, [r0, r1]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #2
 	mov r2, #0x1b
-	bl ScriptState_FlypointFlagAction
+	bl Save_VarsFlags_FlypointFlagAction
 	pop {r3, pc}
 	.balign 4, 0
 	thumb_func_end ov44_02229EE0
@@ -431,9 +432,9 @@ ov44_0222A168: ; 0x0222A168
 	mov r1, #0x16
 	lsl r1, r1, #4
 	ldr r0, [r0, r1]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp]
-	bl GetPartyCount
+	bl Party_GetCount
 	mov r5, #0
 	add r7, r0, #0
 	add r4, r5, #0
@@ -442,7 +443,7 @@ ov44_0222A168: ; 0x0222A168
 _0222A184:
 	ldr r0, [sp]
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0xa3
 	mov r2, #0
 	add r6, r0, #0
@@ -510,8 +511,8 @@ ov44_0222A1FC: ; 0x0222A1FC
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -527,7 +528,7 @@ ov44_0222A1FC: ; 0x0222A1FC
 	bl SetKeyRepeatTimers
 	mov r0, #0x58
 	mov r1, #0x35
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [sp, #0x20]
 	mov r0, #0x35
 	bl BgConfig_Alloc
@@ -536,7 +537,7 @@ ov44_0222A1FC: ; 0x0222A1FC
 	lsl r2, r2, #2
 	str r0, [r1, r2]
 	mov r0, #0x35
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	mov r2, #0x59
 	ldr r1, [sp, #4]
 	lsl r2, r2, #2
@@ -721,9 +722,9 @@ _0222A37A:
 	ldr r0, _0222A408 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	ldr r0, [sp, #0x20]
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x30
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -940,10 +941,10 @@ _0222A542:
 	str r2, [r5, r1]
 	mov r0, #0xf
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0xf
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r5, #0
 	bl ov44_0222ADF8
 	add r0, r5, #0
@@ -1117,7 +1118,7 @@ _0222A6F0:
 	mov r0, #0x19
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	bl sub_0202168C
 	bl sub_02022608
@@ -1138,7 +1139,7 @@ _0222A6F0:
 	mov r0, #0x59
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, _0222A754 ; =FS_OVERLAY_ID(OVY_42)
 	bl UnloadOverlayByID
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1232,7 +1233,7 @@ ov44_0222A7F8: ; 0x0222A7F8
 	mov r0, #0x57
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	ldr r0, _0222A82C ; =0x000010BC
@@ -1265,7 +1266,7 @@ _0222A83A:
 	sub r2, r2, #1
 	bne _0222A83A
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -2027,26 +2028,26 @@ ov44_0222ADF8: ; 0x0222ADF8
 	mov r0, #0x5f
 	lsl r0, r0, #2
 	mov r1, #0x35
-	bl String_ctor
+	bl String_New
 	mov r1, #0x5d
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	add r1, #8
 	add r0, r1, #0
 	mov r1, #0x35
-	bl String_ctor
+	bl String_New
 	mov r1, #0x5f
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	add r0, r1, #0
 	mov r1, #0x35
-	bl String_ctor
+	bl String_New
 	mov r1, #0x17
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	mov r0, #0xb4
 	mov r1, #0x35
-	bl String_ctor
+	bl String_New
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -2065,19 +2066,19 @@ ov44_0222AE44: ; 0x0222AE44
 	mov r0, #0x5e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x5d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x5f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov44_0222AE44
@@ -2126,19 +2127,19 @@ ov44_0222AEC0: ; 0x0222AEC0
 	mov r0, #1
 	add r5, r1, #0
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r2, #0
 	str r2, [sp]
 	mov r0, #0x35
@@ -2210,7 +2211,7 @@ ov44_0222AEC0: ; 0x0222AEC0
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r6, r0]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -2338,12 +2339,12 @@ _0222B07C:
 
 	thumb_func_start ov44_0222B0A4
 ov44_0222B0A4: ; 0x0222B0A4
-	ldr r3, _0222B0AC ; =GX_EngineAToggleLayers
+	ldr r3, _0222B0AC ; =GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
 	bx r3
 	.balign 4, 0
-_0222B0AC: .word GX_EngineAToggleLayers
+_0222B0AC: .word GfGfx_EngineATogglePlanes
 	thumb_func_end ov44_0222B0A4
 
 	thumb_func_start ov44_0222B0B0
@@ -2418,7 +2419,7 @@ _0222B0DA:
 	lsr r2, r2, #1
 	ldr r2, [r4, r2]
 	mov r1, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x2f
 	lsl r0, r0, #4
 	add r0, r4, r0
@@ -2504,7 +2505,7 @@ _0222B1F6:
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _0222B20C
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0x53
 	mov r1, #0
 	lsl r0, r0, #2
@@ -2711,13 +2712,13 @@ ov44_0222B3A8: ; 0x0222B3A8
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r4, r1, #0
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222B408
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
@@ -2739,7 +2740,7 @@ _0222B3EC:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -2754,7 +2755,7 @@ _0222B408:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0xd2
 	mov r1, #0x22
 	lsl r0, r0, #2
@@ -2828,13 +2829,13 @@ ov44_0222B494: ; 0x0222B494
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r4, r1, #0
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222B4EE
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #3
 	lsl r0, r0, #8
 	add r0, r5, r0
@@ -2867,7 +2868,7 @@ _0222B4EE:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #3
 	lsl r0, r0, #8
 	add r0, r5, r0
@@ -2900,13 +2901,13 @@ ov44_0222B528: ; 0x0222B528
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r4, r1, #0
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222B5EA
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #3
 	mov r1, #0
 	bl SetBgPriority
@@ -2934,7 +2935,7 @@ ov44_0222B528: ; 0x0222B528
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	mov r1, #0x1f
-	bl SavArray_get
+	bl SaveArray_Get
 	bl sub_02031710
 	mov r0, #0x16
 	lsl r0, r0, #4
@@ -2966,7 +2967,7 @@ _0222B5CE:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -2981,7 +2982,7 @@ _0222B5EA:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #3
 	mov r1, #0
 	bl SetBgPriority
@@ -3029,13 +3030,13 @@ ov44_0222B64C: ; 0x0222B64C
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r4, r1, #0
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222B6EA
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0
 	mov r1, #3
 	bl SetBgPriority
@@ -3082,7 +3083,7 @@ _0222B6CE:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -3097,7 +3098,7 @@ _0222B6EA:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0
 	mov r1, #3
 	bl SetBgPriority
@@ -3169,17 +3170,17 @@ ov44_0222B778: ; 0x0222B778
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	str r1, [sp]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	str r0, [sp, #0x14]
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl Sav2_Pokedex_get
+	bl Save_Pokedex_Get
 	str r0, [sp, #0x10]
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp, #0xc]
 	mov r0, #0x16
 	lsl r0, r0, #4
@@ -3187,7 +3188,7 @@ ov44_0222B778: ; 0x0222B778
 	bl sub_0202CA44
 	str r0, [sp, #8]
 	ldr r0, [sp, #0xc]
-	bl GetPartyCount
+	bl Party_GetCount
 	mov r6, #0
 	str r0, [sp, #4]
 	cmp r0, #0
@@ -3196,7 +3197,7 @@ ov44_0222B778: ; 0x0222B778
 _0222B7C0:
 	ldr r0, [sp, #0xc]
 	add r1, r6, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	add r7, r0, #0
@@ -3763,13 +3764,13 @@ _0222BC0A:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222BC38
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	bl sub_02039330
 	add r0, r5, #0
 	mov r1, #0x10
@@ -3785,7 +3786,7 @@ _0222BC38:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r5, #0
 	mov r1, #0x10
 	bl ov44_0222F818
@@ -3893,19 +3894,19 @@ _0222BD1A:
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #0x58
 	mov r1, #0x35
-	bl NARC_ctor
+	bl NARC_New
 	add r6, r0, #0
 	add r0, r5, #0
 	add r1, r6, #0
 	bl ov44_0222AEC0
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, _0222BE2C ; =0x00000D6C
 	mov r1, #1
 	str r1, [r5, r0]
 	ldr r0, _0222BE30 ; =gSystem + 0x60
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r1, #0
 	mov r0, #0x57
 	lsl r0, r0, #2
@@ -3944,7 +3945,7 @@ _0222BD1A:
 	str r1, [r5, r0]
 	sub r0, r0, #4
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0x53
 	mov r1, #0
 	lsl r0, r0, #2
@@ -3993,7 +3994,7 @@ _0222BE08:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -4050,7 +4051,7 @@ _0222BE80:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -4388,7 +4389,7 @@ ov44_0222C120: ; 0x0222C120
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	mov r1, #0x35
 	add r6, r0, #0
 	bl PlayerProfile_GetPlayerName_NewString
@@ -4400,7 +4401,7 @@ ov44_0222C120: ; 0x0222C120
 	cmp r0, #0
 	bne _0222C152
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
 _0222C152:
@@ -4432,9 +4433,9 @@ _0222C170:
 	add r0, r5, r0
 	mov r3, #0x20
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r1, [r5, #4]
 	add r0, r5, #0
 	bl ov44_02229F00
@@ -4507,7 +4508,7 @@ _0222C214:
 	lsr r2, r2, #1
 	ldr r2, [r5, r2]
 	mov r3, #0x66
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #1
 	str r2, [sp]
 	mov r0, #0x57
@@ -4684,7 +4685,7 @@ _0222C388:
 	str r1, [r5, r0]
 	mov r0, #0x58
 	mov r1, #0x35
-	bl NARC_ctor
+	bl NARC_New
 	add r6, r0, #0
 	mov r0, #0x57
 	lsl r0, r0, #2
@@ -4724,7 +4725,7 @@ _0222C388:
 	str r1, [r5, r0]
 	sub r0, r0, #4
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0x53
 	mov r1, #0
 	lsl r0, r0, #2
@@ -4798,11 +4799,11 @@ _0222C46A:
 	lsl r0, r0, #4
 	str r1, [r5, r0]
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, _0222C4E8 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #6
 	str r0, [sp]
 	mov r1, #1
@@ -6070,13 +6071,13 @@ _0222CF0C:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222CF5A
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	bl sub_020393C8
 	cmp r0, #0
 	bne _0222CF52
@@ -6107,7 +6108,7 @@ _0222CF5A:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0xd2
 	mov r1, #0x18
 	lsl r0, r0, #2
@@ -6133,7 +6134,7 @@ _0222CF8C:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0
 	mov r1, #0x37
 	mvn r0, r0
@@ -6614,7 +6615,7 @@ _0222D34A:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r5, r0, #0
 	mov r0, #0xe3
 	lsl r0, r0, #2
@@ -6643,7 +6644,7 @@ _0222D386:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	mov r1, #0x10
 	bl ov44_0222F818
@@ -6657,7 +6658,7 @@ _0222D3A8:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	bl ov44_022319EC
 	add r0, r4, #0
@@ -6774,7 +6775,7 @@ _0222D478:
 	add r0, r7, #1
 	mov r1, #0x35
 	str r2, [r3, #4]
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	mov r1, #0x55
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -6927,7 +6928,7 @@ ov44_0222D594: ; 0x0222D594
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	bl ov44_0222F7BC
 	add r0, r5, #0
@@ -6970,7 +6971,7 @@ _0222D5FC:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	bl ov44_0222F7BC
 _0222D656:
@@ -7099,7 +7100,7 @@ _0222D726:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	add r1, r4, #0
 	bl ov44_0222D8B0
@@ -7186,7 +7187,7 @@ _0222D7E8:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r7, #0
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -7326,7 +7327,7 @@ _0222D908:
 _0222D928:
 	add r0, r7, #0
 	mov r1, #0x35
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	mov r1, #0x55
 	lsl r1, r1, #2
 	mov r6, #0
@@ -7505,7 +7506,7 @@ ov44_0222DA64: ; 0x0222DA64
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	bl ov44_0222F7BC
 	add r0, r5, #0
@@ -7543,7 +7544,7 @@ _0222DAC4:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	bl ov44_0222F7BC
 	add r0, r6, #0
@@ -7659,7 +7660,7 @@ _0222DBD2:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r6, #0
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -7990,7 +7991,7 @@ _0222DE58:
 	str r0, [sp, #0x18]
 	mov r0, #2
 	mov r1, #0x35
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	mov r1, #0x55
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -8286,7 +8287,7 @@ _0222E0B2:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	ldr r0, [sp, #0x14]
 	cmp r0, #0
 	beq _0222E110
@@ -8597,7 +8598,7 @@ _0222E386:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -8677,7 +8678,7 @@ _0222E408:
 	mov r0, #0x55
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	ldr r0, [sp, #0x14]
 	cmp r0, #0
 	beq _0222E448
@@ -9859,7 +9860,7 @@ _0222ED32:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r5, r0, #0
 	mov r0, #6
 	lsl r0, r0, #6
@@ -9883,7 +9884,7 @@ _0222ED60:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	mov r1, #0x1a
 	mov r2, #1
@@ -9902,7 +9903,7 @@ _0222ED88:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	bl ov44_0222F7BC
 	mov r0, #0xd2
@@ -10114,7 +10115,7 @@ _0222EF24:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222EF2E:
 	add r0, r5, #0
 	mov r1, #0x65
@@ -10146,7 +10147,7 @@ _0222EF66:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222EF70:
 	add r0, r5, #0
 	bl ov44_0222B9A0
@@ -10187,7 +10188,7 @@ _0222EFB8:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -10220,13 +10221,13 @@ _0222F000:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222F05A
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r5, #0
 	mov r1, #0x8a
 	mov r2, #0
@@ -10242,7 +10243,7 @@ _0222F030:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -10264,7 +10265,7 @@ _0222F05A:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r5, #0
 	bl ov44_0222F7BC
 	bl sub_020343E4
@@ -10444,7 +10445,7 @@ _0222F1CE:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222F1D8:
 	add r0, r5, #0
 	sub r1, r6, #1
@@ -10495,7 +10496,7 @@ _0222F238:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222F242:
 	add r0, r5, #0
 	sub r1, r6, #1
@@ -10531,7 +10532,7 @@ _0222F284:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222F28E:
 	add r0, r5, #0
 	bl ov44_0222B9A0
@@ -10557,7 +10558,7 @@ _0222F2BA:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 _0222F2C4:
 	add r0, r5, #0
 	mov r1, #0x12
@@ -10644,7 +10645,7 @@ _0222F37A:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -10686,13 +10687,13 @@ _0222F3D4:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0222F494
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _0222F4D4 ; =0x0000037E
 	ldrh r0, [r5, r0]
 	bl ov44_0222A0B4
@@ -10746,7 +10747,7 @@ _0222F460:
 	lsl r1, r1, #4
 	add r0, r5, r1
 	sub r1, #0xee
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x63
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -10774,7 +10775,7 @@ _0222F494:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r5, #0
 	bl ov44_0222F7BC
 	add r0, r5, #0
@@ -10844,7 +10845,7 @@ _0222F520:
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 _0222F52E:
 	lsl r0, r0, #0x18
@@ -10898,7 +10899,7 @@ _0222F580:
 	ldr r0, [r5, r0]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 	mov r0, #6
 	mov r1, #8
 	lsl r0, r0, #6
@@ -11047,7 +11048,7 @@ _0222F6C0:
 	ldr r0, [r5, r0]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 	mov r0, #6
 	mov r1, #8
 	lsl r0, r0, #6
@@ -11131,14 +11132,14 @@ ov44_0222F780: ; 0x0222F780
 	cmp r6, r0
 	beq _0222F7BA
 	mov r0, #0x35
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	add r4, r0, #0
 	ldr r0, [r5]
 	add r1, r6, #0
 	bl sub_0202C254
 	add r1, r0, #0
 	add r0, r4, #0
-	bl Sav2_Profile_PlayerName_set
+	bl Save_Profile_PlayerName_Set
 	mov r0, #0x59
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -11171,7 +11172,7 @@ ov44_0222F7BC: ; 0x0222F7BC
 	ldr r0, [r4, r0]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 	mov r0, #6
 	mov r1, #8
 	lsl r0, r0, #6
@@ -11430,16 +11431,16 @@ ov44_0222F9A0: ; 0x0222F9A0
 	bl memset
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _0222FA18 ; =ov44_022354E8
 	ldr r2, _0222FA1C ; =ov44_0222FC84
 	mov r1, #8
@@ -11449,7 +11450,7 @@ ov44_0222F9A0: ; 0x0222F9A0
 	ldr r1, _0222FA20 ; =0x00000B68
 	str r0, [r5, r1]
 	add r0, r4, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	ldr r1, _0222FA14 ; =0x00000B1C
 	add r2, r4, #0
 	str r0, [r5, r1]
@@ -11490,22 +11491,22 @@ ov44_0222FA28: ; 0x0222FA28
 	str r1, [r4, r0]
 	sub r0, #0x4c
 	ldr r0, [r4, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, _0222FA7C ; =0x00000B1C
 	mov r1, #0
 	str r1, [r4, r0]
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 _0222FA76:
 	pop {r4, pc}
 	.balign 4, 0
@@ -12501,10 +12502,10 @@ _022301EC:
 	bl ScheduleBgTilemapBufferTransfer
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x20
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -12598,10 +12599,10 @@ _022302AE:
 	bl ScheduleWindowCopyToVram
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	nop
@@ -12663,7 +12664,7 @@ _02230322:
 	add r0, r5, r0
 	mov r1, #1
 	mov r3, #0x20
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	add r1, r4, #0
 	bl ov44_02231958
@@ -12694,16 +12695,16 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #0x68
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x35
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	add r6, r0, #0
 	ldr r0, [r5]
 	add r1, r4, #0
 	bl sub_0202C298
 	add r1, r0, #0
 	add r0, r6, #0
-	bl Sav2_Profile_PlayerName_set
+	bl Save_Profile_PlayerName_Set
 	ldr r0, _0223069C ; =0x00000B1C
 	mov r1, #0
 	ldr r0, [r5, r0]
@@ -12731,7 +12732,7 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x96
 	mov r0, #0x5a
 	add r2, r1, #0
@@ -12768,7 +12769,7 @@ _02230322:
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0x5a
 	lsl r2, r2, #2
 	ldr r0, [r5, r2]
@@ -12789,7 +12790,7 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5]
 	add r1, r4, #0
 	mov r2, #1
@@ -12831,7 +12832,7 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #0x78
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5]
 	add r1, r4, #0
 	mov r2, #2
@@ -12880,7 +12881,7 @@ _02230322:
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x5a
 	mov r1, #0x2f
 	lsl r0, r0, #2
@@ -12901,7 +12902,7 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5]
 	add r1, r4, #0
 	mov r2, #3
@@ -12950,7 +12951,7 @@ _02230322:
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	bl ov44_02229EF8
 	cmp r0, #1
@@ -12975,7 +12976,7 @@ _02230322:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5]
 	add r1, r4, #0
 	mov r2, #9
@@ -13032,7 +13033,7 @@ _022306A8:
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _022306B4:
 	mov r2, #0x5a
 	lsl r2, r2, #2
@@ -13054,7 +13055,7 @@ _022306B4:
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5]
 	add r1, r4, #0
 	mov r2, #6
@@ -13127,7 +13128,7 @@ _022306B4:
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _02230788:
 	mov r3, #2
 	str r3, [sp]
@@ -13199,7 +13200,7 @@ ov44_022307E0: ; 0x022307E0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13220,7 +13221,7 @@ ov44_022307E0: ; 0x022307E0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x78
 	str r0, [sp]
 	mov r0, #0x18
@@ -13250,7 +13251,7 @@ ov44_022307E0: ; 0x022307E0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x78
 	str r0, [sp]
 	mov r0, #0x30
@@ -13296,7 +13297,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0x5a
 	lsl r2, r2, #2
 	ldr r0, [r5, r2]
@@ -13317,7 +13318,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0x5a
 	lsl r2, r2, #2
 	ldr r0, [r5, r2]
@@ -13345,7 +13346,7 @@ ov44_022308B0: ; 0x022308B0
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13366,7 +13367,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x30
@@ -13405,7 +13406,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x40
@@ -13444,7 +13445,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0x5a
 	lsl r2, r2, #2
 	ldr r0, [r5, r2]
@@ -13472,7 +13473,7 @@ ov44_022308B0: ; 0x022308B0
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13493,7 +13494,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x70
@@ -13532,7 +13533,7 @@ ov44_022308B0: ; 0x022308B0
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x80
@@ -13587,7 +13588,7 @@ ov44_02230B2C: ; 0x02230B2C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0x5a
 	lsl r2, r2, #2
 	ldr r0, [r5, r2]
@@ -13617,7 +13618,7 @@ ov44_02230B2C: ; 0x02230B2C
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13638,7 +13639,7 @@ ov44_02230B2C: ; 0x02230B2C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x30
@@ -13677,7 +13678,7 @@ ov44_02230B2C: ; 0x02230B2C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x68
 	str r0, [sp]
 	mov r0, #0x50
@@ -13738,7 +13739,7 @@ ov44_02230C68: ; 0x02230C68
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r7, #0
 	mov r1, #0x7c
 	add r2, r4, #0
@@ -13765,9 +13766,9 @@ ov44_02230C68: ; 0x02230C68
 	add r2, r6, #0
 	add r0, r5, r0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13788,7 +13789,7 @@ ov44_02230C68: ; 0x02230C68
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x6c
 	str r0, [sp]
 	mov r0, #0x30
@@ -13818,7 +13819,7 @@ ov44_02230C68: ; 0x02230C68
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x6c
 	str r0, [sp]
 	mov r0, #0x50
@@ -13864,7 +13865,7 @@ ov44_02230D8C: ; 0x02230D8C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0x5e
 	lsl r1, r1, #2
 	ldr r1, [r5, r1]
@@ -13885,7 +13886,7 @@ ov44_02230D8C: ; 0x02230D8C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x70
 	str r0, [sp]
 	mov r0, #0x18
@@ -13915,7 +13916,7 @@ ov44_02230D8C: ; 0x02230D8C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x70
 	str r0, [sp]
 	mov r0, #0x30
@@ -13966,7 +13967,7 @@ ov44_02230E5C: ; 0x02230E5C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, _02230FE0 ; =0x00000B1C
 	mov r1, #0
 	ldr r0, [r5, r0]
@@ -14000,7 +14001,7 @@ ov44_02230E5C: ; 0x02230E5C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
 	add r1, r4, #0
 	mov r2, #0xa
@@ -14045,7 +14046,7 @@ ov44_02230E5C: ; 0x02230E5C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
 	add r1, r4, #0
 	mov r2, #0xb
@@ -14090,7 +14091,7 @@ ov44_02230E5C: ; 0x02230E5C
 	ldr r2, [r5, r2]
 	add r0, r5, r0
 	mov r3, #8
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
 	add r1, r4, #0
 	mov r2, #0xc
@@ -14281,7 +14282,7 @@ ov44_022310C8: ; 0x022310C8
 	add r2, #0x79
 	ldr r2, [r5, r2]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	nop
@@ -14554,7 +14555,7 @@ _022312EC:
 	ldr r2, [r5, r2]
 	add r0, r6, #0
 	mov r1, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
 	bl ScheduleWindowCopyToVram
 	add sp, #0x18
@@ -14698,7 +14699,7 @@ _02231430:
 	bne _02231430
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x1e
 	str r0, [sp]
 	mov r0, #2
@@ -14862,7 +14863,7 @@ _0223153E:
 	bl AddTextWindowTopLeftCorner
 	ldr r1, [sp, #0x2c]
 	mov r0, #0x40
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	mov r0, #0x5a
 	lsl r0, r0, #2
@@ -14886,9 +14887,9 @@ _0223153E:
 	str r1, [sp, #0xc]
 	add r0, sp, #0x68
 	mov r1, #2
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r1, [sp, #0x2c]
 	add r0, sp, #0x68
 	bl sub_02013910
@@ -14995,7 +14996,7 @@ ov44_022316B0: ; 0x022316B0
 	add r4, r5, #0
 _022316D6:
 	ldr r0, [r4, r7]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r6, r6, #1
 	add r4, r4, #4
 	cmp r6, #3
@@ -15034,7 +15035,7 @@ ov44_02231720: ; 0x02231720
 	mov r1, #1
 	str r1, [r5, r0]
 	mov r0, #0x10
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _0223174C ; =0x00000D58
 	mov r4, #0
 	ldr r6, _02231750 ; =0x00000B1C
@@ -15075,7 +15076,7 @@ _02231776:
 	mov r1, #0
 	str r1, [r4, r0]
 	mov r0, #0x10
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r4, pc}
 	.balign 4, 0
 _02231784: .word 0x00000D54
@@ -15162,7 +15163,7 @@ ov44_02231800: ; 0x02231800
 	bl Set2dSpriteAnimSeqNo
 	ldr r0, [r6, r7]
 	mov r1, #4
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	cmp r4, #1
 	bne _02231836
 	mov r0, #0x8d
@@ -15196,7 +15197,7 @@ ov44_0223183C: ; 0x0223183C
 	lsl r4, r5, #2
 	add r7, r0, r1
 	ldr r0, [r7, r4]
-	bl sub_020249F8
+	bl Sprite_GetAnimCtrlCurrentFrame
 	str r0, [sp, #4]
 	cmp r6, #0
 	beq _02231868
@@ -15216,9 +15217,9 @@ _02231876:
 	mov r1, #2
 	ldr r0, [r7, r4]
 	lsl r1, r1, #0xc
-	bl sub_020249B0
+	bl Sprite_TickCellOrMulticellAnimation
 	ldr r0, [r7, r4]
-	bl sub_020249F8
+	bl Sprite_GetAnimCtrlCurrentFrame
 	add r4, r0, #0
 	cmp r5, #1
 	bne _022318A6
@@ -15252,10 +15253,10 @@ _022318BE:
 	lsl r4, r5, #2
 	add r6, r0, r1
 	ldr r0, [r6, r4]
-	bl sub_020249A8
+	bl Get2dSpriteCurrentAnimSeqNo
 	add r7, r0, #0
 	ldr r0, [r6, r4]
-	bl sub_020249F8
+	bl Sprite_GetAnimCtrlCurrentFrame
 	str r0, [sp, #0xc]
 	ldr r0, _0223190C ; =ov44_02235360
 	ldrb r0, [r0, r5]
@@ -15271,12 +15272,12 @@ _022318BE:
 	lsl r1, r1, #0x10
 	ldr r0, [r6, r4]
 	lsr r1, r1, #0x10
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 _022318FA:
 	mov r1, #2
 	ldr r0, [r6, r4]
 	lsl r1, r1, #0xc
-	bl sub_020249B0
+	bl Sprite_TickCellOrMulticellAnimation
 _02231904:
 	ldr r0, [sp, #8]
 	add sp, #0x10
@@ -15297,14 +15298,14 @@ ov44_02231918: ; 0x02231918
 	cmp r6, r0
 	beq _02231950
 	mov r0, #0x35
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	add r4, r0, #0
 	ldr r0, [r5]
 	add r1, r6, #0
 	bl sub_0202C254
 	add r1, r0, #0
 	add r0, r4, #0
-	bl Sav2_Profile_PlayerName_set
+	bl Save_Profile_PlayerName_Set
 	ldr r0, _02231954 ; =0x00000B1C
 	mov r1, #0
 	ldr r0, [r5, r0]
@@ -15444,7 +15445,7 @@ ov44_02231A28: ; 0x02231A28
 	mov r0, #0x35
 	add r4, r1, #0
 	add r6, r2, #0
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	str r5, [sp]
 	ldrb r1, [r4]
 	add r7, r0, #0
@@ -15474,7 +15475,7 @@ ov44_02231A28: ; 0x02231A28
 	mov r2, #0
 	strb r2, [r1, #0x13]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r7, #0
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
@@ -16618,7 +16619,7 @@ _022322FE:
 	cmp r4, #4
 	blt _022322FE
 	ldr r0, [r7]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov44_022322E8
 
@@ -16919,11 +16920,11 @@ ov44_02232530: ; 0x02232530
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0x5d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov44_02232530
@@ -16954,7 +16955,7 @@ ov44_0223254C: ; 0x0223254C
 	mov r0, #0x61
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x61
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -16999,12 +17000,12 @@ ov44_022325A4: ; 0x022325A4
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, r4, #0
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -18609,7 +18610,7 @@ _02233198:
 ov44_0223319C: ; 0x0223319C
 	push {r3, lr}
 	ldr r0, [r0, #0x30]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	pop {r3, pc}
@@ -18700,7 +18701,7 @@ _02233246:
 	sub r2, r2, #1
 	bne _02233246
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -18796,28 +18797,28 @@ ov44_0223325C: ; 0x0223325C
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x58
 	add r1, r4, #0
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x20
 	str r1, [sp]
 	mov r1, #0xe
@@ -18887,7 +18888,7 @@ ov44_0223325C: ; 0x0223325C
 	add r0, r0, #2
 	strh r1, [r5, r0]
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x74
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -18934,7 +18935,7 @@ ov44_02233444: ; 0x02233444
 	add r4, r2, #0
 	bl LoadFontPal1
 	ldr r0, [r6, #8]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -19153,7 +19154,7 @@ ov44_0223362C: ; 0x0223362C
 	add r5, r0, #0
 	add r0, r6, #0
 	add r4, r1, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r5, #4]
 	ldr r2, _02233674 ; =0x0000030A
 	mov r0, #0
@@ -19164,17 +19165,17 @@ ov44_0223362C: ; 0x0223362C
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r6, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0xc]
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r6, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x10]
 	mov r0, #0xff
 	strb r0, [r5, #0x14]
 	ldr r0, [r4, #8]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	strh r0, [r5, #0x16]
 	pop {r4, r5, r6, pc}
@@ -19187,13 +19188,13 @@ ov44_02233678: ; 0x02233678
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x10]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0xc]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #8]
 	bl DestroyMsgData
 	ldr r0, [r4, #4]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov44_02233678
@@ -19257,7 +19258,7 @@ _022336DC:
 	add r0, r4, r2
 	ldr r2, [r4, #0xc]
 	add r3, r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x67
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -19281,7 +19282,7 @@ _022336DC:
 	add r0, r4, r2
 	ldr r2, [r4, #0xc]
 	add r3, r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x6b
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -19392,7 +19393,7 @@ ov44_02233820: ; 0x02233820
 	ldr r0, [r5, r0]
 	bl ov42_02228050
 	ldr r0, [r5, #0x18]
-	bl sub_02024504
+	bl SpriteList_Delete
 	mov r6, #0x51
 	mov r4, #0
 	lsl r6, r6, #2
@@ -19433,7 +19434,7 @@ ov44_0223386C: ; 0x0223386C
 	cmp r0, #0
 	beq _02233890
 	ldrb r0, [r5, #0x14]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 	mov r0, #0xff
 	strb r0, [r5, #0x14]
 _02233890:
@@ -19445,7 +19446,7 @@ _02233890:
 	mov r0, #1
 	ldr r1, [sp, #0x28]
 	lsl r0, r0, #8
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	ldr r0, [r5, #8]
 	ldr r1, [sp, #0x10]
@@ -19467,16 +19468,16 @@ _02233890:
 	lsl r0, r0, #2
 	ldr r2, [r5, #0xc]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	strb r0, [r5, #0x14]
 	mov r0, #0x63
 	lsl r0, r0, #2
 	add r0, r5, r0
 	bl ScheduleWindowCopyToVram
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #8]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -19544,7 +19545,7 @@ ov44_02233954: ; 0x02233954
 	cmp r0, #0
 	beq _0223396C
 	ldrb r0, [r4, #0x14]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0223396C:
 	mov r0, #0xff
 	strb r0, [r4, #0x14]
@@ -19574,12 +19575,12 @@ ov44_0223398C: ; 0x0223398C
 	lsl r0, r0, #8
 	add r1, r4, #0
 	str r2, [sp, #0x14]
-	bl String_ctor
+	bl String_New
 	add r6, r0, #0
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r4, #0
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	ldr r1, [sp, #0x10]
 	ldr r2, [sp, #0x14]
@@ -19617,7 +19618,7 @@ ov44_0223398C: ; 0x0223398C
 	add r2, r7, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x73
 	lsl r0, r0, #2
 	add r0, r5, r0
@@ -19630,9 +19631,9 @@ ov44_0223398C: ; 0x0223398C
 	add r0, r5, r0
 	bl ScheduleWindowCopyToVram
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -19722,12 +19723,12 @@ ov44_02233AB8: ; 0x02233AB8
 	add r1, r7, #0
 	str r2, [sp, #0x20]
 	add r4, r3, #0
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x28]
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r7, #0
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x24]
 	ldr r1, [sp, #0x20]
 	str r7, [sp]
@@ -19767,7 +19768,7 @@ ov44_02233AB8: ; 0x02233AB8
 	ldr r2, [sp, #0x24]
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r1, [sp, #0x20]
 	str r7, [sp]
 	add r0, r5, #0
@@ -19793,7 +19794,7 @@ ov44_02233AB8: ; 0x02233AB8
 	ldr r2, [sp, #0x24]
 	mov r3, #0x48
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x6f
 	lsl r0, r0, #2
 	add r0, r5, r0
@@ -19867,9 +19868,9 @@ _02233BAA:
 	mov r1, #2
 	bl ScheduleBgTilemapBufferTransfer
 	ldr r0, [sp, #0x28]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x24]
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x2c
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -20841,7 +20842,7 @@ _022342CA:
 	lsl r0, r0, #2
 	add r0, r4, r0
 	mov r1, #1
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	mov r1, #0x86
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -20867,7 +20868,7 @@ ov44_022342E0: ; 0x022342E0
 	lsl r0, r0, #2
 	str r1, [r5, r0]
 	ldr r0, [r4, #8]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18

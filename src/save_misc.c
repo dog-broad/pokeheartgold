@@ -1,37 +1,40 @@
+#include "global.h"
 #include "save_misc_data.h"
 #include "apricorn_tree.h"
 #include "easy_chat.h"
+#include "msgdata/msg.naix"
+#include "msgdata/msg/msg_0295.h"
 #include "msgdata/msg/msg_0287.h"
 
-void Sav2_BerryPots_init(BERRY_POT *berryPot) {
+void Save_BerryPots_Init(BerryPot *berryPots) {
     int i;
 
-    MI_CpuClear8(berryPot, MAX_BERRY_POT * sizeof(BERRY_POT));
+    MI_CpuClear8(berryPots, MAX_BERRY_POT * sizeof(BerryPot));
     for (i = 0; i < MAX_BERRY_POT; i++) {
-        berryPot[i].unk_1 = 0;
-        berryPot[i].unk_0 = 0;
+        berryPots[i].growthStage = BERRY_POT_GROWTH_STAGE_NONE;
+        berryPots[i].berryId = 0;
     }
 }
 
-void Sav2_BerryPotRTC_init(struct GF_RTC_DateTime *dateTime) {
+void Save_BerryPotRTC_Init(struct GF_RTC_DateTime *dateTime) {
     GF_RTC_CopyDateTime(&dateTime->date, &dateTime->time);
 }
 
-u32 Sav2_Misc_sizeof(void) {
+u32 Save_Misc_sizeof(void) {
     return sizeof(SAVE_MISC_DATA);
 }
 
-void Sav2_Misc_init(SAVE_MISC_DATA *saveMiscData) {
+void Save_Misc_Init(SAVE_MISC_DATA *saveMiscData) {
     int i;
 
     MI_CpuClearFast(saveMiscData, sizeof(SAVE_MISC_DATA));
-    ApricornTrees_init(saveMiscData->apricorn_trees);
-    Sav2_BerryPots_init(saveMiscData->berry_pots);
-    Sav2_BerryPotRTC_init(&saveMiscData->berry_datetime);
-    SavGymmick_Clear(&saveMiscData->gymmick);
-    MI_CpuFill16(saveMiscData->rivalName, EOS, OT_NAME_LENGTH + 1);
+    ApricornTrees_Init(saveMiscData->apricorn_trees);
+    Save_BerryPots_Init(saveMiscData->berry_pots);
+    Save_BerryPotRTC_Init(&saveMiscData->berry_datetime);
+    Save_Gymmick_Clear(&saveMiscData->gymmick);
+    MI_CpuFill16(saveMiscData->rivalName, EOS, PLAYER_NAME_LENGTH + 1);
     MI_CpuFill8(saveMiscData->unk_0280, 0xFF, 8);
-    MailMsg_init_withBank(&saveMiscData->battleGreetingEC, MAILMSG_BANK_0295_GMM);
+    MailMsg_Init_WithBank(&saveMiscData->battleGreetingEC, MAILMSG_BANK_0295_GMM);
     saveMiscData->battleGreetingEC.msg_no = msg_0295_00000;
     saveMiscData->battleGreetingEC.fields[0] = GetECWordIndexByPair(NARC_msg_msg_0287_bin, msg_0287_regards);
     saveMiscData->battleGreetingEC.fields[1] = EC_WORD_NULL;
@@ -41,44 +44,44 @@ void Sav2_Misc_init(SAVE_MISC_DATA *saveMiscData) {
     }
 }
 
-SAVE_MISC_DATA *Sav2_Misc_get(SAVEDATA *saveData) {
-    return SavArray_get(saveData, SAVE_MISC);
+SAVE_MISC_DATA *Save_Misc_Get(SaveData *saveData) {
+    return SaveArray_Get(saveData, SAVE_MISC);
 }
 
-const SAVE_MISC_DATA *Sav2_Misc_const_get(const SAVEDATA *saveData) {
-    return SavArray_const_get(saveData, SAVE_MISC);
+const SAVE_MISC_DATA *Save_Misc_Const_Get(const SaveData *saveData) {
+    return SaveArray_Const_Get(saveData, SAVE_MISC);
 }
 
-APRICORN_TREE *Sav2_FieldApricornTrees_get(SAVEDATA *saveData) {
+APRICORN_TREE *Save_FieldApricornTrees_Get(SaveData *saveData) {
     SAVE_MISC_DATA *misc;
-    misc = SavArray_get(saveData, SAVE_MISC);
+    misc = SaveArray_Get(saveData, SAVE_MISC);
     return misc->apricorn_trees;
 }
 
-BERRY_POT *Sav2_BerryPots_get(SAVEDATA *saveData) {
+BerryPot *Save_BerryPots_Get(SaveData *saveData) {
     SAVE_MISC_DATA *misc;
-    misc = SavArray_get(saveData, SAVE_MISC);
+    misc = SaveArray_Get(saveData, SAVE_MISC);
     return misc->berry_pots;
 }
 
-struct GF_RTC_DateTime *Sav2_BerryPotRTC_get(SAVEDATA *saveData) {
+struct GF_RTC_DateTime *Save_BerryPotRTC_Get(SaveData *saveData) {
     SAVE_MISC_DATA *misc;
-    misc = SavArray_get(saveData, SAVE_MISC);
+    misc = SaveArray_Get(saveData, SAVE_MISC);
     return &misc->berry_datetime;
 }
 
-struct Gymmick *Sav2_GetGymmickPtr(SAVEDATA *saveData) {
+Gymmick *Save_GetGymmickPtr(SaveData *saveData) {
     SAVE_MISC_DATA *misc;
-    misc = SavArray_get(saveData, SAVE_MISC);
+    misc = SaveArray_Get(saveData, SAVE_MISC);
     return &misc->gymmick;
 }
 
-const u16 *Sav2_Misc_RivalName_const_get(const SAVE_MISC_DATA *saveMiscData) {
+const u16 *Save_Misc_RivalName_Const_Get(const SAVE_MISC_DATA *saveMiscData) {
     return saveMiscData->rivalName;
 }
 
-void Sav2_Misc_RivalName_set(SAVE_MISC_DATA *saveMiscData, const STRING *name) {
-    CopyStringToU16Array(name, saveMiscData->rivalName, OT_NAME_LENGTH + 1);
+void Save_Misc_RivalName_Set(SAVE_MISC_DATA *saveMiscData, const String *name) {
+    CopyStringToU16Array(name, saveMiscData->rivalName, PLAYER_NAME_LENGTH + 1);
 }
 
 void SaveMisc_SetExtraChunksExist(SAVE_MISC_DATA *saveMiscData) {
@@ -89,15 +92,15 @@ BOOL SaveMisc_CheckExtraChunksExist(SAVE_MISC_DATA *saveMiscData) {
     return saveMiscData->extraChunksExist;
 }
 
-void SaveMisc_SetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int species, int forme, int isEgg) {
+void SaveMisc_SetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int species, int form, int isEgg) {
     saveMiscData->favoriteMonSpecies = species;
-    saveMiscData->favoriteMonForme = forme;
+    saveMiscData->favoriteMonForm = form;
     saveMiscData->favoriteMonIsEgg = isEgg;
 }
 
-void SaveMisc_GetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int *species, int *forme, int *isEgg) {
+void SaveMisc_GetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int *species, int *form, int *isEgg) {
     *species = saveMiscData->favoriteMonSpecies;
-    *forme = saveMiscData->favoriteMonForme;
+    *form = saveMiscData->favoriteMonForm;
     *isEgg = saveMiscData->favoriteMonIsEgg;
 }
 

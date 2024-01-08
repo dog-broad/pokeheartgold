@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_0208DE40.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -62,7 +63,7 @@ sub_0208DE40: ; 0x0208DE40
 	str r0, [r1, #0x40]
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r1, _0208DED8 ; =0x04000008
 	mov r0, #3
 	ldrh r2, [r1]
@@ -106,7 +107,7 @@ sub_0208DEFC: ; 0x0208DEFC
 	mov r0, #0xa7
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02023120
+	bl Camera_Delete
 	mov r0, #0xb3
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -141,7 +142,7 @@ sub_0208DF2C: ; 0x0208DF2C
 	strh r0, [r1, #4]
 	strh r0, [r1, #6]
 	mov r0, #0x13
-	bl GF_Camera_Create
+	bl Camera_New
 	mov r1, #0xa7
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -153,22 +154,22 @@ sub_0208DF2C: ; 0x0208DF2C
 	ldr r3, _0208DF98 ; =0x000005C1
 	add r0, sp, #0x10
 	add r2, sp, #8
-	bl sub_020232BC
+	bl Camera_Init_FromPosDistanceAndAngle
 	mov r2, #0xa7
 	lsl r2, r2, #2
 	mov r1, #0x19
 	ldr r2, [r4, r2]
 	mov r0, #0
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	mov r0, #0xa7
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02023234
+	bl Camera_ClearFixedTarget
 	mov r0, #0xa7
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add sp, #0x1c
 	pop {r3, r4, pc}
 	nop
@@ -791,7 +792,7 @@ _0208E4F0:
 	cmp r0, #2
 	beq _0208E512
 	ldr r0, _0208E53C ; =_02104FFC
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -802,7 +803,7 @@ _0208E4F0:
 	pop {r3, pc}
 _0208E512:
 	ldr r0, _0208E53C ; =_02104FFC
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	cmp r0, #4
 	blt _0208E526
 	cmp r0, #9

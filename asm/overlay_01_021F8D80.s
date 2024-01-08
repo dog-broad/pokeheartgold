@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F8D80.inc"
 	.include "global.inc"
 
 	.text
@@ -652,7 +653,7 @@ ov01_021F91F8: ; 0x021F91F8
 	add r5, r0, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl MapObjectMan_GetFlagsBitsMask
+	bl MapObjectManager_GetFlagsBitsMask
 	cmp r0, #0
 	beq _021F9212
 	bl GF_AssertFail
@@ -660,10 +661,10 @@ _021F9212:
 	add r0, r5, #0
 	bl FldObjSys_OpenMModelNarc
 	add r0, r5, #0
-	bl MapObjectMan_GetCount
+	bl MapObjectManager_GetCount
 	str r0, [sp, #0x14]
 	add r0, r5, #0
-	bl sub_0205F19C
+	bl MapObjectManager_GetHeapID
 	sub r0, r0, #1
 	str r0, [sp, #0x10]
 	add r0, r5, #0
@@ -679,7 +680,7 @@ _021F9212:
 	bl ov01_021F944C
 	add r0, r5, #0
 	mov r1, #1
-	bl MapObjectMan_SetFlagsBits
+	bl MapObjectManager_SetFlagsBits
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov01_021F91F8
@@ -698,7 +699,7 @@ _021F9260:
 	bl ov01_021F94A0
 	add r0, r4, #0
 	mov r1, #1
-	bl MapObjectMan_ClearFlagsBits
+	bl MapObjectManager_ClearFlagsBits
 	add r0, r4, #0
 	bl FldObjSys_CloseMModelNarc
 	pop {r4, pc}
@@ -711,7 +712,7 @@ FldObjSys_OpenMModelNarc: ; 0x021F927C
 	add r4, r0, #0
 	mov r0, #0x51 ; NARC_data_mmodel_mmodel
 	mov r1, #4
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r0, #0
 	add r0, r4, #0
 	bl FldObjSys_SetMModelNarc
@@ -723,7 +724,7 @@ FldObjSys_OpenMModelNarc: ; 0x021F927C
 FldObjSys_CloseMModelNarc: ; 0x021F9294
 	push {r3, lr}
 	bl FldObjSys_GetMModelNarc
-	bl NARC_dtor
+	bl NARC_Delete
 	pop {r3, pc}
 	thumb_func_end FldObjSys_CloseMModelNarc
 
@@ -733,7 +734,7 @@ ov01_021F92A0: ; 0x021F92A0
 	add r4, r0, #0
 	bl MapObject_GetManager
 	mov r1, #4
-	bl MapObjectMan_GetFlagsBitsMask
+	bl MapObjectManager_GetFlagsBitsMask
 	cmp r0, #0
 	bne _021F92DA
 	mov r1, #1
@@ -945,7 +946,7 @@ ov01_021F9424: ; 0x021F9424
 	push {r4, lr}
 	mov r1, #1
 	add r4, r0, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r1, #1
 	add r0, r4, #0
 	lsl r1, r1, #0x14

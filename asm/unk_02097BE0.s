@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02097BE0.inc"
 	.include "global.inc"
 
 	.text
@@ -74,10 +75,10 @@ _02097C4C: .word sub_02097C50
 sub_02097C50: ; 0x02097C50
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #0x50]
 	cmp r1, #3
@@ -110,7 +111,7 @@ _02097C8A:
 	b _02097CB0
 _02097C9A:
 	add r0, r5, #0
-	bl sub_020552A4
+	bl CallTask_RestoreOverworld
 	ldr r0, [r4, #0x50]
 	add r0, r0, #1
 	str r0, [r4, #0x50]
@@ -148,10 +149,10 @@ _02097CD4: .word sub_02097CD8
 sub_02097CD8: ; 0x02097CD8
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #8]
 	ldr r1, [r4]
@@ -176,7 +177,7 @@ _02097CFC:
 	b _02097D36
 _02097D14:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02097D36
 	ldr r0, [r4, #8]

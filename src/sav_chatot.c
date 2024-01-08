@@ -1,30 +1,31 @@
+#include "global.h"
 #include "sav_chatot.h"
 #include <nitro/mi/memory.h>
 
-u32 Sav2_Chatot_sizeof(void) {
+u32 Save_Chatot_sizeof(void) {
     return sizeof(SOUND_CHATOT);
 }
 
-void Sav2_Chatot_init(SOUND_CHATOT *chatot) {
+void Save_Chatot_Init(SOUND_CHATOT *chatot) {
     MI_CpuClear32(chatot, sizeof(SOUND_CHATOT));
     chatot->exists = FALSE;
 }
 
-SOUND_CHATOT *Chatot_new(HeapID heapID) {
+SOUND_CHATOT *Chatot_New(HeapID heapID) {
     SOUND_CHATOT *chatot = AllocFromHeap(heapID, sizeof(SOUND_CHATOT));
-    Sav2_Chatot_init(chatot);
+    Save_Chatot_Init(chatot);
     return chatot;
 }
 
-SOUND_CHATOT *Sav2_Chatot_get(SAVEDATA *saveData) {
-    return SavArray_get(saveData, SAVE_CHATOT);
+SOUND_CHATOT *Save_Chatot_Get(SaveData *saveData) {
+    return SaveArray_Get(saveData, SAVE_CHATOT);
 }
 
-BOOL Chatot_exists(SOUND_CHATOT *chatot) {
+BOOL Chatot_Exists(SOUND_CHATOT *chatot) {
     return chatot->exists;
 }
 
-void Chatot_invalidate(SOUND_CHATOT *chatot) {
+void Chatot_Invalidate(SOUND_CHATOT *chatot) {
     chatot->exists = FALSE;
 }
 
@@ -77,6 +78,6 @@ void Chatot_Encode(SOUND_CHATOT *chatot, const s8 *data) {
     }
 }
 
-void Chatot_copy(SOUND_CHATOT *dst, SOUND_CHATOT *src) {
+void Chatot_Copy(SOUND_CHATOT *dst, SOUND_CHATOT *src) {
     MI_CpuCopyFast(src, dst, sizeof(SOUND_CHATOT));
 }

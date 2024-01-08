@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -O3 -std=c++11
+CXXFLAGS := -O3 -std=c++11 -g
 
 CXXSRCS := o2narc.cpp Options.cpp RelocElfReader.cpp
 CXXOBJS := $(CXXSRCS:%.cpp=%.o)
@@ -21,7 +21,7 @@ $(DEPDIR): ; @mkdir -p $@
 	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) o2narc o2narc.exe
+	$(RM) -r o2narc o2narc.exe $(DEPDIR)
 
 DEPFILES := $(CXXSRCS:%.cpp=$(DEPDIR)/%.d)
 $(DEPFILES):

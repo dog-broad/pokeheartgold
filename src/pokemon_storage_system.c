@@ -1,23 +1,25 @@
+#include "global.h"
 #include "pokemon_storage_system.h"
 #include "msgdata.h"
 #include "pokemon.h"
+#include "msgdata/msg.naix"
 #include "msgdata/msg/msg_0024.h"
 
-void PCStorage_InitializeBoxes(PC_STORAGE *storage);
-BOOL PCStorage_PlaceMonInBoxFirstEmptySlot(PC_STORAGE *storage, u32 boxno, BOXMON *boxmon);
-void PCStorage_SetBoxModified(PC_STORAGE *storage, u8 boxno);
+void PCStorage_InitializeBoxes(PCStorage *storage);
+BOOL PCStorage_PlaceMonInBoxFirstEmptySlot(PCStorage *storage, u32 boxno, BoxPokemon *boxMon);
+void PCStorage_SetBoxModified(PCStorage *storage, u8 boxno);
 
-void PCStorage_init(PC_STORAGE *storage) {
+void PCStorage_Init(PCStorage *storage) {
     PCStorage_InitializeBoxes(storage);
 }
 
 u32 PCStorage_sizeof(void) {
-    return sizeof(PC_STORAGE);
+    return sizeof(PCStorage);
 }
 
-void PCStorage_InitializeBoxes(PC_STORAGE *storage) {
+void PCStorage_InitializeBoxes(PCStorage *storage) {
     u32 i, j;
-    MSGDATA *msgData;
+    MsgData *msgData;
 
     for (i = 0; i < NUM_BOXES; i++) {
         for (j = 0; j < MONS_PER_BOX; j++) {
@@ -35,7 +37,7 @@ void PCStorage_InitializeBoxes(PC_STORAGE *storage) {
 
     storage->unlockedWallpapers = 0;
 
-    msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0024_bin, 0);
+    msgData = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0024_bin, HEAP_ID_DEFAULT);
     if (msgData != NULL) {
         for (i = 0; i < NUM_BOXES; i++) {
             ReadMsgDataIntoU16Array(msgData, i + msg_0024_00006, storage->box_names[i]);
@@ -46,11 +48,11 @@ void PCStorage_InitializeBoxes(PC_STORAGE *storage) {
     storage->curBox = 0;
 }
 
-BOOL PCStorage_PlaceMonInFirstEmptySlotInAnyBox(PC_STORAGE *storage, BOXMON *boxmon) {
+BOOL PCStorage_PlaceMonInFirstEmptySlotInAnyBox(PCStorage *storage, BoxPokemon *boxMon) {
     u32 i = storage->curBox;
     do {
-        RestoreBoxMonPP(boxmon);
-        if (PCStorage_PlaceMonInBoxFirstEmptySlot(storage, i, boxmon)) {
+        RestoreBoxMonPP(boxMon);
+        if (PCStorage_PlaceMonInBoxFirstEmptySlot(storage, i, boxMon)) {
             PCStorage_SetBoxModified(storage, i);
             return TRUE;
         }
@@ -62,15 +64,15 @@ BOOL PCStorage_PlaceMonInFirstEmptySlotInAnyBox(PC_STORAGE *storage, BOXMON *box
     return FALSE;
 }
 
-BOOL PCStorage_PlaceMonInBoxFirstEmptySlot(PC_STORAGE* storage, u32 boxno, BOXMON* boxmon) {
+BOOL PCStorage_PlaceMonInBoxFirstEmptySlot(PCStorage* storage, u32 boxno, BoxPokemon *boxMon) {
     u32 i;
-    RestoreBoxMonPP(boxmon);
+    RestoreBoxMonPP(boxMon);
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
     for (i = 0; i < MONS_PER_BOX; i++) {
         if (GetBoxMonData(&storage->boxes[boxno].mons[i], MON_DATA_SPECIES, NULL) == SPECIES_NONE) {
-            storage->boxes[boxno].mons[i] = *boxmon;
+            storage->boxes[boxno].mons[i] = *boxMon;
             PCStorage_SetBoxModified(storage, boxno);
             return TRUE;
         }
@@ -78,13 +80,13 @@ BOOL PCStorage_PlaceMonInBoxFirstEmptySlot(PC_STORAGE* storage, u32 boxno, BOXMO
     return FALSE;
 }
 
-BOOL PCStorage_PlaceMonInBoxByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno, BOXMON* boxmon) {
-    RestoreBoxMonPP(boxmon);
+BOOL PCStorage_PlaceMonInBoxByIndexPair(PCStorage* storage, u32 boxno, u32 slotno, BoxPokemon *boxMon) {
+    RestoreBoxMonPP(boxMon);
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
     if (boxno < NUM_BOXES && slotno < MONS_PER_BOX) {
-        storage->boxes[boxno].mons[slotno] = *boxmon;
+        storage->boxes[boxno].mons[slotno] = *boxMon;
         PCStorage_SetBoxModified(storage, boxno);
         return TRUE;
     }
@@ -92,8 +94,8 @@ BOOL PCStorage_PlaceMonInBoxByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slot
     return FALSE;
 }
 
-void PCStorage_SwapMonsInBoxByIndexPair(PC_STORAGE* storage, u32 boxno, u32 from, u32 to) {
-    BOXMON temp;
+void PCStorage_SwapMonsInBoxByIndexPair(PCStorage* storage, u32 boxno, u32 from, u32 to) {
+    BoxPokemon temp;
 
     temp = storage->boxes[boxno].mons[from];
     storage->boxes[boxno].mons[from] = storage->boxes[boxno].mons[to];
@@ -101,7 +103,7 @@ void PCStorage_SwapMonsInBoxByIndexPair(PC_STORAGE* storage, u32 boxno, u32 from
     PCStorage_SetBoxModified(storage, boxno);
 }
 
-void PCStorage_DeleteBoxMonByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno) {
+void PCStorage_DeleteBoxMonByIndexPair(PCStorage* storage, u32 boxno, u32 slotno) {
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
@@ -114,11 +116,11 @@ void PCStorage_DeleteBoxMonByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotn
     GF_ASSERT(0);
 }
 
-int PCStorage_GetActiveBox(PC_STORAGE *storage) {
+int PCStorage_GetActiveBox(PCStorage *storage) {
     return storage->curBox;
 }
 
-int PCStorage_FindFirstBoxWithEmptySlot(PC_STORAGE *storage) {
+int PCStorage_FindFirstBoxWithEmptySlot(PCStorage *storage) {
     int boxno = storage->curBox;
     int i;
 
@@ -136,7 +138,7 @@ int PCStorage_FindFirstBoxWithEmptySlot(PC_STORAGE *storage) {
     return NUM_BOXES;
 }
 
-BOOL PCStorage_FindFirstEmptySlot(PC_STORAGE* storage, int* boxno_p, int* slotno_p) {
+BOOL PCStorage_FindFirstEmptySlot(PCStorage* storage, int* boxno_p, int* slotno_p) {
     int i, j;
 
     if (*boxno_p == -1) {
@@ -171,7 +173,7 @@ BOOL PCStorage_FindFirstEmptySlot(PC_STORAGE* storage, int* boxno_p, int* slotno
     return NUM_BOXES;
 }
 
-int PCStorage_CountEmptySpotsInAllBoxes(PC_STORAGE* storage) {
+int PCStorage_CountEmptySpotsInAllBoxes(PCStorage* storage) {
     int i, j, count = 0;
     for (i = 0; i < NUM_BOXES; i++) {
         for (j = 0; j < MONS_PER_BOX; j++) {
@@ -183,7 +185,7 @@ int PCStorage_CountEmptySpotsInAllBoxes(PC_STORAGE* storage) {
     return count;
 }
 
-int PCStorage_CountEmptySpotsInBox(PC_STORAGE* storage, u32 boxno) {
+int PCStorage_CountEmptySpotsInBox(PCStorage* storage, u32 boxno) {
     int i, count;
 
     if (boxno == -1u) {
@@ -199,7 +201,7 @@ int PCStorage_CountEmptySpotsInBox(PC_STORAGE* storage, u32 boxno) {
     return count;
 }
 
-void PCStorage_SetActiveBox(PC_STORAGE* storage, u32 boxno) {
+void PCStorage_SetActiveBox(PCStorage* storage, u32 boxno) {
     if (boxno < NUM_BOXES) {
         storage->curBox = boxno;
         return;
@@ -207,7 +209,7 @@ void PCStorage_SetActiveBox(PC_STORAGE* storage, u32 boxno) {
     GF_ASSERT(0);
 }
 
-u8 PCStorage_GetBoxWallpaper(PC_STORAGE* storage, u32 boxno) {
+u8 PCStorage_GetBoxWallpaper(PCStorage* storage, u32 boxno) {
     if (boxno < NUM_BOXES) {
         return storage->wallpapers[boxno];
     }
@@ -220,7 +222,7 @@ BOOL PCStorage_IsValidWallpaperId(u8 wallpaperno) {
     || (wallpaperno >= BONUS_WALLPAPER_MIN && wallpaperno < BONUS_WALLPAPER_MAX);
 }
 
-void PCStorage_SetBoxWallpaper(PC_STORAGE* storage, u32 boxno, u8 wallpaperno) {
+void PCStorage_SetBoxWallpaper(PCStorage* storage, u32 boxno, u8 wallpaperno) {
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
@@ -231,7 +233,7 @@ void PCStorage_SetBoxWallpaper(PC_STORAGE* storage, u32 boxno, u8 wallpaperno) {
     GF_ASSERT(0);
 }
 
-void PCStorage_GetBoxName(PC_STORAGE* storage, u32 boxno, STRING* dest) {
+void PCStorage_GetBoxName(PCStorage* storage, u32 boxno, String* dest) {
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
@@ -242,7 +244,7 @@ void PCStorage_GetBoxName(PC_STORAGE* storage, u32 boxno, STRING* dest) {
     GF_ASSERT(0);
 }
 
-void PCStorage_SetBoxName(PC_STORAGE* storage, u32 boxno, const STRING* src) {
+void PCStorage_SetBoxName(PCStorage* storage, u32 boxno, const String* src) {
     if (boxno == -1u) {
         boxno = storage->curBox;
     }
@@ -251,7 +253,7 @@ void PCStorage_SetBoxName(PC_STORAGE* storage, u32 boxno, const STRING* src) {
     }
 }
 
-int PCStorage_CountMonsAndEggsInBox(PC_STORAGE* storage, u32 boxno) {
+int PCStorage_CountMonsAndEggsInBox(PCStorage* storage, u32 boxno) {
     int i, count;
     if (boxno == -1u) {
         boxno = storage->curBox;
@@ -270,7 +272,7 @@ int PCStorage_CountMonsAndEggsInBox(PC_STORAGE* storage, u32 boxno) {
     return 0;
 }
 
-int PCStorage_CountMonsInBox(PC_STORAGE* storage, u32 boxno) {
+int PCStorage_CountMonsInBox(PCStorage* storage, u32 boxno) {
     int i, count;
     if (boxno == -1u) {
         boxno = storage->curBox;
@@ -290,7 +292,7 @@ int PCStorage_CountMonsInBox(PC_STORAGE* storage, u32 boxno) {
     return 0;
 }
 
-int PCStorage_CountMonsInAllBoxes(PC_STORAGE* storage) {
+int PCStorage_CountMonsInAllBoxes(PCStorage* storage) {
     int count;
     u32 i;
 
@@ -300,7 +302,7 @@ int PCStorage_CountMonsInAllBoxes(PC_STORAGE* storage) {
     return count;
 }
 
-u32 PCStorage_GetMonDataByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno, int attr, void *ptr) {
+u32 PCStorage_GetMonDataByIndexPair(PCStorage* storage, u32 boxno, u32 slotno, int attr, void *ptr) {
     GF_ASSERT(boxno < NUM_BOXES || boxno == -1u);
     GF_ASSERT(slotno < MONS_PER_BOX);
     if (boxno == -1u) {
@@ -309,7 +311,7 @@ u32 PCStorage_GetMonDataByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno, 
     return GetBoxMonData(&storage->boxes[boxno].mons[slotno], attr, ptr);
 }
 
-BOXMON* PCStorage_GetMonByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno) {
+BoxPokemon *PCStorage_GetMonByIndexPair(PCStorage* storage, u32 boxno, u32 slotno) {
     GF_ASSERT(boxno < NUM_BOXES || boxno == -1u);
     GF_ASSERT(slotno < MONS_PER_BOX);
     if (boxno == -1u) {
@@ -318,17 +320,17 @@ BOXMON* PCStorage_GetMonByIndexPair(PC_STORAGE* storage, u32 boxno, u32 slotno) 
     return &storage->boxes[boxno].mons[slotno];
 }
 
-void PCStorage_UnlockBonusWallpaper(PC_STORAGE* storage, u32 wallpaper) {
+void PCStorage_UnlockBonusWallpaper(PCStorage* storage, u32 wallpaper) {
     GF_ASSERT(wallpaper < NUM_BONUS_WALLPAPER);
     storage->unlockedWallpapers |= (1 << wallpaper);
 }
 
-BOOL PCStorage_IsBonusWallpaperUnlocked(PC_STORAGE* storage, u32 wallpaper) {
+BOOL PCStorage_IsBonusWallpaperUnlocked(PCStorage* storage, u32 wallpaper) {
     GF_ASSERT(wallpaper < NUM_BONUS_WALLPAPER);
     return (storage->unlockedWallpapers & (1 << wallpaper)) != 0;
 }
 
-void PCStorage_SetBoxModified(PC_STORAGE* storage, u8 boxno) {
+void PCStorage_SetBoxModified(PCStorage* storage, u8 boxno) {
     if (boxno >= NUM_BOXES) {
         GF_ASSERT(0);
         return;
@@ -336,15 +338,15 @@ void PCStorage_SetBoxModified(PC_STORAGE* storage, u8 boxno) {
     storage->boxModifiedFlag |= 1 << boxno;
 }
 
-void PCStorage_SetAllBoxesModified(PC_STORAGE* storage) {
+void PCStorage_SetAllBoxesModified(PCStorage* storage) {
     storage->boxModifiedFlag = BOX_ALL_MODIFIED_FLAG;
 }
 
-void PCStorage_ResetBoxModifiedFlags(PC_STORAGE* storage) {
+void PCStorage_ResetBoxModifiedFlags(PCStorage* storage) {
     storage->boxModifiedFlag = 0;
 }
 
-u32 PCStorage_GetBoxModifiedFlags(PC_STORAGE* storage) {
+u32 PCStorage_GetBoxModifiedFlags(PCStorage* storage) {
     return storage->boxModifiedFlag;
 }
 
@@ -352,7 +354,7 @@ u32 sub_02074120(void) {
     return sizeof(PC_BOX);
 }
 
-void sub_02074128(PC_STORAGE* storage) {
+void sub_02074128(PCStorage* storage) {
     u8 i, j;
 
     for (i = 0; i < NUM_BOXES; i++) {

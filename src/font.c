@@ -1,3 +1,4 @@
+#include "global.h"
 #include "font.h"
 #include "text.h"
 #include "gf_gfx_loader.h"
@@ -43,12 +44,12 @@ void FontWork_Init(void) {
         sFontWork->fontDataMan[i] = NULL;
         sFontWork->fontDataRefCount[i] = 0;
     }
-    sub_0201FFE0(sFontInfos);
+    SetFontsPointer(sFontInfos);
 }
 
 void FontID_Alloc(FontID fontId, HeapID heapId) {
     if (sFontWork->fontDataMan[fontId] == NULL) {
-        sFontWork->fontDataMan[fontId] = FontData_new(NARC_graphic_font, sFontArcParam[fontId][0], FONTARC_MODE_LAZY, sFontArcParam[fontId][1], heapId);
+        sFontWork->fontDataMan[fontId] = FontData_New(NARC_graphic_font, sFontArcParam[fontId][0], FONTARC_MODE_LAZY, sFontArcParam[fontId][1], heapId);
         sFontWork->fontDataRefCount[fontId] = 1;
     } else {
         sFontWork->fontDataRefCount[fontId]++;
@@ -64,7 +65,7 @@ void FontID_SetAccessDirect(FontID fontId, HeapID heapId) {
 void FontID_SetAccessLazy(FontID fontId) {
     GF_ASSERT((int)fontId < FONT_NUM);
     GF_ASSERT(sFontWork->fontDataMan[fontId] != NULL);
-    FontData_ModeSwitch(sFontWork->fontDataMan[fontId], FONTARC_MODE_LAZY, 0);
+    FontData_ModeSwitch(sFontWork->fontDataMan[fontId], FONTARC_MODE_LAZY, HEAP_ID_DEFAULT);
 }
 
 void FontID_Release(FontID fontId) {
@@ -90,7 +91,7 @@ void FontID_Release(FontID fontId) {
             }
         }
         if (sFontWork->fontDataMan[fontId] != NULL) {
-            FontData_delete(sFontWork->fontDataMan[fontId]);
+            FontData_Delete(sFontWork->fontDataMan[fontId]);
             sFontWork->fontDataMan[fontId] = NULL;
         }
     }
@@ -101,7 +102,7 @@ struct GlyphInfo *FontID_TryLoadGlyph(FontID fontId, u16 glyphId) {
     return &sFontWork->glyph_buffer;
 }
 
-BOOL FontID_RenderText(int fontId, struct TextPrinter *printer) {
+RenderResult FontID_RenderText(int fontId, TextPrinter *printer) {
     struct TextPrinterSubStruct *sub;
 
     sub = (struct TextPrinterSubStruct *)printer->subStructFields;
@@ -123,16 +124,16 @@ u32 FontID_FlatArray_GetWidthFirstLine(FontID fontId, const u16 *string, u32 let
     return GetStringWidthFirstLine(sFontWork->fontDataMan[fontId], string, letterSpacing);
 }
 
-u32 FontID_String_GetWidth(FontID fontId, STRING *string, u32 letterSpacing) {
+u32 FontID_String_GetWidth(FontID fontId, String *string, u32 letterSpacing) {
     GF_ASSERT(sFontWork->fontDataMan[fontId] != NULL);
-    return GetStringWidth(sFontWork->fontDataMan[fontId], String_c_str(string), letterSpacing);
+    return GetStringWidth(sFontWork->fontDataMan[fontId], String_cstr(string), letterSpacing);
 }
 
-BOOL FontID_String_AllCharsValid(FontID fontId, STRING *str0, STRING *str1) {
+BOOL FontID_String_AllCharsValid(FontID fontId, String *str0, String *str1) {
     GF_ASSERT(sFontWork->fontDataMan[fontId] != NULL);
-    StringSetEmpty(str1);
-    StringCat_HandleTrainerName(str1, str0);
-    return StringAllCharsValid(sFontWork->fontDataMan[fontId], String_c_str(str1));
+    String_SetEmpty(str1);
+    String_Cat_HandleTrainerName(str1, str0);
+    return StringAllCharsValid(sFontWork->fontDataMan[fontId], String_cstr(str1));
 }
 
 u8 GetFontAttribute(FontID fontId, int attr) {
@@ -168,20 +169,20 @@ u8 GetFontAttribute(FontID fontId, int attr) {
     return ret;
 }
 
-void LoadFontPal0(int layer, u32 baseAddr, HeapID heapId) {
-    GfGfxLoader_GXLoadPal(NARC_graphic_font, 7, layer, baseAddr, 0x20, heapId);
+void LoadFontPal0(enum GFPalLoadLocation location, enum GFPalSlotOffset palSlotOffset, HeapID heapId) { //todo sync with diamond
+    GfGfxLoader_GXLoadPal(NARC_graphic_font, 7, location, palSlotOffset, 0x20, heapId);
 }
 
-void LoadFontPal1(int layer, u32 baseAddr, HeapID heapId) {
-    GfGfxLoader_GXLoadPal(NARC_graphic_font, 8, layer, baseAddr, 0x20, heapId);
+void LoadFontPal1(enum GFPalLoadLocation location, enum GFPalSlotOffset palSlotOffset, HeapID heapId) {
+    GfGfxLoader_GXLoadPal(NARC_graphic_font, 8, location, palSlotOffset, 0x20, heapId);
 }
 
-u32 FontID_String_GetWidthMultiline(FontID fontId, STRING *string, u32 letterSpacing) {
+u32 FontID_String_GetWidthMultiline(FontID fontId, String *string, u32 letterSpacing) {
     GF_ASSERT(sFontWork->fontDataMan[fontId] != NULL);
-    return GetStringWidthMultiline(sFontWork->fontDataMan[fontId], String_c_str(string), letterSpacing);
+    return GetStringWidthMultiline(sFontWork->fontDataMan[fontId], String_cstr(string), letterSpacing);
 }
 
-u32 FontID_String_GetCenterAlignmentX(FontID fontId, STRING *string, u32 letterSpacing, u32 windowWidth) {
+u32 FontID_String_GetCenterAlignmentX(FontID fontId, String *string, u32 letterSpacing, u32 windowWidth) {
     u32 stringWidth = FontID_String_GetWidth(fontId, string, letterSpacing);
     if (stringWidth < windowWidth) {
         return (windowWidth - stringWidth) / 2;
@@ -194,4 +195,3 @@ u32 FontID_GetGlyphWidth(FontID fontId, u16 glyph) {
     GF_ASSERT(sFontWork->fontDataMan[fontId] != NULL);
     return GetGlyphWidth(sFontWork->fontDataMan[fontId], glyph);
 }
-

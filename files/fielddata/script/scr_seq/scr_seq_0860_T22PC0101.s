@@ -1,6 +1,8 @@
 #include "constants/scrcmd.h"
 #include "fielddata/script/scr_seq/event_T22PC0101.h"
 #include "msgdata/msg/msg_0559_T22PC0101.h"
+#include "msgdata/msg/msg_0191.h"
+#include "constants/map_sections.h"
 	.include "asm/macros/script.inc"
 
 	.rodata
@@ -74,7 +76,7 @@ _011D:
 	npc_msg msg_0559_T22PC0101_00018
 	buffer_players_name 0
 	buffer_species_name 1, SPECIES_MAREEP, 0, 0
-	give_egg SPECIES_MAREEP, 14
+	give_egg SPECIES_MAREEP, MAPLOC(METLOC_PRIMO)
 	goto _01CB
 
 _0157:
@@ -86,7 +88,7 @@ _0157:
 	npc_msg msg_0559_T22PC0101_00018
 	buffer_players_name 0
 	buffer_species_name 1, SPECIES_WOOPER, 0, 0
-	give_egg SPECIES_WOOPER, 14
+	give_egg SPECIES_WOOPER, MAPLOC(METLOC_PRIMO)
 	goto _01CB
 
 _0191:
@@ -98,7 +100,7 @@ _0191:
 	npc_msg msg_0559_T22PC0101_00018
 	buffer_players_name 0
 	buffer_species_name 1, SPECIES_SLUGMA, 0, 0
-	give_egg SPECIES_SLUGMA, 14
+	give_egg SPECIES_SLUGMA, MAPLOC(METLOC_PRIMO)
 	goto _01CB
 
 _01CB:
@@ -145,8 +147,8 @@ _0235:
 	closemsg
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _023C:
 	step 63, 1
 	step 32, 1
@@ -154,12 +156,14 @@ _023C:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0250:
 	step 63, 1
 	step 32, 1
 	step 63, 2
 	step 35, 1
 	step_end
+
 scr_seq_T22PC0101_005:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -176,19 +180,19 @@ _0280:
 _028C:
 	npc_msg msg_0559_T22PC0101_00022
 	touchscreen_menu_hide
-	scrcmd_287
+	buffer_union_room_avatar_choices
 	menu_init_std_gmm 1, 1, 0, 1, VAR_SPECIAL_RESULT
-	menu_item_add 53, 255, 0
-	menu_item_add 54, 255, 1
-	menu_item_add 55, 255, 2
-	menu_item_add 56, 255, 3
-	menu_item_add 44, 255, 4
+	menu_item_add msg_0191_00053, 255, 0
+	menu_item_add msg_0191_00054, 255, 1
+	menu_item_add msg_0191_00055, 255, 2
+	menu_item_add msg_0191_00056, 255, 3
+	menu_item_add msg_0191_00044, 255, 4
 	menu_exec
 	copyvar VAR_SPECIAL_x8004, VAR_SPECIAL_RESULT
 	switch VAR_SPECIAL_RESULT
 	case 4, _0331
 	case -2, _0331
-	scrcmd_288 VAR_SPECIAL_x8004, VAR_SPECIAL_x8005
+	union_room_avatar_idx_to_trainer_class VAR_SPECIAL_x8004, VAR_SPECIAL_x8005
 	buffer_trainer_class_name_indef 0, VAR_SPECIAL_x8005
 	capitalize 0
 	npc_msg msg_0559_T22PC0101_00023

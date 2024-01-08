@@ -120,7 +120,8 @@ _017B:
 _018C:
 	npc_msg msg_0341_R10_00004
 	goto _0114
-	.byte 0x02, 0x00
+	end
+
 _0197:
 	npc_msg msg_0341_R10_00005
 	wait_button_or_walk_away
@@ -181,7 +182,7 @@ scr_seq_R10_003:
 	check_battle_won VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_eq _02B3
-	scrcmd_683 VAR_TEMP_x4002
+	get_static_encounter_outcome VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 3
 	goto_if_eq _02AF
 	compare VAR_TEMP_x4002, 4

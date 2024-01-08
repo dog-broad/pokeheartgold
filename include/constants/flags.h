@@ -172,7 +172,7 @@
 #define FLAG_UNK_098                                                0x98
 #define FLAG_MET_PASSERBY_BOY                                       0x99
 #define FLAG_UNK_09A                                                0x9A
-#define FLAG_UNK_09B                                                0x9B
+#define FLAG_OPENED_GOLDENROD_PURPLE_GATE                           0x9B
 #define FLAG_GOT_POKEGEAR                                           0x9C
 #define FLAG_UNK_09D                                                0x9D
 #define FLAG_UNK_09E                                                0x9E
@@ -310,7 +310,7 @@
 #define FLAG_GOT_NUGGET_FROM_ACE_TRAINER_M_KEVIN                   0x122
 #define FLAG_UNK_123                                               0x123
 #define FLAG_GOT_TM19_FROM_ERIKA                                   0x124
-#define FLAG_UNK_125                                               0x125
+#define FLAG_FARFETCHD_NOTICED_YOU                                 0x125
 #define FLAG_UNK_126                                               0x126
 #define FLAG_UNK_127                                               0x127
 #define FLAG_UNK_128                                               0x128
@@ -340,8 +340,8 @@
 #define FLAG_UNK_140                                               0x140
 #define FLAG_WON_THIS_BUG_CONTEST                                  0x141
 #define FLAG_UNK_142                                               0x142
-#define FLAG_UNK_143                                               0x143
-#define FLAG_UNK_144                                               0x144
+#define FLAG_SAW_JOHTO_DEX_CERTIFICATE                             0x143
+#define FLAG_SAW_NATIONAL_DEX_CERTIFICATE                          0x144
 #define FLAG_UNK_145                                               0x145
 #define FLAG_UNK_146                                               0x146
 #define FLAG_UNK_147                                               0x147
@@ -370,7 +370,7 @@
 #define FLAG_MET_MOVE_MANIAC                                       0x15E
 #define FLAG_BUG_CONTEST_OTHER_POKES_HELD                          0x15F
 #define FLAG_ELMS_LAB_PREVENT_PLAYER_ESCAPE                        0x160
-#define FLAG_UNK_161                                               0x161
+#define FLAG_SHOWED_FRIEND_A_SHINY_LEAF                            0x161
 #define FLAG_TRADE_LT_SURGE_PIKACHU                                0x162
 #define FLAG_GOT_RAGECANDYBAR                                      0x163
 #define FLAG_UNK_164                                               0x164
@@ -484,7 +484,7 @@
 #define FLAG_HIDE_BURNED_TOWER_1F_MORTY                            0x1CC
 #define FLAG_UNK_1CD                                               0x1CD
 #define FLAG_UNK_1CE                                               0x1CE
-#define FLAG_UNK_1CF                                               0x1CF
+#define FLAG_HIDE_ROUTE_36_FLOWERSHOP_GIRL                                               0x1CF
 #define FLAG_HIDE_GOLDENROD_FLOWERSHOP_GIRL                        0x1D0
 #define FLAG_UNK_1D1                                               0x1D1
 #define FLAG_UNK_1D2                                               0x1D2

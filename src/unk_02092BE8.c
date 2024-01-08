@@ -1,10 +1,11 @@
+#include "global.h"
 #include "unk_02005D10.h"
 #include "unk_02092BE8.h"
 #include "safari_zone.h"
 #include "map_header.h"
 #include "scrcmd.h"
 #include "unk_02054E00.h"
-#include "unk_0203DE74.h"
+#include "field_system.h"
 #include "unk_0206D494.h"
 #include "sys_vars.h"
 #include "overlay_02.h"
@@ -22,14 +23,14 @@ static void SysTask_RingGearPhone(SysTask *task, GearPhoneRingManager* ptr);
 
 static void sub_02092BE8(FieldSystem* sys, Unk_PokegearSTRUCT_2C* ptr, BOOL a2) {
     Unk_PokegearSTRUCT_14 Unk_struct;
-    SCRIPT_STATE *state = SavArray_Flags_get(sys->savedata);
-    FLYPOINTS_SAVE *points = Save_FlyPoints_get(sys->savedata); 
-    Location *warpPtr = FlyPoints_GetSpecialSpawnWarpPtr(points); 
-    Location *PosPtr = FlyPoints_GetPosition(points); 
-    GearPhoneRingManager* phoneRingMgr = Fsys_GetGearPhoneRingManager(sys);
-    ptr->saveData = sys->savedata;
+    SaveVarsFlags *state = Save_VarsFlags_Get(sys->saveData);
+    LocalFieldData *points = Save_LocalFieldData_Get(sys->saveData);
+    Location *warpPtr = LocalFieldData_GetSpecialSpawnWarpPtr(points);
+    Location *PosPtr = LocalFieldData_GetCurrentPosition(points);
+    GearPhoneRingManager* phoneRingMgr = FieldSystem_GetGearPhoneRingManager(sys);
+    ptr->saveData = sys->saveData;
     ptr->mapID = PosPtr->mapId;
-    if (MapHeader_MapIsOnMainMatrix(ptr->mapID)) { 
+    if (MapHeader_MapIsOnMainMatrix(ptr->mapID)) {
         ptr->x = GetPlayerXCoord(sys->playerAvatar);
         ptr->y = GetPlayerYCoord(sys->playerAvatar);
         ptr->matrixXCoord = ptr->x / 32;
@@ -52,11 +53,11 @@ static void sub_02092BE8(FieldSystem* sys, Unk_PokegearSTRUCT_2C* ptr, BOOL a2) 
         MapMatrix_Free(matrix);
     }
 
-    ptr->playerGender = PlayerProfile_GetTrainerGender(Sav2_PlayerData_GetProfileAddr(Fsys_GetSaveDataPtr(sys)));
+    ptr->playerGender = PlayerProfile_GetTrainerGender(Save_PlayerData_GetProfileAddr(FieldSystem_GetSaveData(sys)));
     ptr->unk28 = &sys->unk_10C;
     ptr->unk01 = sub_0203DF3C(sys);
-    ptr->mapMusicID = Fsys_GetSurfOverriddenMusicId(sys, ptr->mapID);
-    
+    ptr->mapMusicID = FieldSystem_GetOverriddenMusicId(sys, ptr->mapID);
+
     if (a2) {
         return;
     }
@@ -68,10 +69,10 @@ static void sub_02092BE8(FieldSystem* sys, Unk_PokegearSTRUCT_2C* ptr, BOOL a2) 
             ptr->unk06 = Unk_struct.unk08;
             ptr->unk05 = Unk_struct.unk07;
             if (ptr->unk05 == 3) {
-                sub_0202F050(SaveData_GetMomsSavingsAddr(sys->savedata), Unk_struct.unk06);
+                sub_0202F050(SaveData_GetMomsSavingsAddr(sys->saveData), Unk_struct.unk06);
             }
             else if (ptr->unk05 == 0) {
-                sub_0202AB18(Sav2_Misc_get(sys->savedata), Unk_struct.unk04, Unk_struct.unk05, ptr->unk04);
+                sub_0202AB18(Save_Misc_Get(sys->saveData), Unk_struct.unk04, Unk_struct.unk05, ptr->unk04);
             }
             gearRingingManagerReset(phoneRingMgr);
             ptr->unk00 = 1;
@@ -89,16 +90,16 @@ void sub_02092D8C(FieldSystem* sys, Unk_PokegearSTRUCT_2C* ptr) {
     sub_02092BE8(sys, ptr, TRUE);
 }
 
-GearPhoneRingManager* GearPhoneRingManager_new(HeapID heapId, FieldSystem* sys) {
+GearPhoneRingManager* GearPhoneRingManager_New(HeapID heapId, FieldSystem* sys) {
     GearPhoneRingManager * ptr = AllocFromHeap(heapId, sizeof(GearPhoneRingManager));
     MI_CpuClear8(ptr, sizeof(GearPhoneRingManager));
     gearRingingManagerReset(ptr);
     ptr->unk_varC = 10;
     ptr->unk_var10 = 30;
     ptr->unk_var12 = 50;
-    ptr->saveData = sys->savedata;
-    ptr->pokegear_data = SaveData_GSPlayerMisc_get(ptr->saveData);
-    ptr->savings_data = SaveData_GetMomsSavingsAddr(ptr->saveData);
+    ptr->saveData = sys->saveData;
+    ptr->pokegearData = SaveData_GSPlayerMisc_Get(ptr->saveData);
+    ptr->savingsData = SaveData_GetMomsSavingsAddr(ptr->saveData);
     ptr->sys = sys;
     return ptr;
 }
@@ -108,7 +109,7 @@ void sub_02092DD8(GearPhoneRingManager * ptr) {
     FreeToHeap(ptr);
 }
 
-GearPhoneRingManager* Fsys_GetGearPhoneRingManager(FieldSystem* sys) {
+GearPhoneRingManager* FieldSystem_GetGearPhoneRingManager(FieldSystem* sys) {
     return sys->unk114;
 }
 
@@ -126,7 +127,7 @@ PhoneBookEntry* sub_02092E10(GearPhoneRingManager* ptr) {
 }
 
 void sub_02092E14(GearPhoneRingManager* ptr, u8 a1, BOOL a2) {
-    sub_0202F01C(ptr->savings_data, a1);
+    sub_0202F01C(ptr->savingsData, a1);
     if (a2) {
         if (ptr->unk_var8 < ptr->unk_varC - 1) {
             ptr->unk_var8 = ptr->unk_varC - 1;
@@ -146,13 +147,13 @@ void sub_02092E34(GearPhoneRingManager* ptr, s32 a1, BOOL a2) {
 }
 
 static void sub_02092E54(GearPhoneRingManager* ptr) {
-    SCRIPT_STATE* state = SavArray_Flags_get(ptr->saveData);
-    SAFARIZONE* zone = Save_SafariZone_get(ptr->saveData);
-    IGT* igt = Sav2_PlayerData_GetIGTAddr(ptr->saveData);
-    u8 var4057 = ScriptState_GetVar4057(state);
+    SaveVarsFlags* state = Save_VarsFlags_Get(ptr->saveData);
+    SafariZone* zone = Save_SafariZone_Get(ptr->saveData);
+    IGT* igt = Save_PlayerData_GetIGTAddr(ptr->saveData);
+    u8 var4057 = Save_VarsFlags_GetVar4057(state);
     u8 i;
     for (i = 0; i < 5; i++) {
-        if (sub_0202F08C(ptr->savings_data, i + 7)) {
+        if (sub_0202F08C(ptr->savingsData, i + 7)) {
             return;
         }
     }
@@ -169,7 +170,7 @@ static void sub_02092E54(GearPhoneRingManager* ptr) {
         if (var4057 < 6) {
             return;
         }
-        if (!Pokedex_GetNatDexFlag(Sav2_Pokedex_get(ptr->saveData))) {
+        if (!Pokedex_GetNatDexFlag(Save_Pokedex_Get(ptr->saveData))) {
             return;
         }
         u32 Unkvar = sub_0202F798(zone, igt, 3);
@@ -271,23 +272,23 @@ void GearPhone_ToggleRinging(GearPhoneRingManager* ptr, BOOL a1) {
 }
 
 BOOL sub_02093070(FieldSystem* sys) {
-    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_get(sys->savedata), PHONE_CONTACT_BILL) == 0xff) {
+    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_Get(sys->saveData), PHONE_CONTACT_BILL) == 0xff) {
         return FALSE;
     }
-    if (CheckFlagInArray(SavArray_Flags_get(sys->savedata), FLAG_UNK_985)) {
+    if (Save_VarsFlags_CheckFlagInArray(Save_VarsFlags_Get(sys->saveData), FLAG_UNK_985)) {
         return FALSE;
     }
-    if (PCStorage_CountEmptySpotsInAllBoxes(GetStoragePCPointer(sys->savedata)) != 0) {
+    if (PCStorage_CountEmptySpotsInAllBoxes(SaveArray_PCStorage_Get(sys->saveData)) != 0) {
         return FALSE;
     }
-    sub_02092E14(Fsys_GetGearPhoneRingManager(sys), 3, TRUE);
+    sub_02092E14(FieldSystem_GetGearPhoneRingManager(sys), 3, TRUE);
     return TRUE;
 }
 
 BOOL sub_020930C4(FieldSystem* sys) {
-    int owned = Pokedex_CountNationalDexOwned(Sav2_Pokedex_get(sys->savedata));
-    SCRIPT_STATE* state = SavArray_Flags_get(sys->savedata);
-    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_get(sys->savedata), PHONE_CONTACT_PROF__OAK) == 0xff) {
+    int owned = Pokedex_CountNationalDexOwned(Save_Pokedex_Get(sys->saveData));
+    SaveVarsFlags* state = Save_VarsFlags_Get(sys->saveData);
+    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_Get(sys->saveData), PHONE_CONTACT_PROF__OAK) == 0xff) {
         return FALSE;
     }
     u16 var = (owned / 50);
@@ -297,30 +298,30 @@ BOOL sub_020930C4(FieldSystem* sys) {
     if (var > 9) {
         var = 9; // unreachable
     }
-    if (!CheckFlagInArray(state, var + FLAG_UNK_988)) {
-        sub_02092E14(Fsys_GetGearPhoneRingManager(sys), 4, FALSE);
+    if (!Save_VarsFlags_CheckFlagInArray(state, var + FLAG_UNK_988)) {
+        sub_02092E14(FieldSystem_GetGearPhoneRingManager(sys), 4, FALSE);
         return TRUE;
     }
     return FALSE;
 }
 
-BOOL sub_02093134(FieldSystem* sys, POKEMON * pkmn) {
-    if (sub_0206D8D0(pkmn, sys->savedata) == 0) {
+BOOL sub_02093134(FieldSystem* sys, Pokemon *mon) {
+    if (MonIsFromTogepiEgg(mon, sys->saveData) == 0) {
         return FALSE;
     }
-    sub_02092E14(Fsys_GetGearPhoneRingManager(sys), 0, 1);
-    SetFlagInArray(SavArray_Flags_get(sys->savedata), FLAG_UNK_983);
+    sub_02092E14(FieldSystem_GetGearPhoneRingManager(sys), 0, 1);
+    Save_VarsFlags_SetFlagInArray(Save_VarsFlags_Get(sys->saveData), FLAG_UNK_983);
     return TRUE;
 }
 
 BOOL sub_0209316C(FieldSystem* sys) {
-    SCRIPT_STATE* state = SavArray_Flags_get(sys->savedata);
-    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_get(sys->savedata), PHONE_CONTACT_DAY_C_MAN) == 0xff) {
+    SaveVarsFlags* state = Save_VarsFlags_Get(sys->saveData);
+    if (GSPlayerMisc_IsGearNumberRegistered(SaveData_GSPlayerMisc_Get(sys->saveData), PHONE_CONTACT_DAY_C_MAN) == 0xff) {
         return FALSE;
     }
-    if (CheckFlagInArray(state, FLAG_UNK_992) && !CheckFlagInArray(state, FLAG_UNK_99E)) {
+    if (Save_VarsFlags_CheckFlagInArray(state, FLAG_UNK_992) && !Save_VarsFlags_CheckFlagInArray(state, FLAG_UNK_99E)) {
         return FALSE;
     }
-    sub_02092E14(Fsys_GetGearPhoneRingManager(sys), 5, 1);
+    sub_02092E14(FieldSystem_GetGearPhoneRingManager(sys), 5, 1);
     return TRUE;
 }

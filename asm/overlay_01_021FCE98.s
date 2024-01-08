@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021FCE98.inc"
 	.include "global.inc"
 
 	.text
@@ -17,10 +18,10 @@
 Task_UseSweetScentInField: ; 0x021FCE98
 	push {r3, r4, r5, r6, r7, lr}
 	str r0, [sp]
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	ldr r0, [sp]
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r7, r0, #0
 	ldr r0, [sp]
 	bl TaskManager_GetStatePtr
@@ -134,7 +135,7 @@ _021FCF80:
 	ldr r0, [r6, r0]
 	mov r1, #1
 	mov r5, #2
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	b _021FCF9E
 _021FCF9C:
 	mov r5, #1
@@ -202,7 +203,7 @@ _021FD010: .word ov01_021FD014
 ov01_021FD014: ; 0x021FD014
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 	add r0, r4, #0
 	bl TaskManager_GetStatePtr

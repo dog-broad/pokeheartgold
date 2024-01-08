@@ -257,9 +257,9 @@ scr_seq_D22R0101_023:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _040E
@@ -285,9 +285,9 @@ _044C:
 	apply_movement obj_D22R0101_gsmiddleman1_3, _050C
 _045C:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0483
@@ -308,8 +308,8 @@ _0483:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _04C0:
 	step 15, 1
 	step 12, 2
@@ -318,11 +318,13 @@ _04C0:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _04D8:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _04E4:
 	step 12, 1
 	step 14, 1
@@ -330,6 +332,7 @@ _04E4:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _04F8:
 	step 12, 1
 	step 15, 1
@@ -337,16 +340,19 @@ _04F8:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _050C:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0518:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_D22R0101_024:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -364,9 +370,9 @@ scr_seq_D22R0101_024:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _05A1
@@ -392,9 +398,9 @@ _05DF:
 	apply_movement obj_D22R0101_gsmiddleman1_4, _050C
 _05EF:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0616
@@ -432,7 +438,7 @@ _0664:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0678:
 	step 13, 1
 	step 15, 2
@@ -441,6 +447,7 @@ _0678:
 	step 12, 2
 	step 33, 1
 	step_end
+
 scr_seq_D22R0101_001:
 	scrcmd_055 2, 0
 	scrcmd_057 3
@@ -500,5 +507,8 @@ scr_seq_D22R0101_010:
 	closemsg
 	releaseall
 	end
-	.byte 0x02, 0x00, 0x00, 0x00
+
+_0760:
+	end
+
 	.balign 4, 0

@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_28.inc"
 	.include "global.inc"
 
 	.text
@@ -23,7 +24,7 @@ ov28_0225D520: ; 0x0225D520
 	lsl r1, r1, #6
 	mov r2, #0xa
 	mov r3, #8
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r6, r0, #0
 	bl sub_0201F988
 	add r4, r0, #0
@@ -48,7 +49,7 @@ ov28_0225D520: ; 0x0225D520
 	bne _0225D5A6
 	ldr r0, [r4, #0x18]
 	add r1, sp, #8
-	bl Fsys_GetFacingObject
+	bl FieldSystem_GetFacingObject
 	ldr r0, [sp, #8]
 	bl MapObject_GetScript
 	bl ov01_021F6BD0
@@ -67,7 +68,7 @@ _0225D59E:
 _0225D5A6:
 	mov r0, #0xfd
 	mov r1, #8
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	bl ov28_0225D628
 	add r0, r5, #0
@@ -83,7 +84,7 @@ _0225D5A6:
 	add r1, r7, #0
 	bl ov28_0225D898
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r6, #0
 	add sp, #0xc
 	pop {r4, r5, r6, r7, pc}
@@ -109,7 +110,7 @@ ov28_0225D5EC: ; 0x0225D5EC
 	ldr r0, [r4, #0x10]
 	bl ov28_0225D6E0
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #8
 	bl DestroyHeap
 	pop {r3, r4, r5, pc}
@@ -332,7 +333,7 @@ ov28_0225D7C4: ; 0x0225D7C4
 	lsl r6, r6, #4
 _0225D7CE:
 	ldr r0, [r5, r6]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
@@ -378,7 +379,7 @@ _0225D7FC:
 	add r0, r4, #0
 	mov r1, #4
 	mov r3, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	bl CopyWindowPixelsToVram_TextMode
 	ldr r0, [sp, #0x10]
@@ -468,7 +469,7 @@ ov28_0225D8D0: ; 0x0225D8D0
 	add r0, r4, #0
 	bl ov28_0225D910
 	ldr r0, [r4, #0x24]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r4, pc}
 	thumb_func_end ov28_0225D8D0
 
@@ -680,7 +681,7 @@ ov28_0225DA74: ; 0x0225DA74
 	add r5, r0, #0
 	mov r0, #0xe
 	mov r1, #8
-	bl NARC_ctor
+	bl NARC_New
 	add r4, r0, #0
 	mov r0, #7
 	str r0, [sp]
@@ -704,7 +705,7 @@ ov28_0225DA74: ; 0x0225DA74
 	mov r3, #0x46
 	bl ov28_0225D92C
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r1, #0x16
 	lsl r1, r1, #4
 	add r0, r5, r1
@@ -734,7 +735,7 @@ ov28_0225DA74: ; 0x0225DA74
 	add r2, sp, #0x20
 	bl ov28_0225DA1C
 	ldr r0, [r5, #0x18]
-	bl FieldSys_GetPlayerAvatar
+	bl FieldSystem_GetPlayerAvatar
 	bl sub_0205CB38
 	cmp r0, #0
 	bne _0225DB22
@@ -778,15 +779,15 @@ ov28_0225DB54: ; 0x0225DB54
 	mov r0, #6
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0x61
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -866,7 +867,7 @@ ov28_0225DBFC: ; 0x0225DBFC
 	lsl r6, r6, #4
 _0225DC08:
 	ldr r0, [r5, r6]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #4
@@ -911,7 +912,7 @@ _0225DC56:
 	cmp r0, #0
 	bne _0225DC76
 	ldr r0, _0225DD1C ; =ov28_0225EA88
-	bl sub_0202529C
+	bl TouchscreenHitbox_FindHitboxAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -922,11 +923,11 @@ _0225DC56:
 	str r1, [r4, r0]
 _0225DC76:
 	ldr r0, [r4, #0x18]
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #1
 	beq _0225DC98
 	ldr r0, _0225DD1C ; =ov28_0225EA88
-	bl sub_02025244
+	bl TouchscreenHitbox_FindHitboxAtTouchHeld
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1983,7 +1984,7 @@ _0225E470:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, r7, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x19
 	mov r1, #0x87
 	lsl r0, r0, #4
@@ -2020,7 +2021,7 @@ _0225E4BC:
 	lsl r0, r0, #4
 	ldr r0, [r6, r0]
 	add r1, sp, #4
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x19
 	mov r1, #0x87
 	lsl r0, r0, #4
@@ -2421,7 +2422,7 @@ ov28_0225E7D4: ; 0x0225E7D4
 	add r4, r0, #0
 	add r0, sp, #4
 	add r1, sp, #0
-	bl sub_02025364
+	bl System_GetTouchHeldCoords
 	mov r1, #0x85
 	lsl r1, r1, #2
 	ldr r0, [sp, #4]
@@ -2468,7 +2469,7 @@ _0225E828:
 	cmp r0, #0
 	ldr r0, [r5, #0x18]
 	bne _0225E860
-	bl FieldSys_GetPlayerAvatar
+	bl FieldSystem_GetPlayerAvatar
 	bl PlayerAvatar_GetMapObject
 	add r4, r0, #0
 	bl MapObject_GetGfxID
@@ -2496,7 +2497,7 @@ _0225E860:
 	bne _0225E890
 	ldr r0, [r5, #0x18]
 	add r1, sp, #0
-	bl Fsys_GetFacingObject
+	bl FieldSystem_GetFacingObject
 	ldr r0, [sp]
 	bl MapObject_GetScript
 	bl ov01_021F6BD0
@@ -2537,10 +2538,10 @@ ov28_0225E8B8: ; 0x0225E8B8
 	add r5, r1, #0
 	str r2, [sp]
 	add r6, r3, #0
-	bl sub_020252F4
+	bl TouchscreenHitbox_TouchHeldIsIn
 	add r4, r0, #0
 	add r0, r5, #0
-	bl sub_020249A8
+	bl Get2dSpriteCurrentAnimSeqNo
 	add r7, r0, #0
 	cmp r4, #1
 	bne _0225E8E6
@@ -2635,11 +2636,11 @@ _0225E96C:
 	mov r1, #1
 	bl Set2dSpriteVisibleFlag
 	ldr r0, _0225E9DC ; =ov28_0225EA84
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0225E9DA
 	ldr r0, [r5, #0x18]
-	bl FieldSys_GetPlayerAvatar
+	bl FieldSystem_GetPlayerAvatar
 	add r6, r0, #0
 	bl sub_0205CB38
 	add r4, r0, #0
@@ -2739,7 +2740,7 @@ ov28_0225EA58: ; 0x0225EA58
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x18]
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #1
 	bne _0225EA76
 	ldr r0, [r4, #0x18]

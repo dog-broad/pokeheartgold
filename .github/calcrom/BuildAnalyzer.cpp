@@ -32,7 +32,7 @@ void BuildAnalyzer::AnalyzeObject(path fname_s) {
                 }
                 if (find_if(program.GetProgramHeaders().cbegin(), program.GetProgramHeaders().cend(), [&word](const auto & phdr) {
                     return phdr.p_vaddr <= word && word < phdr.p_vaddr + phdr.p_memsz;
-                }) != program.GetProgramHeaders().cend()) {
+                }) != program.GetProgramHeaders().cend() && word > 0x01000000) {
 #ifndef NDEBUG
                     try {
                         unsigned addr = (&word - &*data.cbegin()) * 4 + xmap.at({fname_b.string(), shname});
@@ -104,7 +104,7 @@ BuildAnalyzer &BuildAnalyzer::operator()() {
     if (analyzed) {
         reset();
     }
-    string pattern = srcbase.string() + "/{src,asm,lib/{src,asm},lib/{!syscall}/{src,asm}}/*.{c,s,cpp}";
+    string pattern = srcbase.string() + "/{src,asm,lib/{src,asm},lib/{NitroSDK,NitroDWC}/{src,asm}}/{,*/,*/*/}*.{c,s,cpp}";
     for (char const * & fname : Glob(pattern, GLOB_TILDE | GLOB_BRACE | GLOB_NOSORT)) {
         AnalyzeObject(fname);
     }

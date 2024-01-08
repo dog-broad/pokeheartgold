@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_109.inc"
 	.include "global.inc"
 
 	.text
@@ -157,8 +158,8 @@ ov109_021E5A20: ; 0x021E5A20
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -195,7 +196,7 @@ ov109_021E5A70: ; 0x021E5A70
 	str r0, [r5, #0xc]
 	ldr r0, [r5, #0x10]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r4, r0, #0
 	bl Options_GetTextFrameDelay
 	add r1, r5, #0
@@ -228,7 +229,7 @@ ov109_021E5A70: ; 0x021E5A70
 	strb r0, [r5, #0x1c]
 	ldr r0, [r5, #0x10]
 	ldr r0, [r0, #0xc]
-	bl Save_PhotoAlbum_get
+	bl Save_PhotoAlbum_Get
 	mov r1, #0x7b
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -954,7 +955,7 @@ ov109_021E5FFC: ; 0x021E5FFC
 	add r5, r0, #0
 	ldr r0, _021E6050 ; =ov109_021E7A18
 	add r6, r1, #0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r4, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -1419,7 +1420,7 @@ ov109_021E638C: ; 0x021E638C
 	add r5, r0, #0
 	ldr r0, _021E63E0 ; =ov109_021E7A18
 	add r6, r1, #0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r4, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -2039,7 +2040,7 @@ ov109_021E685C: ; 0x021E685C
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _021E686C
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 _021E686C:
 	add r0, r4, #0
 	bl ov109_021E6898
@@ -2047,7 +2048,7 @@ _021E686C:
 	bl ov109_021E68D4
 	bl NNS_GfdDoVramTransfer
 	ldr r0, [r4, #0x14]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E6890 ; =0x027E0000
 	ldr r1, _021E6894 ; =0x00003FF8
 	mov r0, #1
@@ -2161,7 +2162,7 @@ _021E6936:
 	sub r2, r2, #1
 	bne _021E6936
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -2406,7 +2407,7 @@ ov109_021E6B5C: ; 0x021E6B5C
 	add r5, r0, #0
 	ldr r1, [r5]
 	mov r0, #0xab
-	bl NARC_ctor
+	bl NARC_New
 	mov r2, #0
 	str r2, [sp]
 	ldr r1, [r5]
@@ -2512,7 +2513,7 @@ ov109_021E6B5C: ; 0x021E6B5C
 	add r1, #0xc0
 	str r0, [r1]
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r1, #6
 	ldr r2, [r5]
 	mov r0, #0
@@ -2566,11 +2567,11 @@ ov109_021E6C9C: ; 0x021E6C9C
 	ldr r2, [r5]
 	mov r0, #6
 	mov r1, #0x16
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r5, #0x28]
 	ldr r1, [r5]
 	mov r0, #0x80
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x2c]
 	ldr r0, [r5, #0x24]
 	mov r1, #0
@@ -2601,7 +2602,7 @@ _021E6CF0:
 	blt _021E6CF0
 	ldr r1, [r5]
 	mov r0, #4
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	add r1, r5, #0
 	add r1, #0x88
 	str r0, [r1]
@@ -2626,7 +2627,7 @@ ov109_021E6D2C: ; 0x021E6D2C
 	add r6, r0, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r6, #0
 	mov r4, #0
 	add r0, #0x88
@@ -2634,7 +2635,7 @@ ov109_021E6D2C: ; 0x021E6D2C
 	add r5, r6, #0
 _021E6D42:
 	ldr r0, [r5, #0x48]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #2
@@ -2643,17 +2644,17 @@ _021E6D42:
 	add r4, r6, #0
 _021E6D54:
 	ldr r0, [r4, #0x34]
-	bl String_dtor
+	bl String_Delete
 	add r5, r5, #1
 	add r4, r4, #4
 	cmp r5, #5
 	blt _021E6D54
 	ldr r0, [r6, #0x30]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x28]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r6, #0x24]
 	bl DestroyMsgData
 	mov r0, #4
@@ -2684,7 +2685,7 @@ _021E6D90:
 	cmp r6, #3
 	blt _021E6D90
 	ldr r0, [r7]
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	add r7, #0x8c
 	str r0, [r7]
 	pop {r3, r4, r5, r6, r7, pc}
@@ -2710,7 +2711,7 @@ _021E6DC6:
 	blt _021E6DC6
 	add r6, #0x8c
 	ldr r0, [r6]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	pop {r4, r5, r6, pc}
 	thumb_func_end ov109_021E6DBC
 
@@ -2723,7 +2724,7 @@ ov109_021E6DE4: ; 0x021E6DE4
 	mov r0, #0x20
 	bl GF_CreateVramTransferManager
 	ldr r0, [r4]
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	add r1, r4, #0
 	add r1, #0x90
 	str r0, [r1]
@@ -2741,7 +2742,7 @@ ov109_021E6DE4: ; 0x021E6DE4
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r1, r4, #0
 	add r1, #0x94
 	str r0, [r1]
@@ -2780,7 +2781,7 @@ ov109_021E6E64: ; 0x021E6E64
 	add r1, #0x94
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D0E4
+	bl SpriteRenderer_RemoveGfxHandler
 	add r0, r4, #0
 	mov r1, #0
 	add r0, #0x94
@@ -2788,7 +2789,7 @@ ov109_021E6E64: ; 0x021E6E64
 	add r0, r4, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	add r0, r4, #0
 	mov r1, #0
 	add r0, #0x90
@@ -2813,7 +2814,7 @@ ov109_021E6E9C: ; 0x021E6E9C
 	str r0, [r4]
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r4, pc}
 	thumb_func_end ov109_021E6E9C
 
@@ -2823,7 +2824,7 @@ ov109_021E6EC0: ; 0x021E6EC0
 	add r4, r0, #0
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	bl ov109_021E6F60
 	add r0, r4, #0
@@ -2850,7 +2851,7 @@ _021E6EEE:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	add r2, r4, #0
-	bl sub_0200D2B4
+	bl SpriteRenderer_CreateSprite
 	add r1, r5, #0
 	add r1, #0x98
 	str r0, [r1]
@@ -2884,7 +2885,7 @@ _021E6EEE:
 	add r0, #0xa8
 	ldr r0, [r0]
 	mov r1, #2
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	add r6, #0xa8
 	ldr r0, [r6]
 	mov r1, #1
@@ -2903,7 +2904,7 @@ _021E6F66:
 	add r0, r5, #0
 	add r0, #0x98
 	ldr r0, [r0]
-	bl sub_0200D018
+	bl thunk_Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
@@ -3319,7 +3320,7 @@ ov109_021E7248: ; 0x021E7248
 _021E728A:
 	ldr r0, [r5, #0x10]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	ldr r0, [r5, #0x28]
 	mov r1, #0
@@ -3410,7 +3411,7 @@ _021E7342:
 	add r0, r5, #0
 	ldr r2, [r5, #0x2c]
 	add r0, #0x70
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	add r0, #0x70
 	bl ScheduleWindowCopyToVram
@@ -3451,7 +3452,7 @@ ov109_021E7388: ; 0x021E7388
 	add r0, r4, #0
 	add r0, #0xa8
 	ldr r0, [r0]
-	bl sub_02024964
+	bl Sprite_ResetAnimCtrlState
 _021E73B2:
 	ldr r1, [r4, #0x30]
 	mov r0, #4
@@ -3472,7 +3473,7 @@ _021E73B2:
 	ldr r2, [r4, #0x30]
 	add r0, #0x50
 	mov r1, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	add r0, #0x50
 	bl ScheduleWindowCopyToVram
@@ -3519,7 +3520,7 @@ _021E7412:
 	ldr r2, [r2, #0x34]
 	add r0, #0x60
 	add r3, r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	b _021E7462
 _021E7440:
 	mov r1, #0
@@ -3534,7 +3535,7 @@ _021E7440:
 	ldr r2, [r2, #0x34]
 	add r0, #0x60
 	add r3, r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r1, r5, #0
 	add r1, #0x21
 	strb r0, [r1]
@@ -3566,7 +3567,7 @@ ov109_021E7474: ; 0x021E7474
 	mov r1, #1
 	mov r7, #0xc0
 	mov r4, #0xa0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	b _021E74C4
 _021E749C:
 	mov r0, #0x30
@@ -3587,13 +3588,13 @@ _021E749C:
 	add r0, #0x98
 	ldr r0, [r0]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 _021E74C4:
 	add r5, #0x98
 	ldr r0, [r5]
 	add r1, r7, #0
 	add r2, r4, #0
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 	thumb_func_end ov109_021E7474
@@ -3632,7 +3633,7 @@ _021E74EE:
 	ldr r0, [r0]
 	asr r1, r1, #0x10
 	asr r2, r2, #0x10
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	add r5, #0x9c
 	ldr r0, [r5]
 	add r1, r4, #0
@@ -3698,7 +3699,7 @@ ov109_021E7584: ; 0x021E7584
 	add r5, #0x98
 	lsl r4, r6, #2
 	ldr r0, [r5, r4]
-	bl sub_02024964
+	bl Sprite_ResetAnimCtrlState
 	ldr r0, [r5, r4]
 	mov r1, #1
 	bl Set2dSpriteAnimActiveFlag
@@ -3920,7 +3921,7 @@ ov109_021E76F0: ; 0x021E76F0
 	strb r1, [r0, #0x12]
 	ldr r0, [r4]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add sp, #0x14
 	pop {r4, r5, pc}
 	thumb_func_end ov109_021E76F0
@@ -3931,7 +3932,7 @@ ov109_021E7748: ; 0x021E7748
 	add r5, r0, #0
 	add r0, #0x8c
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r4, r0, #0
 	cmp r4, #1
 	beq _021E7760
@@ -4032,7 +4033,7 @@ ov109_021E7810: ; 0x021E7810
 	ldr r0, [r4]
 	add r0, #0xa8
 	ldr r0, [r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _021E784C
 	ldr r0, [r4]

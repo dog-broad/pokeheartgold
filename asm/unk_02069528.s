@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02069528.inc"
 	.include "global.inc"
 
 	.text
@@ -10,13 +11,13 @@ sub_02069528: ; 0x02069528
 	add r6, r0, #0
 	str r1, [sp]
 	add r7, r2, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r4, r0, #0
 	add r0, r6, #0
 	bl sub_0202CA44
 	add r5, r0, #0
 	add r0, r6, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	str r0, [sp, #4]
 	add r0, r7, #0
 	mov r1, #0
@@ -77,7 +78,7 @@ sub_02069528: ; 0x02069528
 	mov r2, #1
 	lsl r0, r0, #0x1e
 	lsr r0, r0, #0x1f
-	bl sub_0205B46C
+	bl GetUnionRoomAvatarAttrBySprite
 	add r1, r7, #0
 	add r1, #0xc9
 	strb r0, [r1]

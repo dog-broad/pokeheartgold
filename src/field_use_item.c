@@ -13,12 +13,12 @@
 #include "overlay_01.h"
 #include "overlay_02.h"
 #include "unk_02054E00.h"
-#include "unk_0205B6E8.h"
+#include "metatile_behavior.h"
 #include "unk_0203E348.h"
-#include "unk_0200E398.h"
+#include "render_window.h"
 #include "unk_0200FA24.h"
 #include "text.h"
-#include "field_alph_checks.h"
+#include "alph_checks.h"
 #include "map_header.h"
 #include "system.h"
 #include "unk_02066EDC.h"
@@ -27,6 +27,8 @@
 #include "fielddata/script/scr_seq/event_D24R0202.h"
 #include "fielddata/script/scr_seq/event_D24R0206.h"
 #include "msgdata/msg/msg_0010.h"
+#include "script.h"
+#include "msgdata/msg.naix"
 
 struct ItemUseFuncDat {
     ItemMenuUseFunc menu;
@@ -38,18 +40,18 @@ static struct AlphItemUseData *CreateAlphItemUseWork(int scriptNo, u16 var_8000,
 static void ExitMenuAndJumpToAlphChamberReaction(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2, int scriptNo);
 static BOOL Task_UseItemInAlphChamber(TaskManager *taskManager);
 static void ItemMenuUseFunc_HealingItem(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
-static u32 ItemCheckUseFunc_Dummy(const struct ItemCheckUseData *data);
+static enum ItemUseError ItemCheckUseFunc_Dummy(const struct ItemCheckUseData *data);
 static void ItemMenuUseFunc_Bicycle(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_Bicycle(struct ItemFieldUseData *data);
 static BOOL Task_MountOrDismountBicycle(TaskManager *taskManager);
-static u32 ItemCheckUseFunc_Bicycle(const struct ItemCheckUseData *data);
+static enum ItemUseError ItemCheckUseFunc_Bicycle(const struct ItemCheckUseData *data);
 static void ItemMenuUseFunc_TMHM(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static void ItemMenuUseFunc_Mail(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
-static u32 ItemCheckUseFunc_Berry(const struct ItemCheckUseData *data);
+static enum ItemUseError ItemCheckUseFunc_Berry(const struct ItemCheckUseData *data);
 static void ItemMenuUseFunc_Berry(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static void ItemMenuUseFunc_PalPad(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_PalPad(struct ItemFieldUseData *data);
-static struct PalPadWork *_CreatePalPadWork(FieldSystem *fsys);
+static struct PalPadWork *_CreatePalPadWork(FieldSystem *fieldSystem);
 static void ItemMenuUseFunc_Honey(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static void ItemMenuUseFunc_OldRod(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_OldRod(struct ItemFieldUseData *data);
@@ -57,34 +59,34 @@ static void ItemMenuUseFunc_GoodRod(struct ItemMenuUseData *data, const struct I
 static BOOL ItemFieldUseFunc_GoodRod(struct ItemFieldUseData *data);
 static void ItemMenuUseFunc_SuperRod(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_SuperRod(struct ItemFieldUseData *data);
-static u32 ItemCheckUseFunc_FishingRod(const struct ItemCheckUseData *data);
+static enum ItemUseError ItemCheckUseFunc_FishingRod(const struct ItemCheckUseData *data);
 static BOOL ItemFieldUseFunc_Generic(struct ItemFieldUseData *data);
 static BOOL Task_PrintRegisteredKeyItemUseMessage(TaskManager *taskManager);
 static void ItemMenuUseFunc_EvoStone(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static void ItemMenuUseFunc_EscapeRope(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
-static u32 ItemCheckUseFunc_EscapeRope(const struct ItemCheckUseData *data);
+static enum ItemUseError ItemCheckUseFunc_EscapeRope(const struct ItemCheckUseData *data);
 static BOOL Task_JumpToFieldEscapeRope(TaskManager *taskManager);
 static void ItemMenuUseFunc_ApricornBox(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_ApricornBox(struct ItemFieldUseData *data);
-static struct ApricornBoxWork *_CreateApricornBoxWork(FieldSystem *fsys);
+static struct ApricornBoxWork *_CreateApricornBoxWork(FieldSystem *fieldSystem);
 static void ItemMenuUseFunc_BerryPots(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_BerryPots(struct ItemFieldUseData *data);
-static struct BerryPotsWork *_CreateBerryPotsWork(FieldSystem *fsys);
+static struct BerryPotsArgs *_BerryPotsArgs_New(FieldSystem *fieldSystem);
 static void ItemMenuUseFunc_UnownReport(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_UnownReport(struct ItemFieldUseData *data);
-static struct UnownReportWork *_CreateUnownReportWork(FieldSystem *fsys);
+static struct UnownReportWork *_CreateUnownReportWork(FieldSystem *fieldSystem);
 static void ItemMenuUseFunc_DowsingMchn(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_DowsingMchn(struct ItemFieldUseData *data);
 static BOOL Task_ActivateDowsingMchnUI(TaskManager *taskManager);
 static BOOL ItemFieldUseFunc_GbSounds(struct ItemFieldUseData *data);
 static void ItemMenuUseFunc_Gracidea(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_Gracidea(struct ItemFieldUseData *data);
-static struct GracideaWork *_CreateGracideaWork(FieldSystem *fsys);
+static struct GracideaWork *_CreateGracideaWork(FieldSystem *fieldSystem);
 static void ItemMenuUseFunc_VSRecorder(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 static BOOL ItemFieldUseFunc_VSRecorder(struct ItemFieldUseData *data);
-static void *_VsRecorderInit(FieldSystem *fsys);
-static BOOL KeyItemIdSpawnsSubprocess(FieldSystem *fsys, u16 itemId);
-static void RegisteredItem_GoToPrintErrorTask(struct ItemFieldUseData *data, u32 error);
+static void *_VsRecorderInit(FieldSystem *fieldSystem);
+static BOOL KeyItemIdSpawnsSubprocess(FieldSystem *fieldSystem, u16 itemId);
+static void RegisteredItem_GoToPrintErrorTask(struct ItemFieldUseData *data, enum ItemUseError error);
 static BOOL Task_RegisteredItem_GoToApp(TaskManager *taskManager);
 static void RegisteredItem_CreateGoToAppTask(struct ItemFieldUseData *data, FieldApplicationWorkCtor ctor, BOOL no_app);
 
@@ -131,21 +133,21 @@ void *GetItemFieldUseFunc(int funcType, int itemType) {
     }
 }
 
-void ItemCheckUseData_Init(FieldSystem *fsys, struct ItemCheckUseData *dat) {
+void ItemCheckUseData_Init(FieldSystem *fieldSystem, struct ItemCheckUseData *dat) {
     int x, y;
     LocalMapObject *dummy;
 
-    dat->fsys = fsys;
-    dat->mapId = fsys->location->mapId;
-    dat->haveFollower = ScriptState_CheckHaveFollower(SavArray_Flags_get(fsys->savedata));
-    dat->haveRocketCostume = ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(fsys->savedata));
-    dat->playerState = PlayerAvatar_GetState(fsys->playerAvatar);
+    dat->fieldSystem = fieldSystem;
+    dat->mapId = fieldSystem->location->mapId;
+    dat->haveFollower = Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(fieldSystem->saveData));
+    dat->haveRocketCostume = Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(fieldSystem->saveData));
+    dat->playerState = PlayerAvatar_GetState(fieldSystem->playerAvatar);
 
-    x = GetPlayerXCoord(fsys->playerAvatar);
-    y = GetPlayerYCoord(fsys->playerAvatar);
-    dat->standingTile = GetMetatileBehaviorAt(fsys, x, y);
+    x = GetPlayerXCoord(fieldSystem->playerAvatar);
+    y = GetPlayerYCoord(fieldSystem->playerAvatar);
+    dat->standingTile = GetMetatileBehaviorAt(fieldSystem, x, y);
 
-    switch (PlayerAvatar_GetFacingDirection(fsys->playerAvatar)) {
+    switch (PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar)) {
     case DIR_NORTH:
         y--;
         break;
@@ -159,10 +161,10 @@ void ItemCheckUseData_Init(FieldSystem *fsys, struct ItemCheckUseData *dat) {
         x--;
         break;
     }
-    dat->facingTile = GetMetatileBehaviorAt(fsys, x, y);
+    dat->facingTile = GetMetatileBehaviorAt(fieldSystem, x, y);
 
-    Fsys_GetFacingObject(fsys, &dummy);
-    dat->playerAvatar = fsys->playerAvatar;
+    FieldSystem_GetFacingObject(fieldSystem, &dummy);
+    dat->playerAvatar = fieldSystem->playerAvatar;
 }
 
 static struct AlphItemUseData *CreateAlphItemUseWork(int scriptNo, u16 var_8000, u16 var_8001, u16 var_8002, u16 var_8003) {
@@ -178,28 +180,28 @@ static struct AlphItemUseData *CreateAlphItemUseWork(int scriptNo, u16 var_8000,
 
 static void ExitMenuAndJumpToAlphChamberReaction(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2, int scriptNo) {
 #pragma unused(dat2)
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_UseItemInAlphChamber;
     env->atexit_TaskEnv = CreateAlphItemUseWork(scriptNo, data->itemId, 0, 0, 0);
     env->state = 12;
 }
 
 static BOOL Task_UseItemInAlphChamber(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    struct AlphItemUseData *env = TaskManager_GetEnv(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    struct AlphItemUseData *env = TaskManager_GetEnvironment(taskManager);
     u32 *state_p = TaskManager_GetStatePtr(taskManager);
     LocalMapObject *sp0;
 
     switch (*state_p) {
     case 0:
-        Fsys_GetFacingObject(fsys, &sp0);
+        FieldSystem_GetFacingObject(fieldSystem, &sp0);
         QueueScript(taskManager, env->scriptNo, sp0, NULL);
-        *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8000) = env->var_8000;
-        *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8001) = env->var_8001;
-        *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8002) = env->var_8002;
-        *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8003) = env->var_8003;
+        *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8000) = env->var_8000;
+        *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8001) = env->var_8001;
+        *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8002) = env->var_8002;
+        *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8003) = env->var_8003;
         (*state_p)++;
         break;
     case 1:
@@ -212,62 +214,62 @@ static BOOL Task_UseItemInAlphChamber(TaskManager *taskManager) {
 
 static void ItemMenuUseFunc_HealingItem(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
 #pragma unused(dat2)
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    struct UseItemInPartyTaskEnv *usedat = AllocFromHeap(11, sizeof(struct UseItemInPartyTaskEnv));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    struct UseItemInPartyTaskEnv *usedat = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct UseItemInPartyTaskEnv));
     memset(usedat, 0, sizeof(struct UseItemInPartyTaskEnv));
-    usedat->party = SavArray_PlayerParty_get(fsys->savedata);
-    usedat->bag = Sav2_Bag_get(fsys->savedata);
-    usedat->mailbox = Sav2_Mailbox_get(fsys->savedata);
-    usedat->options = Sav2_PlayerData_GetOptionsAddr(fsys->savedata);
-    usedat->unk10 = sub_020270C4(fsys->savedata);
+    usedat->party = SaveArray_Party_Get(fieldSystem->saveData);
+    usedat->bag = Save_Bag_Get(fieldSystem->saveData);
+    usedat->mailbox = Save_Mailbox_Get(fieldSystem->saveData);
+    usedat->options = Save_PlayerData_GetOptionsAddr(fieldSystem->saveData);
+    usedat->unk10 = sub_020270C4(fieldSystem->saveData);
     usedat->unk18 = &env->unk_0370;
     usedat->unk25 = 0;
     usedat->unk24 = 5;
-    usedat->fsys = fsys;
+    usedat->fieldSystem = fieldSystem;
     usedat->itemId = data->itemId;
     usedat->unk26 = data->unk6;
-    usedat->unk20 = &fsys->unk_10C;
-    Fsys_LaunchApplication(fsys, &_0210159C, usedat);
+    usedat->unk20 = &fieldSystem->unk_10C;
+    FieldSystem_LaunchApplication(fieldSystem, &_0210159C, usedat);
     env->atexit_TaskEnv = usedat;
     sub_0203C8F0(env, sub_0203CA9C);
 }
 
-static u32 ItemCheckUseFunc_Dummy(const struct ItemCheckUseData *data) {
+static enum ItemUseError ItemCheckUseFunc_Dummy(const struct ItemCheckUseData *data) {
     return ITEMUSEERROR_OAKSWORDS;
 }
 
 static void ItemMenuUseFunc_Bicycle(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
 #pragma unused(dat2)
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_MountOrDismountBicycle;
     env->atexit_TaskEnv = NULL;
     env->state = 12;
 }
 
 static BOOL ItemFieldUseFunc_Bicycle(struct ItemFieldUseData *data) {
-    FieldSys_CreateTask(data->fsys, Task_MountOrDismountBicycle, NULL);
-    data->fsys->unkD2_7 = 1;
+    FieldSystem_CreateTask(data->fieldSystem, Task_MountOrDismountBicycle, NULL);
+    data->fieldSystem->unkD2_7 = 1;
     return FALSE;
 }
 
 static BOOL Task_MountOrDismountBicycle(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     u32 *state_p = TaskManager_GetStatePtr(taskManager);
     int r6;
 
     switch (*state_p) {
     case 0:
-        if (FollowingPokemon_IsActive(fsys)) {
-            if (MapObject_IsMovementPaused(FollowingPokemon_GetMapObject(fsys))) {
-                if (PlayerAvatar_GetState(fsys->playerAvatar) == PLAYER_STATE_CYCLING) {
+        if (FollowingPokemon_IsActive(fieldSystem)) {
+            if (MapObject_IsMovementPaused(FollowingPokemon_GetMapObject(fieldSystem))) {
+                if (PlayerAvatar_GetState(fieldSystem->playerAvatar) == PLAYER_STATE_CYCLING) {
                     r6 = 0x30;
                 } else {
                     r6 = 0x38;
                 }
-                sub_0205FC94(FollowingPokemon_GetMapObject(fsys), r6);
+                sub_0205FC94(FollowingPokemon_GetMapObject(fieldSystem), r6);
                 (*state_p)++;
             }
         } else {
@@ -275,43 +277,43 @@ static BOOL Task_MountOrDismountBicycle(TaskManager *taskManager) {
         }
         break;
     case 1:
-        if (PlayerAvatar_GetState(fsys->playerAvatar) == PLAYER_STATE_CYCLING) {
-            MapObject_UnpauseMovement(PlayerAvatar_GetMapObject(fsys->playerAvatar));
-            ov01_PlayerAvatar_OrrTransitionFlags(fsys->playerAvatar, 1);
-            ov01_PlayerAvatar_ApplyTransitionFlags(fsys->playerAvatar);
-            Fsys_SetSavedMusicId(fsys, 0);
+        if (PlayerAvatar_GetState(fieldSystem->playerAvatar) == PLAYER_STATE_CYCLING) {
+            MapObject_UnpauseMovement(PlayerAvatar_GetMapObject(fieldSystem->playerAvatar));
+            Field_PlayerAvatar_OrrTransitionFlags(fieldSystem->playerAvatar, 1);
+            Field_PlayerAvatar_ApplyTransitionFlags(fieldSystem->playerAvatar);
+            FieldSystem_SetSavedMusicId(fieldSystem, 0);
             if (SndRadio_GetSeqNo() == 0) {
-                Fsys_PlayOrFadeToNewMusicId(fsys, Fsys_GetSurfOverriddenMusicId(fsys, fsys->location->mapId), 1);
+                FieldSystem_PlayOrFadeToNewMusicId(fieldSystem, FieldSystem_GetOverriddenMusicId(fieldSystem, fieldSystem->location->mapId), 1);
             }
-            ov01_02205790(fsys, PlayerAvatar_GetFacingDirection(fsys->playerAvatar));
-            if (FollowingPokemon_IsActive(fsys)) {
-                sub_02069E84(FollowingPokemon_GetMapObject(fsys), 1);
-                sub_02069DC8(FollowingPokemon_GetMapObject(fsys), TRUE);
+            ov01_02205790(fieldSystem, PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar));
+            if (FollowingPokemon_IsActive(fieldSystem)) {
+                sub_02069E84(FollowingPokemon_GetMapObject(fieldSystem), 1);
+                sub_02069DC8(FollowingPokemon_GetMapObject(fieldSystem), TRUE);
             }
         } else {
             if (SndRadio_GetSeqNo() == 0) {
-                Fsys_SetSavedMusicId(fsys, SEQ_GS_BICYCLE);
-                Fsys_PlayOrFadeToNewMusicId(fsys, SEQ_GS_BICYCLE, 1);
+                FieldSystem_SetSavedMusicId(fieldSystem, SEQ_GS_BICYCLE);
+                FieldSystem_PlayOrFadeToNewMusicId(fieldSystem, SEQ_GS_BICYCLE, 1);
             }
-            MapObject_UnpauseMovement(PlayerAvatar_GetMapObject(fsys->playerAvatar));
-            ov01_PlayerAvatar_OrrTransitionFlags(fsys->playerAvatar, 2);
-            ov01_PlayerAvatar_ApplyTransitionFlags(fsys->playerAvatar);
-            ov01_02205D68(fsys);
-            if (FollowingPokemon_IsActive(fsys)) {
-                sub_02069E84(FollowingPokemon_GetMapObject(fsys), FALSE);
+            MapObject_UnpauseMovement(PlayerAvatar_GetMapObject(fieldSystem->playerAvatar));
+            Field_PlayerAvatar_OrrTransitionFlags(fieldSystem->playerAvatar, 2);
+            Field_PlayerAvatar_ApplyTransitionFlags(fieldSystem->playerAvatar);
+            ov01_02205D68(fieldSystem);
+            if (FollowingPokemon_IsActive(fieldSystem)) {
+                sub_02069E84(FollowingPokemon_GetMapObject(fieldSystem), FALSE);
             }
         }
         (*state_p)++;
         break;
     case 2:
-        MapObjectMan_UnpauseAllMovement(fsys->mapObjectMan);
+        MapObjectManager_UnpauseAllMovement(fieldSystem->mapObjectManager);
         return TRUE;
     }
 
     return FALSE;
 }
 
-static u32 ItemCheckUseFunc_Bicycle(const struct ItemCheckUseData *data) {
+static enum ItemUseError ItemCheckUseFunc_Bicycle(const struct ItemCheckUseData *data) {
     if (data->haveFollower == TRUE) {
         return ITEMUSEERROR_NOFOLLOWER;
     }
@@ -335,44 +337,44 @@ static u32 ItemCheckUseFunc_Bicycle(const struct ItemCheckUseData *data) {
 
 static void ItemMenuUseFunc_TMHM(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
 #pragma unused(dat2)
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    struct UseItemInPartyTaskEnv *usedat = AllocFromHeap(11, sizeof(struct UseItemInPartyTaskEnv));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    struct UseItemInPartyTaskEnv *usedat = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct UseItemInPartyTaskEnv));
     memset(usedat, 0, sizeof(struct UseItemInPartyTaskEnv));
-    usedat->party = SavArray_PlayerParty_get(fsys->savedata);
-    usedat->bag = Sav2_Bag_get(fsys->savedata);
-    usedat->mailbox = Sav2_Mailbox_get(fsys->savedata);
-    usedat->options = Sav2_PlayerData_GetOptionsAddr(fsys->savedata);
+    usedat->party = SaveArray_Party_Get(fieldSystem->saveData);
+    usedat->bag = Save_Bag_Get(fieldSystem->saveData);
+    usedat->mailbox = Save_Mailbox_Get(fieldSystem->saveData);
+    usedat->options = Save_PlayerData_GetOptionsAddr(fieldSystem->saveData);
     usedat->unk18 = &env->unk_0370;
     usedat->unk25 = 0;
     usedat->unk24 = 6;
-    usedat->fsys = fsys;
+    usedat->fieldSystem = fieldSystem;
     usedat->itemId = data->itemId;
     usedat->unk26 = data->unk6;
     usedat->unk2A = TMHMGetMove(data->itemId);
-    usedat->unk20 = &fsys->unk_10C;
-    Fsys_LaunchApplication(fsys, &_0210159C, usedat);
+    usedat->unk20 = &fieldSystem->unk_10C;
+    FieldSystem_LaunchApplication(fieldSystem, &_0210159C, usedat);
     env->atexit_TaskEnv = usedat;
     sub_0203C8F0(env, sub_0203CA9C);
 }
 
 static void ItemMenuUseFunc_Mail(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
 #pragma unused(dat2)
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    struct UseMailWork *mailWork = CreateUseMailWork(fsys, 3, ItemToMailId(data->itemId), 11);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    struct UseMailWork *mailWork = CreateUseMailWork(fieldSystem, 3, ItemToMailId(data->itemId), HEAP_ID_FIELD);
     env->unk_0384 = sub_0203D818(data->itemId, 3, 0);
     env->atexit_TaskEnv = mailWork;
     sub_0203C8F0(env, sub_0203D830);
 }
 
-static u32 ItemCheckUseFunc_Berry(const struct ItemCheckUseData *data) {
+static enum ItemUseError ItemCheckUseFunc_Berry(const struct ItemCheckUseData *data) {
     return ITEMUSEERROR_OKAY; // It is always okay to use a Berry
 }
 
 static void ItemMenuUseFunc_Berry(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
     ItemMenuUseFunc_HealingItem(data, dat2);
 }
 
@@ -382,9 +384,9 @@ BOOL Leftover_CanPlantBerry(const struct ItemCheckUseData *data) {
 }
 
 static void ItemMenuUseFunc_PalPad(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    env->atexit_TaskEnv = CreatePalPadWork(fsys, fsys->savedata, 11);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    env->atexit_TaskEnv = CreatePalPadWork(fieldSystem, fieldSystem->saveData, HEAP_ID_FIELD);
     sub_0203C8F0(env, sub_0203D718);
 }
 
@@ -393,75 +395,75 @@ static BOOL ItemFieldUseFunc_PalPad(struct ItemFieldUseData *data) {
     return TRUE;
 }
 
-static struct PalPadWork *_CreatePalPadWork(FieldSystem *fsys) {
-    return CreatePalPadWork(fsys, fsys->savedata, 11);
+static struct PalPadWork *_CreatePalPadWork(FieldSystem *fieldSystem) {
+    return CreatePalPadWork(fieldSystem, fieldSystem->saveData, HEAP_ID_FIELD);
 }
 
 static void ItemMenuUseFunc_Honey(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
     size_t size;
     void *honey_work;
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     size = GetHoneySweetScentWorkSize();
-    honey_work = AllocFromHeapAtEnd(11, size);
+    honey_work = AllocFromHeapAtEnd(HEAP_ID_FIELD, size);
     memset(honey_work, 0, size);
     env->atexit_TaskFunc = Task_HoneyOrSweetScent;
     env->atexit_TaskEnv = honey_work;
     env->state = 12;
-    Bag_TakeItem(Sav2_Bag_get(fsys->savedata), data->itemId, 1, 11);
+    Bag_TakeItem(Save_Bag_Get(fieldSystem->saveData), data->itemId, 1, HEAP_ID_FIELD);
 }
 
 static void ItemMenuUseFunc_OldRod(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_OverworldFish;
-    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fsys, 11, 0);
+    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fieldSystem, HEAP_ID_FIELD, 0);
     env->state = 12;
 }
 
 static BOOL ItemFieldUseFunc_OldRod(struct ItemFieldUseData *data) {
-    FieldSys_CreateTask(data->fsys, Task_OverworldFish, CreateFishingRodTaskEnv(data->fsys, 4, 0));
+    FieldSystem_CreateTask(data->fieldSystem, Task_OverworldFish, CreateFishingRodTaskEnv(data->fieldSystem, HEAP_ID_4, 0));
     return FALSE;
 }
 
 static void ItemMenuUseFunc_GoodRod(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_OverworldFish;
-    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fsys, 11, 1);
+    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fieldSystem, HEAP_ID_FIELD, 1);
     env->state = 12;
 }
 
 static BOOL ItemFieldUseFunc_GoodRod(struct ItemFieldUseData *data) {
-    FieldSys_CreateTask(data->fsys, Task_OverworldFish, CreateFishingRodTaskEnv(data->fsys, 4, 1));
+    FieldSystem_CreateTask(data->fieldSystem, Task_OverworldFish, CreateFishingRodTaskEnv(data->fieldSystem, HEAP_ID_4, 1));
     return FALSE;
 }
 
 static void ItemMenuUseFunc_SuperRod(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_OverworldFish;
-    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fsys, 11, 2);
+    env->atexit_TaskEnv = CreateFishingRodTaskEnv(fieldSystem, HEAP_ID_FIELD, 2);
     env->state = 12;
 }
 
 static BOOL ItemFieldUseFunc_SuperRod(struct ItemFieldUseData *data) {
-    FieldSys_CreateTask(data->fsys, Task_OverworldFish, CreateFishingRodTaskEnv(data->fsys, 4, 2));
+    FieldSystem_CreateTask(data->fieldSystem, Task_OverworldFish, CreateFishingRodTaskEnv(data->fieldSystem, HEAP_ID_4, 2));
     return FALSE;
 }
 
-static u32 ItemCheckUseFunc_FishingRod(const struct ItemCheckUseData *data) {
+static enum ItemUseError ItemCheckUseFunc_FishingRod(const struct ItemCheckUseData *data) {
     if (data->haveFollower == TRUE) {
         return ITEMUSEERROR_NOFOLLOWER;
     }
     if (data->haveRocketCostume == TRUE) {
         return ITEMUSEERROR_NOTNOW;
     }
-    if (sub_0205B778(data->facingTile) == TRUE) {
+    if (MetatileBehavior_IsSurfableWater(data->facingTile) == TRUE) {
         if (sub_0205BA30(data->standingTile) == TRUE || sub_0205BA24(data->standingTile) == TRUE) {
             if (MapObject_CheckFlag28(PlayerAvatar_GetMapObject(data->playerAvatar)) == TRUE) {
                 return ITEMUSEERROR_OAKSWORDS;
@@ -473,25 +475,25 @@ static u32 ItemCheckUseFunc_FishingRod(const struct ItemCheckUseData *data) {
 }
 
 static BOOL ItemFieldUseFunc_Generic(struct ItemFieldUseData *data) {
-    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(11, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
+    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
     env->state = 0;
-    env->strbuf = String_ctor(128, 11);
-    TryFormatRegisteredKeyItemUseMessage(data->fsys->savedata, env->strbuf, data->itemId, 11);
-    FieldSys_CreateTask(data->fsys, Task_PrintRegisteredKeyItemUseMessage, env);
+    env->strbuf = String_New(128, HEAP_ID_FIELD);
+    TryFormatRegisteredKeyItemUseMessage(data->fieldSystem->saveData, env->strbuf, data->itemId, HEAP_ID_FIELD);
+    FieldSystem_CreateTask(data->fieldSystem, Task_PrintRegisteredKeyItemUseMessage, env);
     return FALSE;
 }
 
 static BOOL Task_PrintRegisteredKeyItemUseMessage(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    struct RegisteredKeyItemUseMessagePrintTaskData *env = TaskManager_GetEnv(taskManager);
-    OPTIONS *options;
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    struct RegisteredKeyItemUseMessagePrintTaskData *env = TaskManager_GetEnvironment(taskManager);
+    Options *options;
 
     switch (env->state) {
     case 0:
-        fsys->unkD2_6 = TRUE;
-        MapObjectMan_PauseAllMovement(fsys->mapObjectMan);
-        sub_0205B514(fsys->bg_config, &env->window, 3);
-        options = Sav2_PlayerData_GetOptionsAddr(fsys->savedata);
+        fieldSystem->unkD2_6 = TRUE;
+        MapObjectManager_PauseAllMovement(fieldSystem->mapObjectManager);
+        sub_0205B514(fieldSystem->bgConfig, &env->window, 3);
+        options = Save_PlayerData_GetOptionsAddr(fieldSystem->saveData);
         sub_0205B564(&env->window, options);
         env->printerId = sub_0205B5B4(&env->window, env->strbuf, options, TRUE);
         env->state++;
@@ -499,16 +501,16 @@ static BOOL Task_PrintRegisteredKeyItemUseMessage(TaskManager *taskManager) {
     case 1:
         if (IsPrintFinished(env->printerId) == TRUE) {
             if ((gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B | PAD_KEY_UP | PAD_KEY_DOWN | PAD_KEY_LEFT | PAD_KEY_RIGHT)) || (gSystem.simulatedInputs & PAD_BUTTON_A)) {
-                fsys->unkD2_6 = FALSE;
+                fieldSystem->unkD2_6 = FALSE;
                 ClearFrameAndWindow2(&env->window, 0);
                 env->state++;
             }
         }
         break;
     case 2:
-        MapObjectMan_UnpauseAllMovement(fsys->mapObjectMan);
+        MapObjectManager_UnpauseAllMovement(fieldSystem->mapObjectManager);
         RemoveWindow(&env->window);
-        String_dtor(env->strbuf);
+        String_Delete(env->strbuf);
         FreeToHeap(env);
         return TRUE;
     }
@@ -517,61 +519,61 @@ static BOOL Task_PrintRegisteredKeyItemUseMessage(TaskManager *taskManager) {
 }
 
 static void ItemMenuUseFunc_EvoStone(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys;
+    FieldSystem *fieldSystem;
     struct BagViewAppWork *env;
     struct UseItemInPartyTaskEnv *usedat;
 
-    fsys = TaskManager_GetSys(data->taskManager);
-    if (data->itemId == ITEM_WATER_STONE && CheckUseWaterStoneInAlphChamber(fsys)) {
+    fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    if (data->itemId == ITEM_WATER_STONE && CheckUseWaterStoneInAlphChamber(fieldSystem)) {
         ExitMenuAndJumpToAlphChamberReaction(data, dat2, _EV_scr_seq_D24R0206_002 + 1);
         return;
     }
-    env = TaskManager_GetEnv(data->taskManager);
-    usedat = AllocFromHeap(11, sizeof(struct UseItemInPartyTaskEnv));
+    env = TaskManager_GetEnvironment(data->taskManager);
+    usedat = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct UseItemInPartyTaskEnv));
     memset(usedat, 0, sizeof(struct UseItemInPartyTaskEnv));
-    usedat->party = SavArray_PlayerParty_get(fsys->savedata);
-    usedat->bag = Sav2_Bag_get(fsys->savedata);
-    usedat->mailbox = Sav2_Mailbox_get(fsys->savedata);
-    usedat->options = Sav2_PlayerData_GetOptionsAddr(fsys->savedata);
-    usedat->unk10 = sub_020270C4(fsys->savedata);
+    usedat->party = SaveArray_Party_Get(fieldSystem->saveData);
+    usedat->bag = Save_Bag_Get(fieldSystem->saveData);
+    usedat->mailbox = Save_Mailbox_Get(fieldSystem->saveData);
+    usedat->options = Save_PlayerData_GetOptionsAddr(fieldSystem->saveData);
+    usedat->unk10 = sub_020270C4(fieldSystem->saveData);
     usedat->unk18 = &env->unk_0370;
     usedat->unk25 = 0;
     usedat->unk24 = 16;
     usedat->itemId = data->itemId;
     usedat->unk26 = data->unk6;
-    usedat->fsys = fsys;
-    usedat->unk20 = &fsys->unk_10C;
-    Fsys_LaunchApplication(fsys, &_0210159C, usedat);
+    usedat->fieldSystem = fieldSystem;
+    usedat->unk20 = &fieldSystem->unk_10C;
+    FieldSystem_LaunchApplication(fieldSystem, &_0210159C, usedat);
     env->atexit_TaskEnv = usedat;
     sub_0203C8F0(env, sub_0203CA9C);
 }
 
 static void ItemMenuUseFunc_EscapeRope(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys;
+    FieldSystem *fieldSystem;
     struct BagViewAppWork *env;
 
-    if (CheckUseEscapeRopeInAlphChamber(dat2->fsys)) {
+    if (CheckUseEscapeRopeInAlphChamber(dat2->fieldSystem)) {
         ExitMenuAndJumpToAlphChamberReaction(data, dat2, _EV_scr_seq_D24R0202_002 + 1);
         return;
     }
 
-    fsys = TaskManager_GetSys(data->taskManager);
-    env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_JumpToFieldEscapeRope;
     env->atexit_TaskEnv = NULL;
     env->state = 12;
-    Bag_TakeItem(Sav2_Bag_get(fsys->savedata), data->itemId, 1, 11);
+    Bag_TakeItem(Save_Bag_Get(fieldSystem->saveData), data->itemId, 1, HEAP_ID_FIELD);
 }
 
-static u32 ItemCheckUseFunc_EscapeRope(const struct ItemCheckUseData *data) {
+static enum ItemUseError ItemCheckUseFunc_EscapeRope(const struct ItemCheckUseData *data) {
     if (data->haveFollower == TRUE) {
         return ITEMUSEERROR_NOFOLLOWER;
     }
     if (data->haveRocketCostume == TRUE) {
         return ITEMUSEERROR_NOTNOW;
     }
-    if (CheckUseEscapeRopeInAlphChamber(data->fsys)) {
+    if (CheckUseEscapeRopeInAlphChamber(data->fieldSystem)) {
         return ITEMUSEERROR_OKAY;
     }
     if (MapHeader_IsCave(data->mapId) == TRUE && MapHeader_IsEscapeRopeAllowed(data->mapId) == TRUE) {
@@ -581,14 +583,14 @@ static u32 ItemCheckUseFunc_EscapeRope(const struct ItemCheckUseData *data) {
 }
 
 static BOOL Task_JumpToFieldEscapeRope(TaskManager *taskManager) {
-    TaskManager_Jump(taskManager, Task_FieldEscapeRope, CreateFieldEscapeRopeTaskEnv(TaskManager_GetSys(taskManager), 11));
+    TaskManager_Jump(taskManager, Task_FieldEscapeRope, CreateFieldEscapeRopeTaskEnv(TaskManager_GetFieldSystem(taskManager), HEAP_ID_FIELD));
     return FALSE;
 }
 
 static void ItemMenuUseFunc_ApricornBox(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    env->atexit_TaskEnv = CreateApricornBoxWork(fsys, 1);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    env->atexit_TaskEnv = CreateApricornBoxWork(fieldSystem, 1);
     sub_0203C8F0(env, sub_0203D718);
 }
 
@@ -597,30 +599,30 @@ static BOOL ItemFieldUseFunc_ApricornBox(struct ItemFieldUseData *data) {
     return TRUE;
 }
 
-static struct ApricornBoxWork *_CreateApricornBoxWork(FieldSystem *fsys) {
-    return CreateApricornBoxWork(fsys, 1);
+static struct ApricornBoxWork *_CreateApricornBoxWork(FieldSystem *fieldSystem) {
+    return CreateApricornBoxWork(fieldSystem, 1);
 }
 
 static void ItemMenuUseFunc_BerryPots(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    env->atexit_TaskEnv = CreateBerryPotsWork(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    env->atexit_TaskEnv = BerryPotsArgs_New(fieldSystem);
     sub_0203C8F0(env, sub_0203D718);
 }
 
 static BOOL ItemFieldUseFunc_BerryPots(struct ItemFieldUseData *data) {
-    RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_CreateBerryPotsWork, FALSE);
+    RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_BerryPotsArgs_New, FALSE);
     return TRUE;
 }
 
-static struct BerryPotsWork *_CreateBerryPotsWork(FieldSystem *fsys) {
-    return CreateBerryPotsWork(fsys);
+static struct BerryPotsArgs *_BerryPotsArgs_New(FieldSystem *fieldSystem) {
+    return BerryPotsArgs_New(fieldSystem);
 }
 
 static void ItemMenuUseFunc_UnownReport(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    env->atexit_TaskEnv = CreateUnownReportWork(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    env->atexit_TaskEnv = CreateUnownReportWork(fieldSystem);
     sub_0203C8F0(env, sub_0203D718);
 }
 
@@ -629,37 +631,37 @@ static BOOL ItemFieldUseFunc_UnownReport(struct ItemFieldUseData *data) {
     return TRUE;
 }
 
-static struct UnownReportWork *_CreateUnownReportWork(FieldSystem *fsys) {
-    return CreateUnownReportWork(fsys);
+static struct UnownReportWork *_CreateUnownReportWork(FieldSystem *fieldSystem) {
+    return CreateUnownReportWork(fieldSystem);
 }
 
 static void ItemMenuUseFunc_DowsingMchn(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_020505C0(fsys);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_020505C0(fieldSystem);
     env->atexit_TaskFunc = Task_ActivateDowsingMchnUI;
     env->atexit_TaskEnv = NULL;
     env->state = 12;
 }
 
 static BOOL ItemFieldUseFunc_DowsingMchn(struct ItemFieldUseData *data) {
-    FieldSys_CreateTask(data->fsys, Task_ActivateDowsingMchnUI, NULL);
+    FieldSystem_CreateTask(data->fieldSystem, Task_ActivateDowsingMchnUI, NULL);
     return FALSE;
 }
 
 static BOOL Task_ActivateDowsingMchnUI(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     u32 *state_p = TaskManager_GetStatePtr(taskManager);
 
     switch (*state_p) {
     case 0:
-        ov01_021F6A9C(fsys, 4, NULL);
-        fsys->unkD2_7 = TRUE;
+        ov01_021F6A9C(fieldSystem, 4, NULL);
+        fieldSystem->unkD2_7 = TRUE;
         (*state_p)++;
         break;
     case 1:
-        if (ov01_021F6B10(fsys) == TRUE) {
-            MapObjectMan_UnpauseAllMovement(fsys->mapObjectMan);
+        if (ov01_021F6B10(fieldSystem) == TRUE) {
+            MapObjectManager_UnpauseAllMovement(fieldSystem->mapObjectManager);
             return TRUE;
         }
         break;
@@ -669,9 +671,9 @@ static BOOL Task_ActivateDowsingMchnUI(TaskManager *taskManager) {
 }
 
 static BOOL ItemFieldUseFunc_GbSounds(struct ItemFieldUseData *data) {
-    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(11, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
+    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
     env->state = 0;
-    MSGDATA *msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0010_bin, 11);
+    MsgData *msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, NARC_msg_msg_0010_bin, HEAP_ID_FIELD);
     if (SoundSys_GetGBSoundsState() == TRUE) {
         env->strbuf = NewString_ReadMsgData(msgData, msg_0010_00105);
     } else {
@@ -679,14 +681,14 @@ static BOOL ItemFieldUseFunc_GbSounds(struct ItemFieldUseData *data) {
     }
     DestroyMsgData(msgData);
     SoundSys_ToggleGBSounds();
-    FieldSys_CreateTask(data->fsys, Task_PrintRegisteredKeyItemUseMessage, env);
+    FieldSystem_CreateTask(data->fieldSystem, Task_PrintRegisteredKeyItemUseMessage, env);
     return FALSE;
 }
 
 static void ItemMenuUseFunc_Gracidea(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    env->atexit_TaskEnv = sub_0203FAE8(fsys, 11, ITEM_GRACIDEA);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAP_ID_FIELD, ITEM_GRACIDEA);
     sub_0203C8F0(env, sub_0203CA9C);
 }
 
@@ -695,14 +697,14 @@ static BOOL ItemFieldUseFunc_Gracidea(struct ItemFieldUseData *data) {
     return TRUE;
 }
 
-static struct GracideaWork *_CreateGracideaWork(FieldSystem *fsys) {
-    return sub_0203FAE8(fsys, 11, ITEM_GRACIDEA);
+static struct GracideaWork *_CreateGracideaWork(FieldSystem *fieldSystem) {
+    return sub_0203FAE8(fieldSystem, HEAP_ID_FIELD, ITEM_GRACIDEA);
 }
 
 static void ItemMenuUseFunc_VSRecorder(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2) {
-    FieldSystem *fsys = TaskManager_GetSys(data->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(data->taskManager);
-    sub_0203F570(fsys, fsys->savedata);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(data->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(data->taskManager);
+    sub_0203F570(fieldSystem, fieldSystem->saveData);
     env->atexit_TaskEnv = NULL;
     sub_0203C8F0(env, sub_0203D9B4);
 }
@@ -712,9 +714,9 @@ static BOOL ItemFieldUseFunc_VSRecorder(struct ItemFieldUseData *data) {
     return TRUE;
 }
 
-static void *_VsRecorderInit(FieldSystem *fsys) {
-    ov01_021F4440(fsys);
-    sub_0203F570(fsys, fsys->savedata);
+static void *_VsRecorderInit(FieldSystem *fieldSystem) {
+    ov01_021F4440(fieldSystem);
+    sub_0203F570(fieldSystem, fieldSystem->saveData);
     return NULL;
 }
 
@@ -729,7 +731,7 @@ static u16 sStayInFieldItemIds[] = {
     ITEM_COIN_CASE,
 };
 
-static BOOL KeyItemIdSpawnsSubprocess(FieldSystem *fsys, u16 itemId) {
+static BOOL KeyItemIdSpawnsSubprocess(FieldSystem *fieldSystem, u16 itemId) {
     int i;
 
     for (i = 0; i < NELEMS(sStayInFieldItemIds); i++) {
@@ -741,47 +743,47 @@ static BOOL KeyItemIdSpawnsSubprocess(FieldSystem *fsys, u16 itemId) {
     return TRUE;
 }
 
-int UseRegisteredItemButtonInField(FieldSystem *fsys, u8 slot) {
+int UseRegisteredItemButtonInField(FieldSystem *fieldSystem, u8 slot) {
     struct ItemFieldUseData *data;
     u16 itemId;
     u16 funcType;
     ItemFieldUseFunc fieldUseFunc;
     ItemCheckUseFunc checkUseFunc;
     BOOL result;
-    u32 error;
+    enum ItemUseError error;
 
     GF_ASSERT(slot == 1 || slot == 2);
-    if (sub_02067584(fsys) == TRUE) {
+    if (sub_02067584(fieldSystem) == TRUE) {
          return 0;
     }
-    if (ScriptState_CheckPalParkSysFlag(SavArray_Flags_get(fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckPalParkSysFlag(Save_VarsFlags_Get(fieldSystem->saveData)) == TRUE) {
         return 0;
     }
-    if (CheckFlag996(SavArray_Flags_get(fsys->savedata)) == TRUE) {
+    if (CheckFlag996(Save_VarsFlags_Get(fieldSystem->saveData)) == TRUE) {
         return 0;
     }
-    if (ov01_021F6B10(fsys) != TRUE) {
+    if (ov01_021F6B10(fieldSystem) != TRUE) {
         return 0;
     }
     if (slot == 1) {
-        itemId = Bag_GetRegisteredItemSlot1(Sav2_Bag_get(fsys->savedata));
+        itemId = Bag_GetRegisteredItem1(Save_Bag_Get(fieldSystem->saveData));
     } else {
-        itemId = Bag_GetRegisteredItemSlot2(Sav2_Bag_get(fsys->savedata));
+        itemId = Bag_GetRegisteredItem2(Save_Bag_Get(fieldSystem->saveData));
     }
-    if (itemId == ITEM_DOWSING_MCHN && ov01_021F6B00(fsys) == 4) {
+    if (itemId == ITEM_DOWSING_MCHN && ov01_021F6B00(fieldSystem) == 4) {
         return 0;
     }
-    funcType = GetItemAttr(itemId, ITEMATTR_FIELDUSEFUNC, 11);
+    funcType = GetItemAttr(itemId, ITEMATTR_FIELDUSEFUNC, HEAP_ID_FIELD);
     checkUseFunc = GetItemFieldUseFunc(USE_ITEM_TASK_CHECK, funcType);
     fieldUseFunc = GetItemFieldUseFunc(USE_ITEM_TASK_FIELD, funcType);
     if (fieldUseFunc == NULL) {
         return 0;
     }
-    data = AllocFromHeap(11, sizeof(struct ItemFieldUseData));
+    data = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct ItemFieldUseData));
     memset(data, 0, sizeof(struct ItemFieldUseData));
-    data->fsys = fsys;
+    data->fieldSystem = fieldSystem;
     data->itemId = itemId;
-    ItemCheckUseData_Init(fsys, &data->dat);
+    ItemCheckUseData_Init(fieldSystem, &data->dat);
     result = FALSE;
     if (checkUseFunc == NULL) {
         result = fieldUseFunc(data);
@@ -795,33 +797,33 @@ int UseRegisteredItemButtonInField(FieldSystem *fsys, u8 slot) {
     }
     if (result == FALSE) {
         FreeToHeap(data);
-    } else if (KeyItemIdSpawnsSubprocess(fsys, data->itemId)) {
+    } else if (KeyItemIdSpawnsSubprocess(fieldSystem, data->itemId)) {
         return 1;
     }
     return 2;
 }
 
-static void RegisteredItem_GoToPrintErrorTask(struct ItemFieldUseData *data, u32 error) {
-    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(11, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
+static void RegisteredItem_GoToPrintErrorTask(struct ItemFieldUseData *data, enum ItemUseError error) {
+    struct RegisteredKeyItemUseMessagePrintTaskData *env = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct RegisteredKeyItemUseMessagePrintTaskData));
     env->state = 0;
-    env->strbuf = String_ctor(128, 11);
-    GetItemUseErrorMessage(Sav2_PlayerData_GetProfileAddr(data->fsys->savedata), env->strbuf, data->itemId, error, 11);
-    FieldSys_CreateTask(data->fsys, Task_PrintRegisteredKeyItemUseMessage, env);
+    env->strbuf = String_New(128, HEAP_ID_FIELD);
+    GetItemUseErrorMessage(Save_PlayerData_GetProfileAddr(data->fieldSystem->saveData), env->strbuf, data->itemId, error, HEAP_ID_FIELD);
+    FieldSystem_CreateTask(data->fieldSystem, Task_PrintRegisteredKeyItemUseMessage, env);
 }
 
 static BOOL Task_RegisteredItem_GoToApp(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    struct ItemFieldUseData *env = TaskManager_GetEnv(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    struct ItemFieldUseData *env = TaskManager_GetEnvironment(taskManager);
 
     switch (env->state) {
     case 0:
-        MapObjectMan_PauseAllMovement(fsys->mapObjectMan);
+        MapObjectManager_PauseAllMovement(fieldSystem->mapObjectManager);
         ov01_021E636C(0);
         env->state = 1;
         break;
     case 1:
         if (IsPaletteFadeFinished()) {
-            env->work = env->ctor(fsys);
+            env->work = env->ctor(fieldSystem);
             if (env->no_app == FALSE) {
                 env->state = 2;
             } else {
@@ -830,7 +832,7 @@ static BOOL Task_RegisteredItem_GoToApp(TaskManager *taskManager) {
         }
         break;
     case 2:
-        if (FieldSys_ApplicationIsRunning(fsys)) {
+        if (FieldSystem_ApplicationIsRunning(fieldSystem)) {
             break;
         }
         // fallthrough
@@ -838,19 +840,19 @@ static BOOL Task_RegisteredItem_GoToApp(TaskManager *taskManager) {
         if (env->work != NULL) {
             FreeToHeap(env->work);
         }
-        sub_020505C0(fsys);
+        sub_020505C0(fieldSystem);
         env->state = 4;
         break;
     case 4:
-        if (sub_020505C8(fsys)) {
-            MapObjectMan_PauseAllMovement(fsys->mapObjectMan);
+        if (sub_020505C8(fieldSystem)) {
+            MapObjectManager_PauseAllMovement(fieldSystem->mapObjectManager);
             ov01_021E636C(1);
             env->state = 5;
         }
         break;
     case 5:
         if (IsPaletteFadeFinished()) {
-            MapObjectMan_UnpauseAllMovement(fsys->mapObjectMan);
+            MapObjectManager_UnpauseAllMovement(fieldSystem->mapObjectManager);
             FreeToHeap(env);
             return TRUE;
         }
@@ -863,5 +865,5 @@ static BOOL Task_RegisteredItem_GoToApp(TaskManager *taskManager) {
 static void RegisteredItem_CreateGoToAppTask(struct ItemFieldUseData *data, FieldApplicationWorkCtor ctor, BOOL no_app) {
     data->ctor = ctor;
     data->no_app = no_app;
-    FieldSys_CreateTask(data->fsys, Task_RegisteredItem_GoToApp, data);
+    FieldSystem_CreateTask(data->fieldSystem, Task_RegisteredItem_GoToApp, data);
 }

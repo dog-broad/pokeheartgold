@@ -1,3 +1,4 @@
+#include "global.h"
 #include "field_player_avatar.h"
 #include "assert.h"
 #include "field_map_object.h"
@@ -8,6 +9,8 @@
 #include "unk_02034354.h"
 #include "unk_02035900.h"
 #include "unk_0205FD20.h"
+#include "overlay_01_021FE780.h"
+#include "overlay_01_02200858.h"
 #include "constants/global.fieldmap.h"
 #include "constants/sprites.h"
 
@@ -19,15 +22,15 @@ int sub_0205C268(u32 unkA) {
 }
 
 u8 sub_0205C278(void) {
-    PLAYERPROFILE* profile = sub_02034818(sub_0203769C() ^ 1);
+    PlayerProfile* profile = sub_02034818(sub_0203769C() ^ 1);
     if (!profile) {
         GF_ASSERT(FALSE);
     }
     return PlayerProfile_GetVersion(profile);
 }
 
-u8 sub_0205C298(SAVEDATA* savedata) {
-    u8 ver = PlayerProfile_GetVersion(Sav2_PlayerData_GetProfileAddr(savedata));
+u8 sub_0205C298(SaveData* saveData) {
+    u8 ver = PlayerProfile_GetVersion(Save_PlayerData_GetProfileAddr(saveData));
     if (ver == 0) {
         return 1;
     }
@@ -121,9 +124,9 @@ u8 sub_0205C350(u32 unkA) {
     return ret;
 }
 
-FIELD_PLAYER_AVATAR* sub_0205C390(MapObjectMan *man, int x, int y, int direction, int state, int gender, int a6, struct FlypointsPlayerSub *a7) {
-    FIELD_PLAYER_AVATAR* avatar = sub_0205C4E0();
-    sub_0205C500(avatar, state, gender, a7);
+PlayerAvatar* sub_0205C390(MapObjectManager *man, int x, int y, int direction, int state, int gender, int a6, struct PlayerSaveData *playerSaveData) {
+    PlayerAvatar* avatar = sub_0205C4E0();
+    sub_0205C500(avatar, state, gender, playerSaveData);
     int sprite;
     if (a6 == 2) {
         sprite = PlayerAvatar_GetSpriteByStateAndGender(state, gender);
@@ -152,10 +155,10 @@ FIELD_PLAYER_AVATAR* sub_0205C390(MapObjectMan *man, int x, int y, int direction
     return avatar;
 }
 
-FIELD_PLAYER_AVATAR* sub_0205C408(MapObjectMan* man, FIELD_PLAYER_AVATAR_SUB* avatar_sub, int gender) {
-    FIELD_PLAYER_AVATAR* avatar = sub_0205C4E0();
-    int state = sub_0205C7EC(avatar_sub);
-    sub_0205C500(avatar, state, gender, avatar_sub);
+PlayerAvatar* sub_0205C408(MapObjectManager* man, PlayerSaveData* playerSaveData, int gender) {
+    PlayerAvatar* avatar = sub_0205C4E0();
+    int state = sub_0205C7EC(playerSaveData);
+    sub_0205C500(avatar, state, gender, playerSaveData);
     LocalMapObject* mapObj = sub_0205C640(man);
     MapObject_SetGfxID(mapObj, PlayerAvatar_GetSpriteByStateAndGender(state, gender));
     MapObject_SetFlagsBits(mapObj, MAPOBJECTFLAG_UNK13 | MAPOBJECTFLAG_UNK10);
@@ -165,7 +168,7 @@ FIELD_PLAYER_AVATAR* sub_0205C408(MapObjectMan* man, FIELD_PLAYER_AVATAR_SUB* av
     return avatar;
 }
 
-void sub_0205C46C(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205C46C(PlayerAvatar* avatar) {
     LocalMapObject* mapObj = PlayerAvatar_GetMapObject(avatar);
     if (!mapObj) {
         GF_ASSERT(FALSE);
@@ -180,26 +183,26 @@ void sub_0205C46C(FIELD_PLAYER_AVATAR* avatar) {
     }
 }
 
-void PlayerAvatar_FreeToHeap(FIELD_PLAYER_AVATAR* avatar) {
+void PlayerAvatar_FreeToHeap(PlayerAvatar* avatar) {
     FreeToHeap(avatar);
 }
 
-void PlayerAvatar_DeleteFromMap(FIELD_PLAYER_AVATAR* avatar) {
+void PlayerAvatar_DeleteFromMap(PlayerAvatar* avatar) {
     MapObject_Remove(PlayerAvatar_GetMapObject(avatar));
     PlayerAvatar_FreeToHeap(avatar);
 }
 
-FIELD_PLAYER_AVATAR* sub_0205C4E0() {
-    FIELD_PLAYER_AVATAR* avatar = AllocFromHeap(11, sizeof(FIELD_PLAYER_AVATAR));
+PlayerAvatar* sub_0205C4E0() {
+    PlayerAvatar* avatar = AllocFromHeap(HEAP_ID_FIELD, sizeof(PlayerAvatar));
     if (!avatar) {
         GF_ASSERT(FALSE);
     }
-    memset(avatar, 0, sizeof(FIELD_PLAYER_AVATAR));
+    memset(avatar, 0, sizeof(PlayerAvatar));
     return avatar;
 }
 
-void sub_0205C500(FIELD_PLAYER_AVATAR* avatar, int state, u32 gender, FIELD_PLAYER_AVATAR_SUB* avatar_sub) {
-    sub_0205C794(avatar, avatar_sub);
+void sub_0205C500(PlayerAvatar* avatar, int state, u32 gender, PlayerSaveData* playerSaveData) {
+    PlayerAvatar_SetPlayerSaveData(avatar, playerSaveData);
     sub_0205C6C8(avatar, 0);
     sub_0205C6D0(avatar, 0);
     PlayerAvatar_SetState(avatar, state);
@@ -212,7 +215,7 @@ void sub_0205C500(FIELD_PLAYER_AVATAR* avatar, int state, u32 gender, FIELD_PLAY
     sub_0205CA4C(avatar, TRUE);
 }
 
-void CreatePlayerAvatarMapObject(FIELD_PLAYER_AVATAR* avatar, MapObjectMan* man, u32 sprite, u32 direction, u32 x, u32 y) {
+void CreatePlayerAvatarMapObject(PlayerAvatar* avatar, MapObjectManager* man, u32 sprite, u32 direction, u32 x, u32 y) {
     LocalMapObject* mapObj = CreateSpecialFieldObject(man, x, y, direction, sprite, 1, 1);
     if (!mapObj) {
         GF_ASSERT(FALSE);
@@ -232,7 +235,7 @@ void CreatePlayerAvatarMapObject(FIELD_PLAYER_AVATAR* avatar, MapObjectMan* man,
     sub_0205C6D8(avatar, mapObj);
 }
 
-LocalMapObject* sub_0205C600(MapObjectMan* man) {
+LocalMapObject* sub_0205C600(MapObjectManager* man) {
     int y = 0;
     LocalMapObject* mapObj = 0;
     while (sub_0205EEF4(man, &mapObj, &y, MAPOBJECTFLAG_ACTIVE)) {
@@ -243,7 +246,7 @@ LocalMapObject* sub_0205C600(MapObjectMan* man) {
     return mapObj;
 }
 
-LocalMapObject* sub_0205C640(MapObjectMan* man) {
+LocalMapObject* sub_0205C640(MapObjectManager* man) {
     LocalMapObject* mapObj = sub_0205C600(man);
     if (!mapObj) {
         GF_ASSERT(FALSE);
@@ -251,71 +254,71 @@ LocalMapObject* sub_0205C640(MapObjectMan* man) {
     return mapObj;
 }
 
-int PlayerAvatar_GetFacingDirection(FIELD_PLAYER_AVATAR* avatar) {
+int PlayerAvatar_GetFacingDirection(PlayerAvatar* avatar) {
     return MapObject_GetFacingDirection(PlayerAvatar_GetMapObject(avatar));
 }
 
-void PlayerAvatar_SetFacingDirection(FIELD_PLAYER_AVATAR* avatar, int direction) {
+void PlayerAvatar_SetFacingDirection(PlayerAvatar* avatar, int direction) {
     MapObject_SetFacingDirection(PlayerAvatar_GetMapObject(avatar), direction);
 }
 
-u32 PlayerAvatar_GetNextFacing(FIELD_PLAYER_AVATAR* avatar) {
+u32 PlayerAvatar_GetNextFacing(PlayerAvatar* avatar) {
     return MapObject_GetNextFacing(PlayerAvatar_GetMapObject(avatar));
 }
 
-int GetPlayerXCoord(FIELD_PLAYER_AVATAR* avatar) {
+int GetPlayerXCoord(PlayerAvatar* avatar) {
     return MapObject_GetCurrentX(PlayerAvatar_GetMapObject(avatar));
 }
 
-int GetPlayerYCoord(FIELD_PLAYER_AVATAR* avatar) {
+int GetPlayerYCoord(PlayerAvatar* avatar) {
     return MapObject_GetCurrentY(PlayerAvatar_GetMapObject(avatar));
 }
 
-int GetPlayerLastXCoord(FIELD_PLAYER_AVATAR* avatar) {
+int GetPlayerLastXCoord(PlayerAvatar* avatar) {
     return MapObject_GetPrevX(PlayerAvatar_GetMapObject(avatar));
 }
 
-int GetPlayerLastYCoord(FIELD_PLAYER_AVATAR* avatar) {
+int GetPlayerLastYCoord(PlayerAvatar* avatar) {
     return MapObject_GetPrevY(PlayerAvatar_GetMapObject(avatar));
 }
 
-void PlayerAvatar_GetPositionVec(FIELD_PLAYER_AVATAR* avatar, VecFx32* vec) {
+void PlayerAvatar_GetPositionVec(PlayerAvatar* avatar, VecFx32* vec) {
     MapObject_GetPositionVec(PlayerAvatar_GetMapObject(avatar), vec);
 }
 
-VecFx32* PlayerAvatar_GetPositionVecConst(FIELD_PLAYER_AVATAR* avatar) {
+VecFx32* PlayerAvatar_GetPositionVecConst(PlayerAvatar* avatar) {
     return MapObject_GetPositionVecPtr(PlayerAvatar_GetMapObjectConst(avatar));
 }
 
-void sub_0205C6C8(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C6C8(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk10 = unkA;
 }
 
-u32 sub_0205C6CC(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C6CC(PlayerAvatar* avatar) {
     return avatar->unk10;
 }
 
-void sub_0205C6D0(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C6D0(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk14 = unkA;
 }
 
-u32 sub_0205C6D4(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C6D4(PlayerAvatar* avatar) {
     return avatar->unk14;
 }
 
-void sub_0205C6D8(FIELD_PLAYER_AVATAR* avatar, LocalMapObject* obj) {
+void sub_0205C6D8(PlayerAvatar* avatar, LocalMapObject* obj) {
     avatar->mapObject = obj;
 }
 
-LocalMapObject* PlayerAvatar_GetMapObject(FIELD_PLAYER_AVATAR* avatar) {
+LocalMapObject* PlayerAvatar_GetMapObject(PlayerAvatar* avatar) {
     return avatar->mapObject;
 }
 
-LocalMapObject* PlayerAvatar_GetMapObjectConst(FIELD_PLAYER_AVATAR* avatar) {
+LocalMapObject* PlayerAvatar_GetMapObjectConst(PlayerAvatar* avatar) {
     return avatar->mapObject;
 }
 
-void PlayerAvatar_SetState(FIELD_PLAYER_AVATAR* avatar, int state) {
+void PlayerAvatar_SetState(PlayerAvatar* avatar, int state) {
     if(state >= PLAYER_STATE_UNK_SP) {
         GF_ASSERT(FALSE);
     }
@@ -323,59 +326,59 @@ void PlayerAvatar_SetState(FIELD_PLAYER_AVATAR* avatar, int state) {
     sub_0205C800(avatar, state);
 }
 
-int PlayerAvatar_GetState(FIELD_PLAYER_AVATAR* avatar) {
+int PlayerAvatar_GetState(PlayerAvatar* avatar) {
     if(!avatar) {
         GF_ASSERT(FALSE);
     }
     return avatar->state;
 }
 
-void PlayerAvatar_OrrTransitionFlags(FIELD_PLAYER_AVATAR* avatar, u32 flag) {
+void PlayerAvatar_OrrTransitionFlags(PlayerAvatar* avatar, u32 flag) {
     avatar->transFlag = avatar->transFlag | flag;
 }
 
-void PlayerAvatar_SetTransitionFlags(FIELD_PLAYER_AVATAR* avatar, u32 flag) {
+void PlayerAvatar_SetTransitionFlags(PlayerAvatar* avatar, u32 flag) {
     avatar->transFlag = flag;
 }
 
-u32 PlayerAvatar_GetTransitionFlags(FIELD_PLAYER_AVATAR* avatar) {
+u32 PlayerAvatar_GetTransitionFlags(PlayerAvatar* avatar) {
     return avatar->transFlag;
 }
 
-void PlayerAvatar_SetGender(FIELD_PLAYER_AVATAR* avatar, u32 gender) {
+void PlayerAvatar_SetGender(PlayerAvatar* avatar, u32 gender) {
     avatar->gender = gender;
 }
 
-int PlayerAvatar_GetGender(FIELD_PLAYER_AVATAR* avatar) {
+int PlayerAvatar_GetGender(PlayerAvatar* avatar) {
     return avatar->gender;
 }
 
-void sub_0205C728(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C728(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk0 = avatar->unk0 | unkA;
 }
 
-void sub_0205C730(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C730(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk0 = avatar->unk0 & ~unkA;
 }
 
-u32 sub_0205C73C(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+u32 sub_0205C73C(PlayerAvatar* avatar, u32 unkA) {
     return avatar->unk0 & unkA;
 }
 
-u32 sub_0205C744(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C744(PlayerAvatar* avatar) {
     return avatar->unk24;
 }
 
-void sub_0205C748(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C748(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk24 = unkA;
 }
 
-void sub_0205C74C(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205C74C(PlayerAvatar* avatar) {
     avatar->unk24 = 0;
     sub_0205CA78(avatar, FALSE);
 }
 
-int sub_0205C758(FIELD_PLAYER_AVATAR* avatar, int unkB, int unkC) {
+int sub_0205C758(PlayerAvatar* avatar, int unkB, int unkC) {
     int var = avatar->unk24 + unkB;
     avatar->unk24 = var;
     if (var > unkC) {
@@ -384,112 +387,112 @@ int sub_0205C758(FIELD_PLAYER_AVATAR* avatar, int unkB, int unkC) {
     return avatar->unk24;
 }
 
-void sub_0205C768(FIELD_PLAYER_AVATAR* avatar, int unkA) {
+void sub_0205C768(PlayerAvatar* avatar, int unkA) {
     avatar->unk28 = unkA;
 }
 
-int sub_0205C76C(FIELD_PLAYER_AVATAR* avatar) {
+int sub_0205C76C(PlayerAvatar* avatar) {
     return avatar->unk28;
 }
 
-void sub_0205C770(FIELD_PLAYER_AVATAR* avatar, int unkA) {
+void sub_0205C770(PlayerAvatar* avatar, int unkA) {
     avatar->unk2c = unkA;
 }
 
-int sub_0205C774(FIELD_PLAYER_AVATAR* avatar) {
+int sub_0205C774(PlayerAvatar* avatar) {
     return avatar->unk2c;
 }
 
-void sub_0205C778(FIELD_PLAYER_AVATAR* avatar, int unkB, int unkC) {
+void sub_0205C778(PlayerAvatar* avatar, int unkB, int unkC) {
     sub_0205C768(avatar, unkB);
     sub_0205C770(avatar, unkC);
 }
 
-void sub_0205C78C(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C78C(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk34 = unkA;
 }
 
-u32 sub_0205C790(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C790(PlayerAvatar* avatar) {
     return avatar->unk34;
 }
 
-void sub_0205C794(FIELD_PLAYER_AVATAR* avatar, FIELD_PLAYER_AVATAR_SUB* unkA) {
-    avatar->unk38 = unkA;
+void PlayerAvatar_SetPlayerSaveData(PlayerAvatar* avatar, PlayerSaveData* playerSaveData) {
+    avatar->playerSaveData = playerSaveData;
 }
 
-FIELD_PLAYER_AVATAR_SUB* sub_0205C798(FIELD_PLAYER_AVATAR* avatar) {
-    return avatar->unk38;
+PlayerSaveData* PlayerAvatar_GetPlayerSaveData(PlayerAvatar* avatar) {
+    return avatar->playerSaveData;
 }
 
-void sub_0205C79C(FIELD_PLAYER_AVATAR* avatar, u32 unkA) {
+void sub_0205C79C(PlayerAvatar* avatar, u32 unkA) {
     avatar->unk8 = unkA;
 }
 
-u32 sub_0205C7A0(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C7A0(PlayerAvatar* avatar) {
     return avatar->unk8;
 }
 
-u32 sub_0205C7A4(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205C7A4(PlayerAvatar* avatar) {
     return avatar->unkc;
 }
 
-void sub_0205C7A8(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205C7A8(PlayerAvatar* avatar) {
     avatar->unkc = (avatar->unkc + 1) & TRUE;
 }
 
-void sub_0205C7B4(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205C7B4(PlayerAvatar* avatar) {
     avatar->unkc = 0;
 }
 
-void FlypointsPlayerSub_init(struct FlypointsPlayerSub* fpsub) {
-    fpsub->hasRunningShoes = 0;
-    fpsub->unk2 = 0;
-    fpsub->unk4 = 0;
+void PlayerSaveData_Init(struct PlayerSaveData* playerSaveData) {
+    playerSaveData->hasRunningShoes = 0;
+    playerSaveData->unk2 = 0;
+    playerSaveData->unk4 = 0;
 }
 
-BOOL FlypointsPlayerSub_CheckRunningShoes(struct FlypointsPlayerSub* fpsub) {
-    if (fpsub) {
-        if (fpsub->hasRunningShoes == TRUE) {
+BOOL PlayerSaveData_CheckRunningShoes(struct PlayerSaveData* playerSaveData) {
+    if (playerSaveData != NULL) {
+        if (playerSaveData->hasRunningShoes == TRUE) {
             return TRUE;
         }
     }
     return FALSE;
 }
 
-void FlypointsPlayerSub_SetRunningShoesFlag(struct FlypointsPlayerSub* fpsub, BOOL unkB) {
-    if (unkB == TRUE) {
-        fpsub->hasRunningShoes = TRUE;
+void PlayerSaveData_SetRunningShoesFlag(struct PlayerSaveData* playerSaveData, BOOL flag) {
+    if (flag == TRUE) {
+        playerSaveData->hasRunningShoes = TRUE;
     }
     else {
-        fpsub->hasRunningShoes = FALSE;
+        playerSaveData->hasRunningShoes = FALSE;
     }
 }
 
-int sub_0205C7EC(FIELD_PLAYER_AVATAR_SUB* avatar) {
-    if (!avatar) {
+int sub_0205C7EC(PlayerSaveData* playerSaveData) {
+    if (!playerSaveData) {
         return 0;
     }
-    return avatar->unk4;
+    return playerSaveData->unk4;
 }
 
-void sub_0205C7F8(FIELD_PLAYER_AVATAR_SUB* unkPtr, int state) {
-    if (!unkPtr) {
+void sub_0205C7F8(PlayerSaveData* playerSaveData, int state) {
+    if (!playerSaveData) {
         return;
     }
-    unkPtr->unk4 = state;
+    playerSaveData->unk4 = state;
 }
 
-void sub_0205C800(FIELD_PLAYER_AVATAR* avatar, int state) {
-    sub_0205C7F8(sub_0205C798(avatar), state);
+void sub_0205C800(PlayerAvatar* avatar, int state) {
+    sub_0205C7F8(PlayerAvatar_GetPlayerSaveData(avatar), state);
 }
 
-void sub_0205C810(FIELD_PLAYER_AVATAR* avatar, u32 unkA, u32 unkB) {
-    sub_0205FBC0(PlayerAvatar_GetMapObject(avatar), unkA, unkB);
+void sub_0205C810(PlayerAvatar* avatar, VecFx32 *pos, u32 dir) {
+    sub_0205FBC0(PlayerAvatar_GetMapObject(avatar), pos, dir);
     sub_0205C6C8(avatar, 0);
     sub_0205C6D0(avatar, 0);
 }
 
-void sub_0205C838(FIELD_PLAYER_AVATAR* avatar, int unkA) {
+void sub_0205C838(PlayerAvatar* avatar, int unkA) {
     LocalMapObject* mapObj = PlayerAvatar_GetMapObject(avatar);
     VecFx32 vec;
     MapObject_GetPositionVec(mapObj, &vec);
@@ -497,24 +500,24 @@ void sub_0205C838(FIELD_PLAYER_AVATAR* avatar, int unkA) {
     MapObject_SetPositionVec(mapObj, &vec);
 }
 
-void PlayerAvatar_ToggleAutomaticHeightUpdating(FIELD_PLAYER_AVATAR* avatar, u8 state) {
+void PlayerAvatar_ToggleAutomaticHeightUpdating(PlayerAvatar* avatar, u8 state) {
     LocalMapObject* mapObj = PlayerAvatar_GetMapObject(avatar);
     if (state == TRUE) {
-        MapObject_SetFlag23(mapObj, FALSE);
+        MapObject_SetIgnoreHeights(mapObj, FALSE);
     }
     else {
-        MapObject_SetFlag23(mapObj, TRUE);
+        MapObject_SetIgnoreHeights(mapObj, TRUE);
     }
 }
 
-void PlayerAvatar_ToggleAutomaticHeightUpdating_NowApply(FIELD_PLAYER_AVATAR* avatar, BOOL state) {
+void PlayerAvatar_ToggleAutomaticHeightUpdating_NowApply(PlayerAvatar* avatar, BOOL state) {
     LocalMapObject* mapObj = PlayerAvatar_GetMapObject(avatar);
     if (state == TRUE) {
-        MapObject_SetFlag23(mapObj, FALSE);
+        MapObject_SetIgnoreHeights(mapObj, FALSE);
         sub_02061070(mapObj);
     }
     else {
-        MapObject_SetFlag23(mapObj, TRUE);
+        MapObject_SetIgnoreHeights(mapObj, TRUE);
     }
 }
 
@@ -628,11 +631,11 @@ u32 PlayerAvatar_GetTransitionBits(u32 unkA) {
     }
 }
 
-FIELD_PLAYER_AVATAR* FieldSys_GetPlayerAvatar(FieldSystem* fsys) {
-    return fsys->playerAvatar;
+PlayerAvatar* FieldSystem_GetPlayerAvatar(FieldSystem* fieldSystem) {
+    return fieldSystem->playerAvatar;
 }
 
-void sub_0205CA20(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
+void sub_0205CA20(PlayerAvatar* avatar, BOOL unkA) {
     if (unkA == TRUE) {
         sub_0205C728(avatar, 1);
     }
@@ -641,14 +644,14 @@ void sub_0205CA20(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
     }
 }
 
-BOOL sub_0205CA38(FIELD_PLAYER_AVATAR* avatar) {
+BOOL sub_0205CA38(PlayerAvatar* avatar) {
     if (sub_0205C73C(avatar, 1)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0205CA4C(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
+void sub_0205CA4C(PlayerAvatar* avatar, BOOL unkA) {
     if (unkA == TRUE) {
         sub_0205C728(avatar, 2);
     }
@@ -657,14 +660,14 @@ void sub_0205CA4C(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
     }
 }
 
-BOOL sub_0205CA64(FIELD_PLAYER_AVATAR* avatar) {
+BOOL sub_0205CA64(PlayerAvatar* avatar) {
     if (sub_0205C73C(avatar, 2)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0205CA78(FIELD_PLAYER_AVATAR* avatar, BOOL unkB) {
+void sub_0205CA78(PlayerAvatar* avatar, BOOL unkB) {
     if (unkB == TRUE) {
         sub_0205C728(avatar, 4);
     }
@@ -673,30 +676,30 @@ void sub_0205CA78(FIELD_PLAYER_AVATAR* avatar, BOOL unkB) {
     }
 }
 
-BOOL sub_0205CA90(FIELD_PLAYER_AVATAR* avatar) {
+BOOL sub_0205CA90(PlayerAvatar* avatar) {
     if (sub_0205C73C(avatar, 4)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0205CAA4(FIELD_PLAYER_AVATAR* avatar, u8 unkA) {
+void sub_0205CAA4(PlayerAvatar* avatar, u8 unkA) {
     if (unkA == 1) {
         sub_0205C728(avatar, 8);
     }
-    else { 
+    else {
         sub_0205C730(avatar, 8);
     }
 }
 
-BOOL sub_0205CABC(FIELD_PLAYER_AVATAR* avatar) {
+BOOL sub_0205CABC(PlayerAvatar* avatar) {
     if (sub_0205C73C(avatar, 8)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0205CAD0(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
+void sub_0205CAD0(PlayerAvatar* avatar, BOOL unkA) {
     if (unkA == TRUE) {
         sub_0205C728(avatar, 32);
     }
@@ -705,22 +708,22 @@ void sub_0205CAD0(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
     }
 }
 
-void sub_0205CAE8(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205CAE8(PlayerAvatar* avatar) {
     sub_0205C728(avatar, 64);
 }
 
-void sub_0205CAF4(FIELD_PLAYER_AVATAR* avatar) {
+void sub_0205CAF4(PlayerAvatar* avatar) {
     sub_0205C730(avatar, 64);
 }
 
-BOOL sub_0205CB00(FIELD_PLAYER_AVATAR* avatar) {
+BOOL sub_0205CB00(PlayerAvatar* avatar) {
     if (sub_0205C73C(avatar, 64)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0205CB14(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
+void sub_0205CB14(PlayerAvatar* avatar, BOOL unkA) {
     if (unkA == TRUE) {
         sub_0205C728(avatar, 128);
     }
@@ -729,14 +732,14 @@ void sub_0205CB14(FIELD_PLAYER_AVATAR* avatar, BOOL unkA) {
     }
 }
 
-u32 sub_0205CB2C(FIELD_PLAYER_AVATAR* avatar) {
+u32 sub_0205CB2C(PlayerAvatar* avatar) {
     return sub_0205C73C(avatar, 128);
 }
 
-u16 sub_0205CB38(FIELD_PLAYER_AVATAR* avatar) {
-    return avatar->unk38->unk2;
+u16 sub_0205CB38(PlayerAvatar* avatar) {
+    return avatar->playerSaveData->unk2;
 }
 
-void sub_0205CB40(FIELD_PLAYER_AVATAR* avatar, u16 unkA) {
-    avatar->unk38->unk2 = unkA;
+void sub_0205CB40(PlayerAvatar* avatar, u16 unkA) {
+    avatar->playerSaveData->unk2 = unkA;
 }

@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_88.inc"
 	.include "global.inc"
 
 	.text
@@ -344,7 +345,7 @@ ov88_02258ABC: ; 0x02258ABC
 	add r5, r0, #0
 	mov r0, #0xc6
 	add r4, r1, #0
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #5
 	lsl r1, r1, #6
 	str r0, [r5, r1]
@@ -352,7 +353,7 @@ ov88_02258ABC: ; 0x02258ABC
 	add r1, r4, #0
 	bl GF_CreateVramTransferManager
 	ldr r0, _02258AF0 ; =ov88_02259958
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add r0, r5, #0
 	add r1, r4, #0
 	bl ov88_02258B34
@@ -371,7 +372,7 @@ ov88_02258AF4: ; 0x02258AF4
 	mov r0, #5
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	bl GF_DestroyVramTransferManager
 	add r0, r4, #0
 	bl ov88_02258C60
@@ -393,7 +394,7 @@ _02258B1C: .word sub_0202457C
 ov88_02258B20: ; 0x02258B20
 	push {r3, lr}
 	ldr r0, [r0]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl OamManager_ApplyAndResetBuffers
 	bl GF_RunVramTransferTasks
 	pop {r3, pc}
@@ -414,7 +415,7 @@ ov88_02258B34: ; 0x02258B34
 	ldr r0, _02258C54 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #0
 	ldr r6, _02258C58 ; =ov88_022599C0
 	ldr r4, _02258C5C ; =ov88_02259944
@@ -559,7 +560,7 @@ _02258C68:
 	ldr r0, _02258C94 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	pop {r4, r5, r6, pc}
 	nop
 _02258C90: .word ov88_02259944
@@ -625,10 +626,10 @@ _02258D04:
 	bl sub_0203A880
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -641,7 +642,7 @@ ov88_02258D38: ; 0x02258D38
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #4]
-	bl sub_02024504
+	bl SpriteList_Delete
 	mov r6, #0x13
 	mov r4, #0
 	lsl r6, r6, #4
@@ -1498,7 +1499,7 @@ _02259304:
 	mov r0, #1
 	ldr r1, [sp, #0x1c]
 	lsl r0, r0, #8
-	bl String_ctor
+	bl String_New
 	ldr r1, [sp, #0x14]
 	ldr r2, [sp, #0x14]
 	add r1, #0x90
@@ -1560,7 +1561,7 @@ ov88_022593D0: ; 0x022593D0
 	add r0, r5, #0
 	add r0, #0x90
 	ldr r0, [r0]
-	bl String_dtor
+	bl String_Delete
 	add r4, r5, #0
 	mov r6, #0
 	add r4, #0x60
@@ -1723,7 +1724,7 @@ ov88_02259508: ; 0x02259508
 	add r6, r2, #0
 	lsl r0, r0, #8
 	add r1, r3, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #8]
 	add r0, r6, #7
 	strb r0, [r5, #1]
@@ -1751,7 +1752,7 @@ ov88_0225954C: ; 0x0225954C
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #8]
-	bl String_dtor
+	bl String_Delete
 	add r4, #0xc
 	add r0, r4, #0
 	bl RemoveWindow
@@ -1767,7 +1768,7 @@ ov88_02259560: ; 0x02259560
 	add r7, r1, #0
 	add r6, r2, #0
 	add r4, r3, #0
-	bl StringCopy
+	bl String_Copy
 	mov r0, #1
 	strb r0, [r5]
 	mov r2, #0
@@ -1928,7 +1929,7 @@ ov88_0225967C: ; 0x0225967C
 	str r0, [sp, #0x38]
 	ldr r1, [sp, #0x1c]
 	mov r0, #0x80
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x34]
 	mov r0, #0
 	str r0, [sp, #0x3c]
@@ -1972,14 +1973,14 @@ _022596BC:
 	ldr r2, [sp, #0x34]
 	bl ReadMsgDataIntoString
 	ldr r0, [sp, #0x34]
-	bl StringCountLines
+	bl String_CountLines
 	str r0, [sp, #0x30]
 	ldr r0, [sp, #0x34]
 	ldrb r6, [r5, #8]
-	bl StringGetLength
+	bl String_GetLength
 	ldr r1, [sp, #0x1c]
 	add r0, r0, #1
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [sp, #0x30]
 	mov r7, #0
@@ -1989,7 +1990,7 @@ _02259720:
 	ldr r1, [sp, #0x34]
 	add r0, r4, #0
 	add r2, r7, #0
-	bl StringGetLineN
+	bl String_GetLineN
 	ldrb r0, [r5, #9]
 	cmp r0, #0
 	beq _0225973A
@@ -2033,7 +2034,7 @@ _02259766:
 	ldr r0, [sp, #0x14]
 	mov r1, #0
 	add r2, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x30]
 	add r7, r7, #1
 	add r6, #0x10
@@ -2041,7 +2042,7 @@ _02259766:
 	blo _02259720
 _0225978A:
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x14]
 	bl ScheduleWindowCopyToVram
 	ldr r0, [sp, #0x28]
@@ -2063,7 +2064,7 @@ _0225978A:
 	cmp r0, #4
 	blt _022596BC
 	ldr r0, [sp, #0x34]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x38]
 	bl DestroyMsgData
 	add sp, #0x40

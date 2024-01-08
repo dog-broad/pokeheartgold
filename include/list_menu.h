@@ -3,7 +3,7 @@
 
 #include "list_menu_cursor.h"
 #include "list_menu_items.h"
-#include "window.h"
+#include "bg_window.h"
 
 struct ListMenu;
 
@@ -37,7 +37,7 @@ struct ListMenuTemplate {
     /*0x00*/ LISTMENUITEM *items;
     /*0x04*/ LM_MoveCursorFunc_t moveCursorFunc;
     /*0x08*/ LM_ItemPrintFunc_t itemPrintFunc;
-    /*0x0C*/ WINDOW *window;
+    /*0x0C*/ Window *window;
     /*0x10*/ u16 totalItems;
     /*0x12*/ u16 maxShowed;
     /*0x14*/ u8 header_X;
@@ -74,10 +74,10 @@ struct ListMenu
     /*0x31*/ u8 unk_31;
     /*0x32*/ u8 taskId;
     /*0x33*/ u8 unk_33;
-    /*0x34*/ u8 heap_id;
+    /*0x34*/ u8 heapId;
 };
 
-struct ListMenu *ListMenuInit(const struct ListMenuTemplate *template, u16 cursorPos, u16 itemsAbove, HeapID heap_id);
+struct ListMenu *ListMenuInit(const struct ListMenuTemplate *template, u16 cursorPos, u16 itemsAbove, HeapID heapId);
 s32 ListMenu_ProcessInput(struct ListMenu *list);
 void DestroyListMenu(struct ListMenu *list, u16 * cursorPos, u16 * itemsAbove);
 void RedrawListMenu(struct ListMenu *list);

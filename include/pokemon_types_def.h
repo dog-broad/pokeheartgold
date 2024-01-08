@@ -3,6 +3,7 @@
 
 #include "filesystem.h"
 #include "seal_case.h"
+#include "constants/pokemon.h"
 
 typedef struct BaseStats {
     /* 0x00 */ u8 hp;
@@ -71,9 +72,9 @@ typedef struct {
 } PokemonDataBlockA;
 
 typedef struct {
-    /* 0x00 */ u16 moves[4];
-    /* 0x08 */ u8 movePP[4];
-    /* 0x0C */ u8 movePpUps[4];
+    /* 0x00 */ u16 moves[MAX_MON_MOVES];
+    /* 0x08 */ u8 movePP[MAX_MON_MOVES];
+    /* 0x0C */ u8 movePpUps[MAX_MON_MOVES];
     /* 0x10 */ u32 hpIV:5, atkIV:5, defIV:5, spdIV:5, spatkIV:5, spdefIV:5, isEgg:1, isNicknamed:1;
     // TODO: Finish HoennRibbonSet
     /* 0x14 */ u32 ribbonFlags; // cool, ...
@@ -94,7 +95,7 @@ typedef struct {
 } PokemonDataBlockC;
 
 typedef struct {
-    /* 0x00 */ u16 otTrainerName[8];
+    /* 0x00 */ u16 otTrainerName[PLAYER_NAME_LENGTH + 1];
     /* 0x10 */ u8 dateEggReceived[3];
     /* 0x13 */ u8 dateMet[3];
     /* 0x16 */ u16 DP_EggLocation;
@@ -123,7 +124,7 @@ typedef struct BoxPokemon {
                 u16 Unused:13;    // Might be used for validity checks
     /* 0x006 */ u16 checksum;  // Stored checksum of pokemon
     /* 0x008 */ PokemonDataBlock substructs[4];
-} BOXMON;
+} BoxPokemon;
 
 union MailPatternData
 {
@@ -150,11 +151,11 @@ typedef struct Mail
     u8 author_language;
     u8 author_version;
     u8 mail_type;
-    u16 author_name[OT_NAME_LENGTH + 1];
+    u16 author_name[PLAYER_NAME_LENGTH + 1];
     union MailPatternData mon_icons[3];
-    u16 forme_flags; // bitfield of three 5-bit values
+    u16 form_flags; // bitfield of three 5-bit values
     MAIL_MESSAGE unk_20[3];
-} MAIL;
+} Mail;
 
 typedef struct PartyPokemon {
     /* 0x088 */ u32 status; // slp:3, psn:1, brn:1, frz:1, prz:1, tox:1, ...
@@ -167,14 +168,14 @@ typedef struct PartyPokemon {
     /* 0x096 */ u16 speed;
     /* 0x098 */ u16 spatk;
     /* 0x09A */ u16 spdef;
-    /* 0x09C */ MAIL mail;
+    /* 0x09C */ Mail mail;
     /* 0x0D4 */ CAPSULE sealCoords; // seal coords
 } PARTYMON;
 
-typedef struct Pokemon {
-    /* 0x000 */ BOXMON box;
+typedef struct {
+    /* 0x000 */ BoxPokemon box;
     /* 0x088 */ PARTYMON party;
-} POKEMON; // size: 0xEC
+} Pokemon; // size: 0xEC
 
 struct UnkPokemonStruct_02072A98 {
     /* 0x00 */ u32 pid;
@@ -193,9 +194,9 @@ struct UnkPokemonStruct_02072A98 {
     /* 0x19 */ u8 spdEV;
     /* 0x1A */ u8 spatkEV;
     /* 0x1B */ u8 spdefEV;
-    /* 0x1C */ u16 moves[4];
-    /* 0x24 */ u8 movePP[4];
-    /* 0x28 */ u8 movePpUps[4];
+    /* 0x1C */ u16 moves[MAX_MON_MOVES];
+    /* 0x24 */ u8 movePP[MAX_MON_MOVES];
+    /* 0x28 */ u8 movePpUps[MAX_MON_MOVES];
     /* 0x2C */ u32 hpIV:5;
                u32 atkIV:5;
                u32 defIV:5;
@@ -208,7 +209,7 @@ struct UnkPokemonStruct_02072A98 {
                u8 gender:2;
                u8 alternateForm:5;
     /* 0x32 */ u16 nickname[POKEMON_NAME_LENGTH + 1];
-    /* 0x48 */ u16 otTrainerName[OT_NAME_LENGTH + 1];
+    /* 0x48 */ u16 otTrainerName[PLAYER_NAME_LENGTH + 1];
     /* 0x58 */ u8 pokeball;
     /* 0x59 */ u8 originLanguage;
     /* 0x5C */ u32 status;
@@ -267,24 +268,24 @@ struct Evolution {
 };
 #define MAX_EVOS_PER_POKE      7
 
-typedef struct PARTY {
+typedef struct PartyCore {
     int maxCount;
     int curCount;
-    struct Pokemon mons[PARTY_SIZE];
-} PARTY_CORE;
+    Pokemon mons[PARTY_SIZE];
+} PartyCore;
 
-typedef struct PARTY_EXTRA_SUB {
+typedef struct PartyExtraSub {
     u8 unk_00[5];
-} PARTY_EXTRA_SUB;
+} PartyExtraSub;
 
-typedef struct PARTY_EXTRA {
-    PARTY_EXTRA_SUB unk_00[PARTY_SIZE];
-} PARTY_EXTRA;
+typedef struct PartyExtra {
+    PartyExtraSub unk_00[PARTY_SIZE];
+} PartyExtra;
 
-typedef struct SAVE_PARTY_T {
-    PARTY_CORE core;
-    PARTY_EXTRA extra;
-} PARTY;
+typedef struct Party {
+    PartyCore core;
+    PartyExtra extra;
+} Party;
 
 struct PokeathlonBasePerformance {
     u8 base[5];

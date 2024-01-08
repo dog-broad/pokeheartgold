@@ -62,9 +62,9 @@ scr_seq_D26R0101_001:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _00F0
@@ -83,9 +83,9 @@ _0113:
 	apply_movement obj_D26R0101_gsmiddleman1, _01E0
 _0123:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _014A
@@ -123,12 +123,13 @@ _0198:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _01AC:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01B8:
 	step 12, 1
 	step 14, 1
@@ -136,6 +137,7 @@ _01B8:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01CC:
 	step 12, 1
 	step 15, 1
@@ -143,11 +145,13 @@ _01CC:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01E0:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01EC:
 	step 15, 1
 	step 12, 1

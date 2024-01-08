@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_020192D0.inc"
 	.include "global.inc"
 
 	.rodata
@@ -23,8 +24,8 @@ sub_020192D0: ; 0x020192D0
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -126,7 +127,7 @@ _020193B6:
 	ldr r0, _0201948C ; =_020F6288
 	add r1, r4, #0
 	mov r2, #0x7b
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r4, #8]
 	ldr r0, [r5]
 	add r0, r0, #1
@@ -134,11 +135,11 @@ _020193B6:
 	b _0201945A
 _020193CA:
 	ldr r0, [r4, #8]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #1
 	bne _0201945A
 	ldr r0, [r4, #8]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	ldr r0, [r4, #0x7c]
 	cmp r0, #1
 	bne _020193EC
@@ -159,7 +160,7 @@ _020193F2:
 	ldr r1, [r4]
 	mov r2, #0x7b
 	ldr r1, [r1]
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r4, #8]
 	ldr r0, [r5]
 	add r0, r0, #1
@@ -167,11 +168,11 @@ _020193F2:
 	b _0201945A
 _0201940E:
 	ldr r0, [r4, #8]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #1
 	bne _0201945A
 	ldr r0, [r4, #8]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -180,7 +181,7 @@ _02019426:
 	ldr r0, _0201948C ; =_020F6288
 	add r1, r4, #0
 	mov r2, #0x7b
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r4, #8]
 	ldr r0, [r5]
 	add r0, r0, #1
@@ -188,11 +189,11 @@ _02019426:
 	b _0201945A
 _0201943A:
 	ldr r0, [r4, #8]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #1
 	bne _0201945A
 	ldr r0, [r4, #8]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	mov r0, #0
 	str r0, [r4, #4]
 	ldr r0, [r5]
@@ -1272,7 +1273,7 @@ _02019BF0:
 	cmp r0, #0xff
 	beq _02019C1A
 	add r0, r2, r1
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _02019C12
 	add r0, r5, #0
@@ -1436,7 +1437,7 @@ _02019D24:
 	cmp r0, #0xff
 	beq _02019D4E
 	add r0, r2, r1
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _02019D46
 	add r0, r5, #0

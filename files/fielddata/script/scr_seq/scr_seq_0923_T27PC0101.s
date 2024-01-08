@@ -20,15 +20,15 @@ scr_seq_T27PC0101_000:
 scr_seq_T27PC0101_001:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_T27PC0101_masaki, _0084
 	apply_movement obj_player, _00A0
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	npc_msg msg_0615_T27PC0101_00000
 	npc_msg msg_0615_T27PC0101_00001
@@ -43,8 +43,8 @@ scr_seq_T27PC0101_001:
 	setvar VAR_UNK_410D, 1
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0084:
 	step 13, 4
 	step 15, 6
@@ -54,11 +54,13 @@ _0084:
 	step 62, 4
 	step_end
 
+	.balign 4, 0
 _00A0:
 	step 62, 20
 	step 12, 4
 	step_end
 
+	.balign 4, 0
 _00AC:
 	step 15, 1
 	step 13, 4
@@ -66,10 +68,12 @@ _00AC:
 	step 13, 2
 	step_end
 
+	.balign 4, 0
 _00C0:
 	step 62, 6
 	step 1, 1
 	step_end
+
 scr_seq_T27PC0101_002:
 	simple_npc_msg msg_0615_T27PC0101_00002
 	end

@@ -19,14 +19,14 @@ scr_seq_D27R0108_000:
 	end
 
 _002A:
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _00F4
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	apply_movement obj_partner_poke, _0100
 	wait_movement
 	goto _0062
@@ -71,13 +71,14 @@ _00E5:
 	setvar VAR_UNK_4125, 1
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _00F4:
 	step 12, 2
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0100:
 	step 15, 1
 	step 12, 1

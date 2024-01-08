@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_33.inc"
 	.include "global.inc"
 
 	.text
@@ -23,7 +24,7 @@ ov33_0225D520: ; 0x0225D520
 	lsl r1, r1, #6
 	mov r2, #0xa
 	mov r3, #8
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r7, r0, #0
 	bl sub_0201F988
 	add r4, r0, #0
@@ -74,7 +75,7 @@ ov33_0225D5A8: ; 0x0225D5A8
 	ldr r0, [r4]
 	bl ov33_0225D7B8
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #8
 	bl DestroyHeap
 	pop {r3, r4, r5, pc}
@@ -136,7 +137,7 @@ _0225D61A: ; jump table
 	.short _0225D6D2 - _0225D61A - 2 ; case 5
 _0225D626:
 	ldr r0, [r0, #4]
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0x6f
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -159,7 +160,7 @@ _0225D626:
 	pop {r4, pc}
 _0225D656:
 	ldr r0, [r0, #4]
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	ldr r2, _0225D6EC ; =0x0000FFFF
 	ldr r1, [r4, #0x10]
 	strh r2, [r1, #6]
@@ -411,7 +412,7 @@ ov33_0225D84C: ; 0x0225D84C
 	add r5, r0, #0
 	mov r0, #0xef
 	mov r1, #8
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0xa0
 	str r1, [sp]
 	mov r1, #8
@@ -462,7 +463,7 @@ ov33_0225D84C: ; 0x0225D84C
 	add r0, r6, #0
 	bl FreeToHeap
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -557,13 +558,13 @@ _0225D912:
 	mov r0, #0
 	str r0, [sp, #0xc]
 	add r0, r4, r6
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, r6
 	bl CopyWindowPixelsToVram_TextMode
 	add r0, r4, r6
 	bl ScheduleWindowCopyToVram
 	ldr r0, [sp, #0x20]
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #1
 	lsl r0, r0, #0x10
 	lsr r5, r0, #0x10

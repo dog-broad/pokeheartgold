@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F3114.inc"
 	.include "global.inc"
 
 	.text
@@ -78,7 +79,7 @@ ov01_021F3170: ; 0x021F3170
 	ldr r1, _021F319C ; =ov01_021F31CC
 	add r0, r5, #0
 	add r2, r4, #0
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _021F3198: .word SEQ_SE_DP_F209
@@ -120,7 +121,7 @@ _021F31C8:
 	thumb_func_start ov01_021F31CC
 ov01_021F31CC: ; 0x021F31CC
 	push {r4, r5, r6, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #0x10]
 	bl PlayerAvatar_GetMapObject

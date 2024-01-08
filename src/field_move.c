@@ -1,15 +1,15 @@
 #include "script.h"
 #include "field_move.h"
 #include "field_map_object.h"
-#include "field_alph_checks.h"
+#include "alph_checks.h"
 #include "field_player_avatar.h"
 #include "unk_0203DB6C.h"
 #include "unk_02054648.h"
 #include "unk_0205CB48.h"
-#include "save_flypoints.h"
+#include "save_local_field_data.h"
 #include "overlay_01.h"
 #include "overlay_02.h"
-#include "unk_0205B6E8.h"
+#include "metatile_behavior.h"
 #include "unk_0203BC10.h"
 #include "map_header.h"
 #include "sys_flags.h"
@@ -65,7 +65,7 @@ static BOOL Task_UseWhirlpoolInField(TaskManager *taskManager);
 static u32 FieldMoveMenuCheck_Headbutt(const struct FieldMoveCheckData *checkData);
 static void FieldMoveMenuUse_Headbutt(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData);
 static BOOL Task_UseHeadbuttInField(TaskManager *taskManager);
-static struct TeleportFieldEnv *sub_020689A4(HeapID heapId, u8 slotno, SAVEDATA *saveData);
+static struct TeleportFieldEnv *sub_020689A4(HeapID heapId, u8 slotno, SaveData *saveData);
 
 static const struct FieldMoveFuncDat sFieldMoveFuncTable[] = {
     { FieldMoveMenuUse_Cut,        FieldMoveMenuCheck_Cut        },
@@ -85,8 +85,8 @@ static const struct FieldMoveFuncDat sFieldMoveFuncTable[] = {
 };
 
 static inline BOOL MoveUseCheck_SafariOrPalPark(const struct FieldMoveCheckData *checkData) {
-    if (ScriptState_CheckSafariSysFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE || ScriptState_CheckPalParkSysFlag(
-        SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckSafariSysFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE || Save_VarsFlags_CheckPalParkSysFlag(
+        Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return TRUE;
     } else {
         return FALSE;
@@ -94,8 +94,8 @@ static inline BOOL MoveUseCheck_SafariOrPalPark(const struct FieldMoveCheckData 
 }
 
 static inline BOOL MoveUseCheck_PalPark(const struct FieldMoveCheckData *checkData) {
-    if (ScriptState_CheckPalParkSysFlag(
-        SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckPalParkSysFlag(
+        Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return TRUE;
     } else {
         return FALSE;
@@ -118,16 +118,16 @@ void *PartyMenu_GetFieldMoveFunc(int funcType, int fieldMoveIdx) {
     }
 }
 
-void Fsys_MakeFieldMoveCheckData(FieldSystem *fsys, struct FieldMoveCheckData *checkData) {
+void FieldSystem_MakeFieldMoveCheckData(FieldSystem *fieldSystem, struct FieldMoveCheckData *checkData) {
     LocalMapObject *facingObject;
     int x, y;
     u32 standingTile, facingTile;
 
-    checkData->fsys = fsys;
-    checkData->mapId = fsys->location->mapId;
+    checkData->fieldSystem = fieldSystem;
+    checkData->mapId = fieldSystem->location->mapId;
     checkData->flag = 0;
 
-    Fsys_GetFacingObject(fsys, &facingObject);
+    FieldSystem_GetFacingObject(fieldSystem, &facingObject);
     checkData->facingObject = facingObject;
     if (facingObject != NULL) {
         switch (MapObject_GetGfxID(facingObject)) {
@@ -142,17 +142,17 @@ void Fsys_MakeFieldMoveCheckData(FieldSystem *fsys, struct FieldMoveCheckData *c
             break;
         }
     }
-    x = GetPlayerXCoord(fsys->playerAvatar);
-    y = GetPlayerYCoord(fsys->playerAvatar);
-    standingTile = GetMetatileBehaviorAt(fsys, x, y);
+    x = GetPlayerXCoord(fieldSystem->playerAvatar);
+    y = GetPlayerYCoord(fieldSystem->playerAvatar);
+    standingTile = GetMetatileBehaviorAt(fieldSystem, x, y);
 
-    PlayerAvatar_GetCoordsInFront(fsys->playerAvatar, &x, &y);
-    facingTile = GetMetatileBehaviorAt(fsys, x, y);
+    PlayerAvatar_GetCoordsInFront(fieldSystem->playerAvatar, &x, &y);
+    facingTile = GetMetatileBehaviorAt(fieldSystem, x, y);
 
-    if (Field_PlayerCanStartSurfingByStandingAndFacingTileBehaviors(fsys->playerAvatar, standingTile, facingTile)) {
+    if (Field_PlayerCanStartSurfingByStandingAndFacingTileBehaviors(fieldSystem->playerAvatar, standingTile, facingTile)) {
         checkData->flag |= (1 << FIELD_MOVE_CHECK_WATER_F);
     }
-    if (MetatileBehavior_IsRockClimbInDirection(facingTile, PlayerAvatar_GetFacingDirection(fsys->playerAvatar) )) {
+    if (MetatileBehavior_IsRockClimbInDirection(facingTile, PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar) )) {
         checkData->flag |= (1 << FIELD_MOVE_CHECK_ROCKCLIMB_F);
     }
     if (MetatileBehavior_IsWaterfall(facingTile)) {
@@ -161,32 +161,32 @@ void Fsys_MakeFieldMoveCheckData(FieldSystem *fsys, struct FieldMoveCheckData *c
     if (MetatileBehavior_IsWhirlpool(facingTile)) {
         checkData->flag |= (1 << FIELD_MOVE_CHECK_WHIRLPOOL_F);
     }
-    if (FlyPoints_GetWeatherType(Save_FlyPoints_get(fsys->savedata)) == 11) {
+    if (LocalFieldData_GetWeatherType(Save_LocalFieldData_Get(fieldSystem->saveData)) == 11) {
         checkData->flag |= (1 << FIELD_MOVE_CHECK_FLASH_F);
     }
-    if (MetatileBehavior_IsHeadbutt(facingTile) || FieldSys_FacingModelIsHeadbuttTree(fsys)) {
+    if (MetatileBehavior_IsHeadbutt(facingTile) || FieldSystem_FacingModelIsHeadbuttTree(fieldSystem)) {
         checkData->flag |= (1 << FIELD_MOVE_CHECK_HEADBUTT_F);
     }
 }
 
 static struct FieldUseMoveEnv *PartyMenuEnv_create(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct FieldUseMoveEnv *ret = AllocFromHeap(32, sizeof(struct FieldUseMoveEnv));
+    struct FieldUseMoveEnv *ret = AllocFromHeap(HEAP_ID_32, sizeof(struct FieldUseMoveEnv));
     ret->magic = 0x19740205;
     ret->facingObject = checkData->facingObject;
     ret->useData = *useData;
     return ret;
 }
 
-static void PartyMenuEnv_delete(struct FieldUseMoveEnv *env) {
+static void PartyMenuEnv_Delete(struct FieldUseMoveEnv *env) {
     GF_ASSERT(env->magic == 0x19740205);
     FreeToHeap(env);
 }
 
 static u32 FieldMoveMenuCheck_Cut(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_HIVE)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_HIVE)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
     if (MoveUseCheck_FieldContextFlagCheck(checkData, FIELD_MOVE_CHECK_TREE_F)) {
@@ -197,28 +197,28 @@ static u32 FieldMoveMenuCheck_Cut(const struct FieldMoveCheckData *checkData) {
 }
 
 static void FieldMoveMenuUse_Cut(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *bagWork = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *bagWork = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *useMoveEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     bagWork->atexit_TaskFunc = Task_UseCutInField;
     bagWork->atexit_TaskEnv = useMoveEnv;
     bagWork->state = 12;
 }
 
 static BOOL Task_UseCutInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_cut, env->facingObject);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Fly(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_STORM)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_STORM)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -226,11 +226,11 @@ static u32 FieldMoveMenuCheck_Fly(const struct FieldMoveCheckData *checkData) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (ScriptState_CheckHaveFollower(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_HAVE_FOLLOWER;
     }
 
-    if (ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_NOT_NOW;
     }
 
@@ -242,24 +242,24 @@ static u32 FieldMoveMenuCheck_Fly(const struct FieldMoveCheckData *checkData) {
 }
 
 static void FieldMoveMenuUse_Fly(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    FieldSystem *fsys = TaskManager_GetSys(useData->taskManager);
-    struct BagViewAppWork *env = TaskManager_GetEnv(useData->taskManager);
-    struct FlyTaskStruct *flyEnv = AllocFromHeap(11, sizeof(struct FlyTaskStruct));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(useData->taskManager);
+    struct BagViewAppWork *env = TaskManager_GetEnvironment(useData->taskManager);
+    struct FlyTaskStruct *flyEnv = AllocFromHeap(HEAP_ID_FIELD, sizeof(struct FlyTaskStruct));
     flyEnv->partySlot = useData->partySlot;
     env->unk_0384 = flyEnv;
-    env->atexit_TaskEnv = TownMap_new(fsys, 0);
+    env->atexit_TaskEnv = TownMap_New(fieldSystem, 0);
     sub_0203C8F0(env, Task_UseFlyInField);
 }
 
 static u32 FieldMoveMenuCheck_Surf(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_FOG)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_FOG)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
-    if (PlayerAvatar_GetState(checkData->fsys->playerAvatar) == PLAYER_STATE_SURFING) {
+    if (PlayerAvatar_GetState(checkData->fieldSystem->playerAvatar) == PLAYER_STATE_SURFING) {
         return PARTY_MENU_RESPONSE_ALREADY_SURFING;
     }
 
@@ -267,11 +267,11 @@ static u32 FieldMoveMenuCheck_Surf(const struct FieldMoveCheckData *checkData) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (ScriptState_CheckHaveFollower(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_HAVE_FOLLOWER;
     }
 
-    if (ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_NOT_NOW;
     }
 
@@ -279,28 +279,28 @@ static u32 FieldMoveMenuCheck_Surf(const struct FieldMoveCheckData *checkData) {
 }
 
 static void FieldMoveMenuUse_Surf(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseSurfInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseSurfInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_surf, NULL);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Strength(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_PLAIN)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_PLAIN)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -315,28 +315,28 @@ static u32 FieldMoveMenuCheck_Strength(const struct FieldMoveCheckData *checkDat
 }
 
 static void FieldMoveMenuUse_Strength(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseStrengthInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseStrengthInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_strength, env->facingObject);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_RockSmash(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_ZEPHYR)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_ZEPHYR)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -347,31 +347,31 @@ static u32 FieldMoveMenuCheck_RockSmash(const struct FieldMoveCheckData *checkDa
 }
 
 static void FieldMoveMenuUse_RockSmash(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseRockSmashInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseRockSmashInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_rock_smash, env->facingObject);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Waterfall(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (PlayerAvatar_GetState(checkData->fsys->playerAvatar) != PLAYER_STATE_SURFING) {
+    if (PlayerAvatar_GetState(checkData->fieldSystem->playerAvatar) != PLAYER_STATE_SURFING) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_RISING)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_RISING)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -382,28 +382,28 @@ static u32 FieldMoveMenuCheck_Waterfall(const struct FieldMoveCheckData *checkDa
 }
 
 static void FieldMoveMenuUse_Waterfall(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseWaterfallInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseWaterfallInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_waterfall, NULL);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_RockClimb(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_EARTH)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_EARTH)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -411,11 +411,11 @@ static u32 FieldMoveMenuCheck_RockClimb(const struct FieldMoveCheckData *checkDa
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (ScriptState_CheckHaveFollower(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_HAVE_FOLLOWER;
     }
 
-    if (ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_NOT_NOW;
     }
 
@@ -423,29 +423,29 @@ static u32 FieldMoveMenuCheck_RockClimb(const struct FieldMoveCheckData *checkDa
 }
 
 static void FieldMoveMenuUse_RockClimb(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseRockClimbInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseRockClimbInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_rock_climb, NULL);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Flash(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (CheckUseFlashInAlphChamber(checkData->fsys)) {
+    if (CheckUseFlashInAlphChamber(checkData->fieldSystem)) {
         return PARTY_MENU_RESPONSE_OK;
     }
 
@@ -457,40 +457,40 @@ static u32 FieldMoveMenuCheck_Flash(const struct FieldMoveCheckData *checkData) 
 }
 
 static void FieldMoveMenuUse_Flash(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *retEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseFlashInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseFlashInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    if (CheckUseFlashInAlphChamber(fsys)) {
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    if (CheckUseFlashInAlphChamber(fieldSystem)) {
         StartScriptFromMenu(taskManager, _EV_scr_seq_D24R0204_002 + 1, NULL);
     } else {
         StartScriptFromMenu(taskManager, std_menu_flash, NULL);
     }
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Teleport(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
     if (!MapHeader_IsOutdoors(checkData->mapId)) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (ScriptState_CheckHaveFollower(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_HAVE_FOLLOWER;
     }
 
-    if (ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_NOT_NOW;
     }
 
@@ -502,11 +502,11 @@ static u32 FieldMoveMenuCheck_Teleport(const struct FieldMoveCheckData *checkDat
 }
 
 static void FieldMoveMenuUse_Teleport(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    FieldSystem *fsys = TaskManager_GetSys(useData->taskManager);
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
-    sub_020505C0(fsys);
-    struct TeleportFieldEnv *retEnv = sub_020689A4(11, useData->partySlot, fsys->savedata);
-    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(11, sizeof(struct FlyTaskStruct));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
+    sub_020505C0(fieldSystem);
+    struct TeleportFieldEnv *retEnv = sub_020689A4(HEAP_ID_FIELD, useData->partySlot, fieldSystem->saveData);
+    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(HEAP_ID_FIELD, sizeof(struct FlyTaskStruct));
     retEnv->flySub = retSub;
     retSub->partySlot = useData->partySlot;
     menuEnv->atexit_TaskFunc = Task_UseTeleportInField;
@@ -515,9 +515,9 @@ static void FieldMoveMenuUse_Teleport(struct FieldMoveUseData *useData, const st
 }
 
 static BOOL Task_UseTeleportInField(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    struct TeleportFieldEnv *env = TaskManager_GetEnv(taskManager);
-    struct FieldLongWarpTaskData *newEnv = CreateFieldTeleportTaskEnv(fsys, env->pokemon, env->flySub->partySlot, 4);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    struct TeleportFieldEnv *env = TaskManager_GetEnvironment(taskManager);
+    struct FieldLongWarpTaskData *newEnv = CreateFieldTeleportTaskEnv(fieldSystem, env->mon, env->flySub->partySlot, HEAP_ID_4);
     FreeToHeap(env->flySub);
     FreeToHeap(env);
     TaskManager_Jump(taskManager, Task_FieldTeleport, newEnv);
@@ -525,18 +525,18 @@ static BOOL Task_UseTeleportInField(TaskManager *taskManager) {
 }
 
 static u32 FieldMoveMenuCheck_Dig(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
     if (MapHeader_IsCave(checkData->mapId) != TRUE || MapHeader_IsEscapeRopeAllowed(checkData->mapId) != TRUE) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (ScriptState_CheckHaveFollower(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_HAVE_FOLLOWER;
     }
 
-    if (ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(checkData->fsys->savedata)) == TRUE) {
+    if (Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(checkData->fieldSystem->saveData)) == TRUE) {
         return PARTY_MENU_RESPONSE_NOT_NOW;
     }
 
@@ -544,11 +544,11 @@ static u32 FieldMoveMenuCheck_Dig(const struct FieldMoveCheckData *checkData) {
 }
 
 static void FieldMoveMenuUse_Dig(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    FieldSystem *fsys = TaskManager_GetSys(useData->taskManager);
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
-    sub_020505C0(fsys);
-    struct TeleportFieldEnv *retEnv = sub_020689A4(11, useData->partySlot, fsys->savedata);
-    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(11, sizeof(struct FlyTaskStruct));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
+    sub_020505C0(fieldSystem);
+    struct TeleportFieldEnv *retEnv = sub_020689A4(HEAP_ID_FIELD, useData->partySlot, fieldSystem->saveData);
+    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(HEAP_ID_FIELD, sizeof(struct FlyTaskStruct));
     retEnv->flySub = retSub;
     retSub->partySlot = useData->partySlot;
     menuEnv->atexit_TaskFunc = Task_UseDigInField;
@@ -557,9 +557,9 @@ static void FieldMoveMenuUse_Dig(struct FieldMoveUseData *useData, const struct 
 }
 
 static BOOL Task_UseDigInField(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    struct TeleportFieldEnv *env = TaskManager_GetEnv(taskManager);
-    struct FieldLongWarpTaskData *newEnv = CreateFieldDigTaskEnv(fsys, env->pokemon, env->flySub->partySlot, 11);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    struct TeleportFieldEnv *env = TaskManager_GetEnvironment(taskManager);
+    struct FieldLongWarpTaskData *newEnv = CreateFieldDigTaskEnv(fieldSystem, env->mon, env->flySub->partySlot, HEAP_ID_FIELD);
     FreeToHeap(env->flySub);
     FreeToHeap(env);
     TaskManager_Jump(taskManager, Task_FieldDig, newEnv);
@@ -567,7 +567,7 @@ static BOOL Task_UseDigInField(TaskManager *taskManager) {
 }
 
 static u32 FieldMoveMenuCheck_SweetScent(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
@@ -579,20 +579,20 @@ static u32 FieldMoveMenuCheck_SweetScent(const struct FieldMoveCheckData *checkD
 }
 
 static void FieldMoveMenuUse_SweetScent(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    FieldSystem *fsys = TaskManager_GetSys(useData->taskManager);
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
-    struct TeleportFieldEnv *retEnv = sub_020689A4(11, useData->partySlot, fsys->savedata);
-    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(11, sizeof(struct FlyTaskStruct));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
+    struct TeleportFieldEnv *retEnv = sub_020689A4(HEAP_ID_FIELD, useData->partySlot, fieldSystem->saveData);
+    struct FlyTaskStruct *retSub = AllocFromHeapAtEnd(HEAP_ID_FIELD, sizeof(struct FlyTaskStruct));
     retEnv->flySub = retSub;
     retSub->partySlot = useData->partySlot;
-    sub_020505C0(fsys);
+    sub_020505C0(fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseSweetScentInField;
     menuEnv->atexit_TaskEnv = retEnv;
     menuEnv->state = 12;
 }
 
 static u32 FieldMoveMenuCheck_Chatter(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
@@ -600,34 +600,34 @@ static u32 FieldMoveMenuCheck_Chatter(const struct FieldMoveCheckData *checkData
 }
 
 static void FieldMoveMenuUse_Chatter(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    FieldSystem *fsys = TaskManager_GetSys(useData->taskManager);
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *partyEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(fsys);
+    sub_020505C0(fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseChatterInField;
     menuEnv->atexit_TaskEnv = partyEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseChatterInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_chatter, NULL);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Whirlpool(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (PlayerAvatar_GetState(checkData->fsys->playerAvatar) != PLAYER_STATE_SURFING) {
+    if (PlayerAvatar_GetState(checkData->fieldSystem->playerAvatar) != PLAYER_STATE_SURFING) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
-    if (!PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(checkData->fsys->savedata), BADGE_GLACIER)) {
+    if (!PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(checkData->fieldSystem->saveData), BADGE_GLACIER)) {
         return PARTY_MENU_RESPONSE_NEED_BADGE;
     }
 
@@ -639,25 +639,25 @@ static u32 FieldMoveMenuCheck_Whirlpool(const struct FieldMoveCheckData *checkDa
 }
 
 static void FieldMoveMenuUse_Whirlpool(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *partyEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseWhirlpoolInField;
     menuEnv->atexit_TaskEnv = partyEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseWhirlpoolInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_whirlpool, NULL);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
 static u32 FieldMoveMenuCheck_Headbutt(const struct FieldMoveCheckData *checkData) {
-    if (checkData->fsys->unk70 == 2 || checkData->fsys->unk70 == 3) {
+    if (checkData->fieldSystem->unk70 == 2 || checkData->fieldSystem->unk70 == 3) {
         return PARTY_MENU_RESPONSE_NOT_HERE;
     }
 
@@ -669,26 +669,26 @@ static u32 FieldMoveMenuCheck_Headbutt(const struct FieldMoveCheckData *checkDat
 }
 
 static void FieldMoveMenuUse_Headbutt(struct FieldMoveUseData *useData, const struct FieldMoveCheckData *checkData) {
-    struct BagViewAppWork *menuEnv = TaskManager_GetEnv(useData->taskManager);
+    struct BagViewAppWork *menuEnv = TaskManager_GetEnvironment(useData->taskManager);
     struct FieldUseMoveEnv *partyEnv = PartyMenuEnv_create(useData, checkData);
-    sub_020505C0(checkData->fsys);
+    sub_020505C0(checkData->fieldSystem);
     menuEnv->atexit_TaskFunc = Task_UseHeadbuttInField;
     menuEnv->atexit_TaskEnv = partyEnv;
     menuEnv->state = 12;
 }
 
 static BOOL Task_UseHeadbuttInField(TaskManager *taskManager) {
-    struct FieldUseMoveEnv *env = TaskManager_GetEnv(taskManager);
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
+    struct FieldUseMoveEnv *env = TaskManager_GetEnvironment(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
     StartScriptFromMenu(taskManager, std_menu_headbutt, env->facingObject);
-    FieldMoveArgsSet(fsys, env->useData.partySlot, 0, 0, 0);
-    PartyMenuEnv_delete(env);
+    FieldMoveArgsSet(fieldSystem, env->useData.partySlot, 0, 0, 0);
+    PartyMenuEnv_Delete(env);
     return FALSE;
 }
 
-static struct TeleportFieldEnv *sub_020689A4(HeapID heapId, u8 slotno, SAVEDATA *saveData) {
+static struct TeleportFieldEnv *sub_020689A4(HeapID heapId, u8 slotno, SaveData *saveData) {
     struct TeleportFieldEnv *ret = AllocFromHeapAtEnd(heapId, sizeof(struct TeleportFieldEnv));
-    ret->pokemon = GetPartyMonByIndex(SavArray_PlayerParty_get(saveData), slotno);
+    ret->mon = Party_GetMonByIndex(SaveArray_Party_Get(saveData), slotno);
     ret->flySub = NULL;
     return ret;
 }

@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F4464.inc"
 	.include "global.inc"
 
 	.text
@@ -21,7 +22,7 @@ ov01_021F4464: ; 0x021F4464
 	ldr r3, [r5, #0x28]
 	mov r1, #0x38
 	mov r2, #5
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r6, r0, #0
 	bl sub_0201F988
 	add r4, r0, #0
@@ -115,7 +116,7 @@ _021F4524:
 _021F452A:
 	ldr r0, [r4]
 	ldr r0, [r0, #0x34]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #0
 	str r0, [r4]
 	pop {r4, pc}

@@ -176,9 +176,9 @@ scr_seq_D47_013:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _0258
@@ -204,9 +204,9 @@ _0296:
 	apply_movement obj_D47_gsmiddleman1, _037C
 _02A6:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _02CD
@@ -243,8 +243,8 @@ _031B:
 	closemsg
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0330:
 	step 15, 1
 	step 12, 2
@@ -253,11 +253,13 @@ _0330:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0348:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0354:
 	step 12, 1
 	step 14, 1
@@ -265,6 +267,7 @@ _0354:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0368:
 	step 12, 1
 	step 15, 1
@@ -272,16 +275,19 @@ _0368:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _037C:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0388:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_D47_015:
 	simple_npc_msg msg_0133_D47_00015
 	end

@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F6830.inc"
 	.include "global.inc"
 
 	.text
@@ -127,7 +128,7 @@ ov01_021F68DC: ; 0x021F68DC
 	mov r1, #0x10
 	mov r2, #0xa
 	mov r3, #4
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r4, r0, #0
 	bl sub_0201F988
 	ldr r1, [r5, #0x1c]
@@ -184,7 +185,7 @@ ov01_021F6930: ; 0x021F6930
 	bl ov01_021F69A4
 	add r5, #0xd8
 	ldr r0, [r5]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 _021F6960:
@@ -728,7 +729,7 @@ ov01_02206C08: ; 0x02206C08
 
 ov01_02206C60: ; 0x02206C60
 	.word ov27_02259F80, ov27_0225A19C, ov27_0225A2C8, 0xFFFFFFFF
-	.word ov30_0225D520, ov30_0225D64C, ov30_0225D6FC, FS_OVERLAY_ID(OVY_30)
+	.word ov30_0225D520, ov30_0225D64C, ov30_0225D6FC, FS_OVERLAY_ID(touch_save_app)
 	.word ov31_0225D520, ov31_0225D710, ov31_0225D758, FS_OVERLAY_ID(OVY_31)
 	.word ov27_0225C250, ov27_0225C398, ov27_0225C418, 0xFFFFFFFF
 	.word ov28_0225D520, ov28_0225D5EC, ov28_0225D624, FS_OVERLAY_ID(OVY_28)

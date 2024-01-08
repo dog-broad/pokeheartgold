@@ -9,6 +9,7 @@
 #include "fielddata/script/scr_seq/event_D24R0204.h"
 #include "constants/party_menu.h"
 	.include "asm/macros.inc"
+	.include "unk_0205CB48.inc"
 	.include "global.inc"
 
 	.text
@@ -42,7 +43,7 @@ _0205CB66:
 	add r2, r6, #0
 	bl sub_0205CC4C
 	add r0, r5, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	add r0, r5, #0
 	add r1, r4, #0
 	bl sub_0205D004
@@ -259,11 +260,11 @@ _0205CD36:
 	bl PlaySE
 _0205CD3C:
 	add r0, r5, #0
-	bl sub_0205B6E8
+	bl MetatileBehavior_IsEncounterGrass
 	cmp r0, #1
 	beq _0205CD50
 	add r0, r7, #0
-	bl sub_0205B6E8
+	bl MetatileBehavior_IsEncounterGrass
 	cmp r0, #1
 	bne _0205CD56
 _0205CD50:
@@ -311,7 +312,7 @@ sub_0205CD70: ; 0x0205CD70
 	cmp r0, #1
 	beq _0205CE58
 	add r0, r7, #0
-	bl sub_0205B6E8
+	bl MetatileBehavior_IsEncounterGrass
 	cmp r0, #0
 	bne _0205CE58
 	mov r1, #0
@@ -1249,7 +1250,7 @@ _0205D4DE:
 	bl MapObject_GetFieldSysPtr
 	mov r1, #7
 	str r0, [sp, #8]
-	bl Fsys_IsSavGymmickTypeEqualTo
+	bl FieldSystem_IsSaveGymmickTypeEqualTo
 	cmp r0, #0
 	beq _0205D52E
 	add r0, r5, #0
@@ -1285,8 +1286,8 @@ _0205D536:
 _0205D544:
 	add r0, r6, #0
 	mov r4, #0xc
-	bl sub_0205C798
-	bl FlypointsPlayerSub_CheckRunningShoes
+	bl PlayerAvatar_GetPlayerSaveData
+	bl PlayerSaveData_CheckRunningShoes
 	cmp r0, #1
 	bne _0205D564
 	add r1, sp, #0x18
@@ -2757,7 +2758,7 @@ sub_0205E048: ; 0x0205E048
 	bl MapObject_GetFieldSysPtr
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0
 	add r4, r0, #0
 	bl GameStats_Inc

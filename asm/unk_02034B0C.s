@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02034B0C.inc"
 	.include "global.inc"
 
 	.bss
@@ -90,7 +91,7 @@ sub_02034B0C: ; 0x02034B0C
 	ldr r0, [r2, #8]
 	sub r1, #0x1c
 	add r0, r0, r1
-	bl MailMsg_init
+	bl MailMsg_Init
 	add r0, r7, #0
 	bl sub_02034DF0
 	bl WM_GetNextTgid
@@ -947,7 +948,7 @@ _020351EA:
 	add r0, r3, #0
 	bl sub_02035798
 	add r1, r4, #0
-	bl PlayerProfile_copy
+	bl PlayerProfile_Copy
 	pop {r4, r5, r6, pc}
 _02035202:
 	add r5, r5, #1

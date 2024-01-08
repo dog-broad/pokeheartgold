@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021E6880.inc"
 	.include "global.inc"
 
 	.text
@@ -113,7 +114,7 @@ ov01_021E6928: ; 0x021E6928
 	add r6, r3, #0
 	bl ov01_021E6880
 	add r0, r4, #0
-	bl FieldSys_GetPlayerAvatar
+	bl FieldSystem_GetPlayerAvatar
 	bl sub_0205CB38
 	cmp r0, #0
 	beq _021E694E
@@ -369,12 +370,12 @@ _021E6B12:
 	lsr r0, r0, #0x1f
 	bne _021E6B66
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl HasEnoughAlivePokemonForDoubleBattle
 	add r6, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckHaveFollower
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckHaveFollower
 	cmp r0, #1
 	bne _021E6B36
 	mov r6, #1
@@ -387,7 +388,7 @@ _021E6B36:
 	ldr r0, [r4, #0x40]
 	bl sub_0205CF44
 	ldr r0, [r4, #0x3c]
-	bl MapObjectMan_PauseAllMovement
+	bl MapObjectManager_PauseAllMovement
 	add r0, r4, #0
 	bl FollowingPokemon_IsActive
 	cmp r0, #0
@@ -404,7 +405,7 @@ _021E6B66:
 	lsr r0, r0, #0x1f
 	beq _021E6B86
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl ClearFlag965
 	add r0, r4, #0
 	bl ov01_021E7628
@@ -427,7 +428,7 @@ _021E6B94:
 	bl sub_0205DD94
 	add r7, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #2
 	bl StrengthFlagAction
 	cmp r0, #0
@@ -436,7 +437,7 @@ _021E6B94:
 	orr r6, r0
 _021E6BB6:
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #MOVE_WATERFALL
 	bl GetIdxOfFirstPartyMonWithMove
 	cmp r0, #0xff
@@ -666,7 +667,7 @@ _021E6D9E:
 	lsr r0, r0, #0x1f
 	beq _021E6DB6
 	add r0, r4, #0
-	bl Fsys_GetGearPhoneRingManager
+	bl FieldSystem_GetGearPhoneRingManager
 	bl ov02_02251F20
 	cmp r0, #0
 	beq _021E6DB6
@@ -1107,18 +1108,18 @@ _021E7132:
 	add r2, sp, #0
 	bl PlayerAvatar_GetStandingTileCoords
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckPalParkSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckPalParkSysFlag
 	cmp r0, #1
 	bne _021E7172
 	ldr r1, [sp, #4]
 	ldr r2, [sp]
 	add r0, r4, #0
-	bl sub_02055874
+	bl PalPark_TryEncounter
 	cmp r0, #1
 	bne _021E716C
 	add r0, r4, #0
-	bl sub_0205589C
+	bl PalPark_SetupEncounter
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_020511F8
@@ -1587,7 +1588,7 @@ _021E7510:
 	cmp r0, #2
 	beq _021E7570
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r6, r0, #0
 	ldr r0, [r5, #0x40]
 	add r1, r7, #0
@@ -1601,7 +1602,7 @@ _021E7510:
 	cmp r0, #0
 	beq _021E7550
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #MOVE_SURF
 	bl GetIdxOfFirstPartyMonWithMove
 	cmp r0, #0xff
@@ -1652,12 +1653,12 @@ _021E758C:
 	pop {r3, r4, r5, r6, r7, pc}
 _021E75AC:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckSafariSysFlag
 	cmp r0, #0
 	beq _021E75D6
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	bl sub_0202F620
 	cmp r0, #0
 	bne _021E75D6
@@ -1697,7 +1698,7 @@ ov01_021E7628: ; 0x021E7628
 	push {r3, r4, r5, r6, r7, lr}
 	mov r1, #6
 	add r5, r0, #0
-	bl Fsys_IsSavGymmickTypeEqualTo
+	bl FieldSystem_IsSaveGymmickTypeEqualTo
 	cmp r0, #0
 	beq _021E7644
 	add r0, r5, #0
@@ -1821,7 +1822,7 @@ _021E7732:
 	mov r0, #0x42
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl FsysUnkSub108_MoveMoodTowardsNeutral
+	bl FieldSystemUnkSub108_MoveMoodTowardsNeutral
 _021E7746:
 	mov r0, #0
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1992,17 +1993,17 @@ ov01_021E788C: ; 0x021E788C
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r5, r0, #0
 	ldr r0, [r4, #0xc]
-	bl Sav2_DayCare_get
+	bl Save_Daycare_Get
 	add r1, r5, #0
 	add r2, r4, #0
-	bl HandleDayCareStep
+	bl HandleDaycareStep
 	cmp r0, #1
 	bne _021E78CE
 	ldr r0, [r4, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	add r5, r0, #0
 	mov r1, #0xc
 	bl GameStats_Inc
@@ -2037,9 +2038,9 @@ ov01_021E78E4: ; 0x021E78E4
 	push {r3, r4, r5, lr}
 	ldr r0, [r0, #0xc]
 	mov r5, #0
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r4, r0, #0
-	bl ScriptState_GetVar404B
+	bl Save_VarsFlags_GetVar404B
 	add r0, r0, #1
 	lsl r0, r0, #0x10
 	lsr r1, r0, #0x10
@@ -2049,7 +2050,7 @@ ov01_021E78E4: ; 0x021E78E4
 	mov r5, #1
 _021E7902:
 	add r0, r4, #0
-	bl ScriptState_SetVar404B
+	bl Save_VarsFlags_SetVar404B
 	add r0, r5, #0
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov01_021E78E4
@@ -2059,7 +2060,7 @@ ov01_021E790C: ; 0x021E790C
 	push {r3, r4, r5, r6, r7, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r6, r0, #0
 	ldr r0, [r4, #0x20]
 	ldr r0, [r0]
@@ -2067,7 +2068,7 @@ ov01_021E790C: ; 0x021E790C
 	lsl r0, r0, #0x10
 	lsr r5, r0, #0x10
 	add r0, r6, #0
-	bl GetPartyCount
+	bl Party_GetCount
 	add r7, r0, #0
 	mov r4, #0
 	cmp r7, #0
@@ -2075,7 +2076,7 @@ ov01_021E790C: ; 0x021E790C
 _021E7932:
 	add r0, r6, #0
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	add r2, r5, #0
 	bl MonApplyFriendshipMod
@@ -2092,11 +2093,11 @@ ov01_021E794C: ; 0x021E794C
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetPoisonStepCounter
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetPoisonStepCounter
 	ldrh r1, [r0]
 	add r1, r1, #1
 	strh r1, [r0]
@@ -2156,16 +2157,16 @@ ov01_021E79CC: ; 0x021E79CC
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckSafariSysFlag
 	cmp r0, #0
 	bne _021E79E2
 	mov r0, #0
 	pop {r4, pc}
 _021E79E2:
 	ldr r0, [r4, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetSafariBallsCounter
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetSafariBallsCounter
 	ldrh r0, [r0]
 	cmp r0, #0
 	bne _021E7A00
@@ -2190,9 +2191,9 @@ ov01_021E7A08: ; 0x021E7A08
 	bl SaveData_GetMomsSavingsAddr
 	add r5, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	ldr r1, _021E7A5C ; =0x00000984
-	bl CheckFlagInArray
+	bl Save_VarsFlags_CheckFlagInArray
 	cmp r0, #0
 	bne _021E7A56
 	add r0, r5, #0
@@ -2201,7 +2202,7 @@ ov01_021E7A08: ; 0x021E7A08
 	cmp r0, #0
 	bne _021E7A56
 	ldr r0, [r4, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #1
 	bl GameStats_GetCapped
 	mov r1, #1
@@ -2209,7 +2210,7 @@ ov01_021E7A08: ; 0x021E7A08
 	cmp r0, r1
 	blo _021E7A56
 	add r0, r4, #0
-	bl Fsys_GetGearPhoneRingManager
+	bl FieldSystem_GetGearPhoneRingManager
 	mov r1, #2
 	mov r2, #1
 	bl sub_02092E14
@@ -2226,10 +2227,10 @@ _021E7A5C: .word 0x00000984
 BugContestTimeoutCheck: ; 0x021E7A60
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl FieldSys_BugContest_get
+	bl FieldSystem_BugContest_Get
 	add r5, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag996
 	cmp r0, #0
 	bne _021E7A7C
@@ -2257,12 +2258,12 @@ ov01_021E7A98: ; 0x021E7A98
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0
 	bl GameStats_GetCapped
 	add r4, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Save_ApricornBox_get
+	bl Save_ApricornBox_Get
 	add r1, r4, #0
 	bl sub_02032058
 	pop {r3, r4, r5, pc}
@@ -2431,8 +2432,8 @@ _021E7BBC:
 	bl GF_AssertFail
 _021E7BD2:
 	ldr r0, [r4, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetDynamicWarp
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetDynamicWarp
 	add r2, r0, #0
 	ldmia r2!, {r0, r1}
 	stmia r5!, {r0, r1}
@@ -2453,8 +2454,8 @@ _021E7BEC:
 	str r0, [r5, #0x10]
 _021E7BFE:
 	ldr r0, [r4, #0xc]
-	bl Save_FlyPoints_get
-	bl sub_0203B95C
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetEntrancePosition
 	add r5, r0, #0
 	ldr r0, [r4, #0x40]
 	bl PlayerAvatar_GetFacingDirection
@@ -2480,8 +2481,8 @@ ov01_021E7C28: ; 0x021E7C28
 	add r7, r1, #0
 	str r2, [sp]
 	add r4, r3, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetSpecialSpawnWarpPtr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetSpecialSpawnWarpPtr
 	add r6, r0, #0
 	ldr r3, [r5, #0x20]
 	add r2, r6, #0
@@ -2635,7 +2636,7 @@ ov01_021E7D58: ; 0x021E7D58
 	ldr r0, [r5, #0xc]
 	add r7, r2, #0
 	add r4, r1, #0
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r6, r0, #0
 	lsl r0, r7, #3
 	add r0, r4, r0
@@ -2644,8 +2645,8 @@ ov01_021E7D58: ; 0x021E7D58
 	ldr r0, _021E7DE4 ; =ov01_022063BC
 	ldrh r4, [r0, r1]
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetPosition
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetCurrentPosition
 	add r5, r0, #0
 	ldr r0, [r5]
 	cmp r0, #0x8b
@@ -2866,7 +2867,7 @@ _021E7F34:
 	thumb_func_start ov01_021E7F38
 ov01_021E7F38: ; 0x021E7F38
 	push {r3, lr}
-	bl FieldSys_FacingModelIsHeadbuttTree
+	bl FieldSystem_FacingModelIsHeadbuttTree
 	cmp r0, #0
 	beq _021E7F46
 	ldr r0, _021E7F4C ; =std_field_headbutt
@@ -2923,8 +2924,8 @@ _021E7F9E:
 _021E7FA4: .word 0x0000FFFF
 	thumb_func_end ov01_021E7F54
 
-	thumb_func_start FieldSys_FacingModelIsHeadbuttTree
-FieldSys_FacingModelIsHeadbuttTree: ; 0x021E7FA8
+	thumb_func_start FieldSystem_FacingModelIsHeadbuttTree
+FieldSystem_FacingModelIsHeadbuttTree: ; 0x021E7FA8
 	push {r4, lr}
 	sub sp, #8
 	add r1, sp, #4
@@ -2948,7 +2949,7 @@ _021E7FD4:
 	add sp, #8
 	pop {r4, pc}
 	.balign 4, 0
-	thumb_func_end FieldSys_FacingModelIsHeadbuttTree
+	thumb_func_end FieldSystem_FacingModelIsHeadbuttTree
 
 	.rodata
 

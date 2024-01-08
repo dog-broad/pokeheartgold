@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_29.inc"
 	.include "global.inc"
 
 	.text
@@ -23,7 +24,7 @@ ov29_0225D520: ; 0x0225D520
 	lsl r1, r1, #2
 	mov r2, #0xa
 	mov r3, #8
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	str r0, [sp, #4]
 	bl sub_0201F988
 	add r4, r0, #0
@@ -72,7 +73,7 @@ _0225D594:
 _0225D5A2:
 	mov r0, #0xee
 	mov r1, #8
-	bl NARC_ctor
+	bl NARC_New
 	add r5, r0, #0
 	bl ov29_0225D620
 	ldr r0, [sp]
@@ -88,7 +89,7 @@ _0225D5A2:
 	add r0, r4, #0
 	bl ov29_0225DBF0
 	add r0, r5, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [sp, #4]
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}
@@ -113,7 +114,7 @@ ov29_0225D5EC: ; 0x0225D5EC
 	ldr r0, [r4]
 	bl ov29_0225D6B4
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #8
 	bl DestroyHeap
 	pop {r3, r4, r5, pc}
@@ -313,9 +314,9 @@ _0225D73A:
 	mov r0, #0
 	str r0, [sp, #0xc]
 	add r0, r5, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, r4
 	bl CopyWindowPixelsToVram_TextMode
 	add r0, r5, r4
@@ -389,7 +390,7 @@ ov29_0225D828: ; 0x0225D828
 	add r0, r4, #0
 	bl ov29_0225D864
 	ldr r0, [r4, #0x18]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov29_0225D828
@@ -766,7 +767,7 @@ ov29_0225DB38: ; 0x0225DB38
 	lsl r7, r7, #2
 _0225DB44:
 	ldr r0, [r5, r7]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #0xb
@@ -802,7 +803,7 @@ ov29_0225DB7C: ; 0x0225DB7C
 _0225DB8A:
 	ldr r0, [r5, r6]
 	add r1, r7, #0
-	bl sub_020249B0
+	bl Sprite_TickCellOrMulticellAnimation
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #0xb
@@ -833,7 +834,7 @@ ov29_0225DB9C: ; 0x0225DB9C
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r4, #9
 	bhi _0225DBE0
 	mov r0, #0x5d
@@ -932,7 +933,7 @@ ov29_0225DC50: ; 0x0225DC50
 	str r1, [sp, #4]
 	ldr r0, [r0, r2]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {pc}
 	.balign 4, 0
@@ -966,7 +967,7 @@ _0225DCA6:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x7f
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
@@ -1003,7 +1004,7 @@ _0225DCEA:
 	lsl r1, r0, #2
 	ldr r0, _0225DEA8 ; =ov29_0225E1AC
 	ldr r0, [r0, r1]
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	add r5, r0, #0
 	mvn r1, r1

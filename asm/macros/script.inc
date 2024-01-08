@@ -1316,7 +1316,7 @@
 	.short \var
 	.endm
 
-	.macro scrcmd_221 arg0, arg1
+	.macro static_wild_won_or_caught arg0, arg1
 	.short 221
 	.short \arg0
 	.byte \arg1
@@ -1662,11 +1662,11 @@
 	.short 286
 	.endm
 
-	.macro scrcmd_287
+	.macro buffer_union_room_avatar_choices
 	.short 287
 	.endm
 
-	.macro scrcmd_288 arg0, arg1
+	.macro union_room_avatar_idx_to_trainer_class arg0, arg1
 	.short 288
 	.short \arg0
 	.short \arg1
@@ -2422,7 +2422,7 @@
 	.short \arg0
 	.endm
 
-	.macro scrcmd_425 arg0
+	.macro show_certificate arg0
 	.short 425
 	.short \arg0
 	.endm
@@ -2900,7 +2900,7 @@
 	.short \arg0
 	.endm
 
-	.macro scrcmd_508 arg0
+	.macro palpark_action arg0
 	.short 508
 	.short \arg0
 	.endm
@@ -3338,7 +3338,7 @@
 	.short 587
 	.endm
 
-	.macro scrcmd_588 arg0
+	.macro lati_caught_check arg0
 	.short 588
 	.short \arg0
 	.endm
@@ -3403,18 +3403,18 @@
 	.short 601
 	.endm
 
-	.macro scrcmd_602 arg0
+	.macro toggle_following_pokemon_movement flag
 	.short 602
-	.short \arg0
+	.short \flag
 	.endm
 
-	.macro scrcmd_603
+	.macro wait_following_pokemon_movement
 	.short 603
 	.endm
 
-	.macro scrcmd_604 arg0
+	.macro following_pokemon_movement movement
 	.short 604
-	.short \arg0
+	.short \movement
 	.endm
 
 	.macro scrcmd_605 arg0, arg1
@@ -3728,7 +3728,7 @@
 	.short \arg1
 	.endm
 
-	.macro set_mon_forme arg0, arg1
+	.macro set_mon_form arg0, arg1
 	.short 659
 	.short \arg0
 	.short \arg1
@@ -3808,7 +3808,7 @@
 	.short \arg2
 	.endm
 
-	.macro get_owned_rotom_formes arg0, arg1, arg2, arg3, arg4
+	.macro get_owned_rotom_forms arg0, arg1, arg2, arg3, arg4
 	.short 673
 	.short \arg0
 	.short \arg1
@@ -3823,7 +3823,7 @@
 	.short \arg1
 	.endm
 
-	.macro update_rotom_forme arg0, arg1, arg2, arg3
+	.macro update_rotom_form arg0, arg1, arg2, arg3
 	.short 675
 	.short \arg0
 	.short \arg1
@@ -3831,7 +3831,7 @@
 	.short \arg3
 	.endm
 
-	.macro get_party_mon_forme arg0, arg1
+	.macro get_party_mon_form arg0, arg1
 	.short 676
 	.short \arg0
 	.short \arg1
@@ -3868,7 +3868,7 @@
 	.short \arg0
 	.endm
 
-	.macro scrcmd_683 arg0
+	.macro get_static_encounter_outcome arg0
 	.short 683
 	.short \arg0
 	.endm
@@ -3903,7 +3903,7 @@
 	.endm
 
 	; Attempt to remove all Griseous Orbs and reset Pokemon
-	; to formes present in Diamond and Pearl, to avoid
+	; to forms present in Diamond and Pearl, to avoid
 	; problems communicating with those games.
 	.macro comm_sanitize_party var_result
 	.short 689
@@ -4516,7 +4516,7 @@
 	.short 806
 	.endm
 
-	.macro scrcmd_807 arg0, arg1
+	.macro set_trainer_house_sprite arg0, arg1
 	.short 807
 	.short \arg0
 	.short \arg1
@@ -4527,7 +4527,7 @@
 	.short \arg0
 	.endm
 
-	.macro scrcmd_809 arg0
+	.macro show_trainer_house_intro_message arg0
 	.short 809
 	.short \arg0
 	.endm
@@ -4613,7 +4613,7 @@
 	.short \arg0
 	.endm
 
-	.macro get_partymon_forme arg0, arg1
+	.macro get_partymon_form arg0, arg1
 	.short 827
 	.short \arg0
 	.short \arg1

@@ -1,3 +1,4 @@
+#include "global.h"
 #include "main.h"
 #include "system.h"
 #include "gf_rtc.h"
@@ -18,6 +19,7 @@
 #include "communication_error.h"
 #include "math_util.h"
 #include "unk_020210A0.h"
+#include "brightness.h"
 
 FS_EXTERN_OVERLAY(OVY_60);
 FS_EXTERN_OVERLAY(OVY_36);
@@ -53,19 +55,19 @@ void NitroMain(void) {
     GF_InitRTCWork();
     Main_ResetOverlayManager();
     FontWork_Init();
-    FontID_Alloc(0, 3);
-    FontID_Alloc(1, 3);
-    FontID_Alloc(3, 3);
+    FontID_Alloc(0, HEAP_ID_3);
+    FontID_Alloc(1, HEAP_ID_3);
+    FontID_Alloc(3, HEAP_ID_3);
     _02111868.unk_10.unk_00 = -1;
-    _02111868.unk_10.savedata = SaveBlock2_new();
+    _02111868.unk_10.saveData = SaveData_New();
     sub_02005D00();
-    InitSoundData(Sav2_Chatot_get(_02111868.unk_10.savedata), Sav2_PlayerData_GetOptionsAddr(_02111868.unk_10.savedata));
+    InitSoundData(Save_Chatot_Get(_02111868.unk_10.saveData), Save_PlayerData_GetOptionsAddr(_02111868.unk_10.saveData));
     Init_Timer3();
     if (sub_02039FFC(3) == 3) {
-        ShowWFCUserInfoWarning(3, 0);
+        ShowWFCUserInfoWarning(HEAP_ID_3, 0);
     }
-    if (!Save_FlashChipIsDetected(_02111868.unk_10.savedata)) {
-        ShowSaveDataReadError(0);
+    if (!Save_FlashChipIsDetected(_02111868.unk_10.saveData)) {
+        ShowSaveDataReadError(HEAP_ID_DEFAULT);
     } else {
         switch (OS_GetResetParameter()) {
         case 0:
@@ -86,7 +88,7 @@ void NitroMain(void) {
     gSystem.unk70 = 1;
     gSystem.unk30 = 0;
     InitializeMainRNG();
-    sub_0200B528();
+    ScreenBrightnessData_InitAll();
     sub_02018380();
     _02111864 = 0;
     OS_InitTick();
@@ -118,7 +120,7 @@ void NitroMain(void) {
         OS_WaitIrq(TRUE, OS_IE_VBLANK);
         gSystem.vblankCounter++;
         gSystem.unk30 = 0;
-        sub_0200B594();
+        DoAllScreenBrightnessTransitionStep();
         HandleFadeUpdateFrame();
         if (gSystem.vBlankIntr != NULL) {
             gSystem.vBlankIntr(gSystem.vBlankIntrArg);
@@ -144,12 +146,12 @@ void Main_RunOverlayManager(void) {
             HandleLoadOverlay(_02111868.queuedMainOverlayId, OVY_LOAD_NORMAL);
         }
         _02111868.mainOverlayId = _02111868.queuedMainOverlayId;
-        _02111868.overlayManager = OverlayManager_new(_02111868.queuedMainOverlayTemplate, &_02111868.unk_10, 0);
+        _02111868.overlayManager = OverlayManager_New(_02111868.queuedMainOverlayTemplate, &_02111868.unk_10, HEAP_ID_DEFAULT);
         _02111868.queuedMainOverlayId = FS_OVERLAY_ID_NONE;
         _02111868.queuedMainOverlayTemplate = NULL;
     }
-    if (OverlayManager_run(_02111868.overlayManager)) {
-        OverlayManager_delete(_02111868.overlayManager);
+    if (OverlayManager_Run(_02111868.overlayManager)) {
+        OverlayManager_Delete(_02111868.overlayManager);
         _02111868.overlayManager = NULL;
         if (_02111868.mainOverlayId != FS_OVERLAY_ID_NONE) {
             UnloadOverlayByID(_02111868.mainOverlayId);
@@ -163,7 +165,7 @@ void RegisterMainOverlay(FSOverlayID overlayId, const OVY_MGR_TEMPLATE *template
     _02111868.queuedMainOverlayTemplate = template;
 }
 
-void sub_02000F14(void) {
+static void sub_02000F14(void) {
     sub_02036144();
     OS_WaitIrq(TRUE, OS_IE_VBLANK);
     gSystem.vblankCounter++;
@@ -173,7 +175,7 @@ void sub_02000F14(void) {
     }
 }
 
-void sub_02000F40(u32 param) {
+static void sub_02000F40(u32 param) {
     if (sub_02039AA4() && CARD_TryWaitBackupAsync() == TRUE) {
         OS_ResetSystem(param);
     }
@@ -202,7 +204,7 @@ void DoSoftReset(u32 param) {
     sub_0200FBF4(0, RGB_WHITE);
     sub_0200FBF4(1, RGB_WHITE);
     if (sub_02038D90()) {
-        Save_Cancel(SaveBlock2_get());
+        Save_Cancel(SaveData_Get());
     }
     while (1) {
         HandleDSLidAction();
@@ -237,7 +239,7 @@ void sub_02000FD8(u32 a0, int a1) {
             }
         }
     }
-    ShowCommunicationError(0, r5, 0);
+    ShowCommunicationError(HEAP_ID_DEFAULT, r5, 0);
     sub_02038D90();
     sub_02000F14();
     DoSoundUpdateFrame();

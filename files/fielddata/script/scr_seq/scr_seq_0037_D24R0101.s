@@ -1,3 +1,4 @@
+#include "constants/events.h"
 #include "constants/scrcmd.h"
 #include "fielddata/script/scr_seq/event_D24R0101.h"
 #include "msgdata/msg/msg_0072_D24R0101.h"
@@ -73,7 +74,8 @@ _0112:
 	compare VAR_UNOWN_REPORT_LEVEL, 6
 	goto_if_eq _0080
 	goto _003C
-	.byte 0x02, 0x00
+	end
+
 scr_seq_D24R0101_004:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -91,9 +93,9 @@ scr_seq_D24R0101_004:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _01AD
@@ -112,9 +114,9 @@ _01C8:
 	apply_movement obj_D24R0101_gsmiddleman1, _029C
 _01D8:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _01FF
@@ -151,8 +153,8 @@ _024D:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _0264:
 	step 15, 1
 	step 12, 2
@@ -161,11 +163,13 @@ _0264:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _027C:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0288:
 	step 12, 1
 	step 14, 1
@@ -173,27 +177,30 @@ _0288:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _029C:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _02A8:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_D24R0101_007:
 	scrcmd_609
 	lockall
 	get_party_lead_alive VAR_TEMP_x4005
-	follower_poke_is_event_trigger 2, VAR_TEMP_x4005, VAR_TEMP_x4006
+	follower_poke_is_event_trigger EVENT_ARCEUS_MOVIE_GIFT, VAR_TEMP_x4005, VAR_TEMP_x4006
 	compare VAR_TEMP_x4006, 0
 	goto_if_eq _02DA
 	goto _02EE
 
 _02DA:
-	follower_poke_is_event_trigger 1, VAR_TEMP_x4005, VAR_TEMP_x4007
+	follower_poke_is_event_trigger EVENT_ARCEUS_HALL_OF_ORIGIN, VAR_TEMP_x4005, VAR_TEMP_x4007
 	compare VAR_TEMP_x4007, 0
 	goto_if_eq _0530
 _02EE:
@@ -322,7 +329,7 @@ _0530:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0534:
 	step 62, 1
 	step 17, 3
@@ -331,10 +338,12 @@ _0534:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _054C:
 	step 17, 1
 	step_end
 
+	.balign 4, 0
 _0554:
 	step 38, 1
 	step 75, 1
@@ -344,6 +353,7 @@ _0554:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0570:
 	step 75, 1
 	step 63, 1
@@ -351,6 +361,7 @@ _0570:
 	step 37, 1
 	step_end
 
+	.balign 4, 0
 _0584:
 	step 15, 1
 	step 14, 2
@@ -361,18 +372,21 @@ _0584:
 	step 37, 1
 	step_end
 
+	.balign 4, 0
 _05A4:
 	step 75, 1
 	step 63, 1
 	step 37, 1
 	step_end
 
+	.balign 4, 0
 _05B4:
 	step 14, 1
 	step 13, 1
 	step 37, 1
 	step_end
 
+	.balign 4, 0
 _05C4:
 	step 71, 1
 	step 57, 1
@@ -381,6 +395,7 @@ _05C4:
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _05DC:
 	step 71, 1
 	step 18, 1
@@ -389,35 +404,41 @@ _05DC:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _05F4:
 	step 50, 1
 	step 63, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0604:
 	step 71, 1
 	step 17, 5
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0614:
 	step 13, 3
 	step 15, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0624:
 	step 13, 4
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0630:
 	step 63, 2
 	step 12, 1
 	step 15, 1
 	step 12, 1
 	step_end
+
 scr_seq_D24R0101_000:
 	scrcmd_055 2, 0
 	scrcmd_057 3

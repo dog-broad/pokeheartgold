@@ -1,6 +1,7 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 	.include "asm/macros.inc"
+	.include "unk_02074944.inc"
 	.include "global.inc"
 
 	.text
@@ -9,11 +10,11 @@
 sub_02074944: ; 0x02074944
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
-	bl ZknData_Create
+	bl PokedexData_Create
 	mov r1, #0
 	add r2, r5, #0
 	add r4, r0, #0
-	bl ZknData_LoadAll
+	bl PokedexData_LoadAll
 	add r0, r4, #0
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -23,9 +24,9 @@ sub_02074944: ; 0x02074944
 sub_0207495C: ; 0x0207495C
 	push {r4, lr}
 	add r4, r0, #0
-	bl ZknData_UnloadAll
+	bl PokedexData_UnloadAll
 	add r0, r4, #0
-	bl ZknData_Delete
+	bl PokedexData_Delete
 	pop {r4, pc}
 	thumb_func_end sub_0207495C
 
@@ -87,7 +88,7 @@ _020749D2:
 	beq _020749FC
 	ldr r0, [sp]
 	add r1, r6, #0
-	bl ZknData_GetHeight
+	bl PokedexData_GetHeight
 	cmp r5, #0
 	ble _020749F2
 	cmp r0, r5
@@ -110,7 +111,7 @@ _020749FC:
 	beq _02074A2A
 	ldr r0, [sp]
 	add r1, r6, #0
-	bl ZknData_GetWeight
+	bl PokedexData_GetWeight
 	cmp r5, #0
 	ble _02074A20
 	cmp r0, r5
@@ -216,7 +217,7 @@ _02074AC8:
 	beq _02074B16
 	ldr r0, [sp, #4]
 	sub r1, r1, #1
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r4, r0, #0
 	ldr r0, [sp]
 	ldr r2, [sp, #8]
@@ -279,7 +280,7 @@ _02074B50:
 	cmp r0, #0
 	beq _02074B6C
 	add r1, r7, #0
-	bl IsPokemonLegendaryOrMythical
+	bl IsPokemonBannedFromBattleFrontier 
 	cmp r0, #0
 	beq _02074B6C
 	ldrh r0, [r5]
@@ -496,7 +497,7 @@ sub_02074CD0: ; 0x02074CD0
 	add r0, r1, #0
 	str r1, [sp, #0x10]
 	str r2, [sp, #0x14]
-	bl GetPartyCount
+	bl Party_GetCount
 	str r0, [sp, #0x20]
 	add r6, r0, #0
 	add r0, sp, #0x30
@@ -512,7 +513,7 @@ sub_02074CD0: ; 0x02074CD0
 _02074CFA:
 	ldr r0, [sp, #0x10]
 	add r1, r7, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #0x24]
 	mov r1, #5
 	mov r2, #0
@@ -629,7 +630,7 @@ _02074DD0:
 	bne _02074DF6
 	ldrh r0, [r4]
 	mov r1, #0
-	bl IsPokemonLegendaryOrMythical
+	bl IsPokemonBannedFromBattleFrontier 
 	cmp r0, #1
 	bne _02074DF6
 	add r7, r7, #1

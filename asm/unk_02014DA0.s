@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02014DA0.inc"
 	.include "global.inc"
 
 	.public NNS_G3dGlb
@@ -136,7 +137,7 @@ _02014DEC:
 	cmp r0, #1
 	bne _02014E80
 	ldr r0, [sp, #0x2c]
-	bl GF_Camera_Create
+	bl Camera_New
 	str r0, [r4, #0x20]
 	mov r3, #0
 	str r3, [r4, #0x24]
@@ -151,13 +152,13 @@ _02014DEC:
 	str r0, [sp, #4]
 	ldrh r2, [r4, #0x30]
 	ldr r0, _02014EB4 ; =_020F6084
-	bl sub_02023308
+	bl Camera_Init_FromTargetAndPos
 	add r0, r4, #0
 	mov r1, #0
 	add r0, #0xdb
 	strb r1, [r0]
 	ldr r0, [r4, #0x20]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 _02014E80:
 	mov r0, #6
 	str r0, [sp]
@@ -283,7 +284,7 @@ _02014F6C:
 	ldr r0, [r5, #0x20]
 	cmp r0, #0
 	beq _02014F76
-	bl sub_02023120
+	bl Camera_Delete
 _02014F76:
 	add r0, r5, #0
 	bl FreeToHeap
@@ -963,10 +964,10 @@ sub_020153D8: ; 0x020153D8
 	beq _020153F4
 	add r0, #0xdb
 	ldrb r0, [r0]
-	bl sub_020233D8
+	bl Camera_ApplyPerspectiveType
 	ldr r0, [r4, #0x20]
-	bl GF_Camera_RegisterToStaticPtr
-	bl sub_02023154
+	bl Camera_SetStaticPtr
+	bl Camera_PushLookAtToNNSGlb
 _020153F4:
 	bl NNS_G3dGlbFlushP
 	ldr r0, [r4]
@@ -975,7 +976,7 @@ _020153F4:
 	ldr r0, [r4, #0x20]
 	cmp r0, #0
 	beq _0201540A
-	bl sub_02023148
+	bl Camera_UnsetStaticPtr
 _0201540A:
 	bl NNS_G3dGlbFlushP
 	pop {r4, pc}
@@ -1144,7 +1145,7 @@ sub_020154E4: ; 0x020154E4
 	str r0, [r2]
 	ldr r1, [r5, #0x20]
 	add r0, r4, #0
-	bl GF_Camera_SetBindTarget
+	bl Camera_SetLookAtCamUp
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 	thumb_func_end sub_020154E4
@@ -1567,7 +1568,7 @@ ListMenuCursorNew: ; 0x02015788
 	add r1, r5, #0
 	str r0, [r4]
 	mov r0, #4
-	bl String_ctor
+	bl String_New
 	ldr r1, _020157B4 ; =_020F60DC
 	str r0, [r4, #4]
 	bl CopyU16ArrayToString
@@ -1591,7 +1592,7 @@ _020157C2:
 	ldr r0, [r4, #4]
 	cmp r0, #0
 	beq _020157D0
-	bl String_dtor
+	bl String_Delete
 _020157D0:
 	add r0, r4, #0
 	bl FreeToHeap
@@ -1633,7 +1634,7 @@ ListMenuUpdateCursorObj: ; 0x020157F0
 	ldr r2, [r6, #4]
 	add r0, r5, #0
 	add r3, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	bl CopyWindowPixelsToVram_TextMode
 	add sp, #0x10

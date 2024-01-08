@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_020183F0.inc"
 	.include "global.inc"
 
 	.text
@@ -771,7 +772,7 @@ sub_02018998: ; 0x02018998
 	bl FreeToHeap
 	ldrb r1, [r4, #0x18]
 	ldr r0, [r4, #0x1c]
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	pop {r4, pc}
 	thumb_func_end sub_02018998
 
@@ -1196,7 +1197,7 @@ _02018CC8:
 	ldr r0, [r5, #0x1c]
 	ldr r2, [r2, r6]
 	add r0, r0, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5, #0x1c]
 	add r0, r0, r4
 	bl ScheduleWindowCopyToVram
@@ -1273,7 +1274,7 @@ _02018D50:
 	ldr r3, [sp, #0x10]
 	add r0, r0, r6
 	mov r1, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5, #0x1c]
 	add r0, r0, r6
 	bl ScheduleWindowCopyToVram
@@ -1355,7 +1356,7 @@ sub_02018E08: ; 0x02018E08
 	add r5, r0, #0
 	ldr r0, [r5, #0x20]
 	add r4, r1, #0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r6, r0, #0
 	mov r0, #0
 	mvn r0, r0

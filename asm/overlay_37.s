@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_37.inc"
 	.include "global.inc"
 
 	.text
@@ -22,8 +23,8 @@ _021E5916:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -50,7 +51,7 @@ _021E5916:
 	bl BgConfig_Alloc
 	str r0, [r4]
 	mov r0, #0x27
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0xc]
 	mov r0, #0
 	mov r1, #0x1b
@@ -86,7 +87,7 @@ _021E5916:
 	str r0, [r4, #8]
 	mov r0, #0x4e
 	mov r1, #0x27
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	add r0, r4, #0
 	add r1, r7, #0
@@ -138,7 +139,7 @@ _021E5A30:
 	bl sub_020356EC
 _021E5A48:
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -352,7 +353,7 @@ _021E5BF8:
 	cmp r4, #4
 	blt _021E5BF8
 	ldr r0, [r6, #0x34]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	bl sub_0202168C
 	bl sub_02022608
@@ -364,7 +365,7 @@ _021E5BF8:
 	ldr r0, [r6, #0x10]
 	bl DestroyMsgData
 	ldr r0, [r6, #0xc]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r7]
 	add r0, r0, #1
 	str r0, [r7]
@@ -437,7 +438,7 @@ ov37_021E5CC8: ; 0x021E5CC8
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	add r0, r4, #0
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E5CE8 ; =0x027E0000
 	ldr r1, _021E5CEC ; =0x00003FF8
 	mov r0, #1
@@ -463,7 +464,7 @@ _021E5CFA:
 	sub r2, r2, #1
 	bne _021E5CFA
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -615,7 +616,7 @@ ov37_021E5E30: ; 0x021E5E30
 _021E5E46:
 	mov r0, #8
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r6, #0x14]
 	ldrb r1, [r4]
 	ldr r0, [sp, #4]
@@ -639,11 +640,11 @@ _021E5E46:
 	blt _021E5E46
 	mov r0, #0xa
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r7, #0x28]
 	mov r0, #0x50
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r7, #0x2c]
 	ldr r0, _021E5F0C ; =0x00004376
 	mov r2, #0
@@ -690,7 +691,7 @@ _021E5E46:
 	ldr r1, _021E5F18 ; =0x000043C8
 	str r0, [r7, r1]
 	mov r0, #0x27
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	ldr r1, _021E5F1C ; =0x000093F0
 	str r0, [r7, r1]
 	mov r0, #0xc5
@@ -718,20 +719,20 @@ ov37_021E5F20: ; 0x021E5F20
 	bl FreeToHeap
 	ldr r0, _021E5F58 ; =0x000093F0
 	ldr r0, [r6, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r4, #0
 	add r5, r6, #0
 _021E5F38:
 	ldr r0, [r5, #0x14]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
 	blt _021E5F38
 	ldr r0, [r6, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x28]
-	bl String_dtor
+	bl String_Delete
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
 _021E5F54: .word 0x000043C8
@@ -1248,7 +1249,7 @@ _021E6350:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #2
-	bl sub_02024A04
+	bl Sprite_SetPriority
 _021E6392:
 	add r7, r7, #1
 	add r6, r6, #6
@@ -1289,7 +1290,7 @@ _021E63B0:
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	mov r1, #1
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	mov r0, #0x21
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
@@ -1302,10 +1303,10 @@ _021E63B0:
 	blt _021E63B0
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x64
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -1400,7 +1401,7 @@ ov37_021E6418: ; 0x021E6418
 	add r0, r7, r0
 	mov r1, #1
 	add r3, r3, #2
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0
 	str r0, [sp, #0x14]
 	mov r0, #0x9e
@@ -1530,7 +1531,7 @@ _021E65D4:
 	str r0, [sp, #8]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {r4, r5, pc}
 	.balign 4, 0
@@ -1544,7 +1545,7 @@ ov37_021E65EC: ; 0x021E65EC
 	mov r0, #0
 	str r0, [sp, #4]
 	ldr r0, _021E67E8 ; =ov37_021E7A4C
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	str r0, [sp, #8]
@@ -1711,7 +1712,7 @@ _021E672A:
 	bl PlaySE
 _021E6752:
 	ldr r0, _021E6808 ; =ov37_021E7970
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	add r4, r0, #0
 	bl sub_0203769C
 	lsl r1, r0, #2
@@ -2082,7 +2083,7 @@ _021E6A36:
 _021E6A50:
 	ldr r0, _021E6B34 ; =0x000093F0
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021E6A62
 	cmp r0, #2
@@ -2425,7 +2426,7 @@ ov37_021E6D14: ; 0x021E6D14
 	ldr r0, _021E6DC4 ; =0x000093F0
 	add r6, r1, #0
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r4, r0, #0
 	bl ov37_021E75C4
 	mov r1, #0xc6
@@ -2639,7 +2640,7 @@ ov37_021E6EB4: ; 0x021E6EB4
 	ldr r0, [r5, #0x30]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _021E6ED2:
 	add r0, r5, #0
 	mov r1, #2
@@ -3492,7 +3493,7 @@ _021E74F0:
 	ldr r2, [r4, #0x14]
 	add r0, r5, #0
 	mov r3, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	b _021E7540
 _021E7524:
 	mov r0, #0
@@ -3507,7 +3508,7 @@ _021E7524:
 	ldr r2, [r4, #0x14]
 	add r0, r5, #0
 	mov r3, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _021E7540:
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -3650,7 +3651,7 @@ ov37_021E762C: ; 0x021E762C
 	mov r0, #0x50
 	mov r1, #0x27
 	add r4, r2, #0
-	bl String_ctor
+	bl String_New
 	add r6, r0, #0
 	ldr r0, [r5, #0x10]
 	add r1, r7, #0
@@ -3661,7 +3662,7 @@ ov37_021E762C: ; 0x021E762C
 	add r2, r6, #0
 	bl StringExpandPlaceholders
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0xb6
 	lsl r0, r0, #2
 	add r0, r5, r0
@@ -3964,7 +3965,7 @@ ov37_021E7880: ; 0x021E7880
 	bne _021E789C
 	sub r0, #8
 	ldr r0, [r4, r0]
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	ldr r1, _021E78A0 ; =0x000093F8
 	mov r0, #1
 	str r0, [r4, r1]
@@ -4000,7 +4001,7 @@ _021E78C0: .word 0x000093F8
 ov37_021E78C4: ; 0x021E78C4
 	push {r3, lr}
 	ldr r0, _021E78DC ; =_021E7968
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1

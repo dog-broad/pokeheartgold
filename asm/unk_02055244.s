@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02055244.inc"
 	.include "global.inc"
 
 	.text
@@ -6,7 +7,7 @@
 	thumb_func_start sub_02055244
 sub_02055244: ; 0x02055244
 	push {r3, lr}
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl sub_0203DF7C
 	cmp r0, #0
 	bne _02055256
@@ -22,7 +23,7 @@ _02055256:
 sub_0205525C: ; 0x0205525C
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	bl sub_0203DF7C
 	cmp r0, #0
@@ -44,7 +45,7 @@ _02055288: .word sub_02055244
 	thumb_func_start sub_0205528C
 sub_0205528C: ; 0x0205528C
 	push {r3, lr}
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl sub_020505C8
 	cmp r0, #0
 	beq _0205529E
@@ -56,11 +57,11 @@ _0205529E:
 	.balign 4, 0
 	thumb_func_end sub_0205528C
 
-	thumb_func_start sub_020552A4
-sub_020552A4: ; 0x020552A4
+	thumb_func_start CallTask_RestoreOverworld
+CallTask_RestoreOverworld: ; 0x020552A4
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	bl sub_0203DF7C
 	cmp r0, #0
@@ -77,7 +78,7 @@ _020552BC:
 	pop {r3, r4, r5, pc}
 	nop
 _020552D0: .word sub_0205528C
-	thumb_func_end sub_020552A4
+	thumb_func_end CallTask_RestoreOverworld
 
 	thumb_func_start sub_020552D4
 sub_020552D4: ; 0x020552D4
@@ -98,7 +99,7 @@ PalleteFadeUntilFinished: ; 0x020552E8
 	push {r3, r4, lr}
 	sub sp, #0xc
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl sub_0203DF7C
 	cmp r0, #0
 	bne _02055302
@@ -127,12 +128,12 @@ _02055302:
 _02055328: .word sub_020552D4
 	thumb_func_end PalleteFadeUntilFinished
 
-	thumb_func_start sub_0205532C
-sub_0205532C: ; 0x0205532C
+	thumb_func_start CallTask_FadeFromBlack
+CallTask_FadeFromBlack: ; 0x0205532C
 	push {r3, r4, lr}
 	sub sp, #0xc
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl sub_0203DF7C
 	cmp r0, #0
 	bne _02055346
@@ -158,7 +159,7 @@ _02055346:
 	pop {r3, r4, pc}
 	nop
 _0205536C: .word sub_020552D4
-	thumb_func_end sub_0205532C
+	thumb_func_end CallTask_FadeFromBlack
 
 	thumb_func_start sub_02055370
 sub_02055370: ; 0x02055370
@@ -215,7 +216,7 @@ sub_020553C0: ; 0x020553C0
 	bl TaskManager_GetStatePtr
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	ldr r1, [r4]
 	cmp r1, #0
 	beq _020553E0
@@ -226,7 +227,7 @@ sub_020553C0: ; 0x020553C0
 	b _02055404
 _020553E0:
 	add r0, r5, #0
-	bl sub_020552A4
+	bl CallTask_RestoreOverworld
 	ldr r0, [r4]
 	add r0, r0, #1
 	str r0, [r4]
@@ -234,7 +235,7 @@ _020553E0:
 _020553EE:
 	bl ov01_021EFAF8
 	add r0, r5, #0
-	bl sub_0205532C
+	bl CallTask_FadeFromBlack
 	ldr r0, [r4]
 	add r0, r0, #1
 	str r0, [r4]

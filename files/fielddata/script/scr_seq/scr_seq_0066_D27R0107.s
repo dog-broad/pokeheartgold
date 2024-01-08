@@ -39,15 +39,15 @@ scr_seq_D27R0107_000:
 _0062:
 	npc_msg msg_0094_D27R0107_00000
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	apply_movement obj_player, _01D0
 	apply_movement obj_D27R0107_gsleader6, _01B8
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_DOOR
 	hide_person obj_D27R0107_stop
 	hide_person obj_D27R0107_babyboy1_8
@@ -90,15 +90,15 @@ _00B5:
 	wait_cry
 	npc_msg msg_0094_D27R0107_00007
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	apply_movement obj_player, _0218
 	apply_movement obj_D27R0107_gsleader6, _0200
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	hide_person obj_D27R0107_gsleader6
 	releaseall
 	setflag FLAG_UNK_96A
@@ -124,20 +124,23 @@ _017F:
 	wait_cry
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _01A0:
 	step 30, 1
 	step_end
 
+	.balign 4, 0
 _01A8:
 	step 50, 3
 	step_end
 
+	.balign 4, 0
 _01B0:
 	step 31, 1
 	step_end
 
+	.balign 4, 0
 _01B8:
 	step 63, 1
 	step 13, 3
@@ -146,6 +149,7 @@ _01B8:
 	step 65, 1
 	step_end
 
+	.balign 4, 0
 _01D0:
 	step 2, 1
 	step 71, 1
@@ -156,12 +160,14 @@ _01D0:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01F0:
 	step 14, 1
 	step 12, 3
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0200:
 	step 63, 1
 	step 13, 1
@@ -170,6 +176,7 @@ _0200:
 	step 13, 1
 	step_end
 
+	.balign 4, 0
 _0218:
 	step 0, 1
 	step 71, 1
@@ -179,7 +186,12 @@ _0218:
 	step 62, 1
 	step 35, 1
 	step_end
-	.byte 0x0a, 0x00, 0x02, 0x00, 0xfe, 0x00, 0x00, 0x00
+
+	.balign 4, 0
+_0238:
+	step 10, 2
+	step_end
+
 scr_seq_D27R0107_001:
 	play_se SEQ_SE_DP_SELECT
 	lockall

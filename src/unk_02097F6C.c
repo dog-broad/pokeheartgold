@@ -1,6 +1,7 @@
 #include "assert.h"
 #include "map_events.h"
 #include "wild_encounter.h"
+#include "unk_02097F6C.h"
 #include "constants/easy_chat.h"
 #include "constants/items.h"
 #include "constants/maps.h"
@@ -42,10 +43,10 @@ BOOL sub_02097F6C(u32 rand, u16 mapno, u16 swarmValue) {
     return FALSE;
 }
 
-void sub_02097F9C(u32 rand, u16 *mapno, u16 *species) {
+void GetSwarmInfoFromRand(u32 rand, u16 *mapno, u16 *species) {
     ENC_DATA encData;
     const u16 (*swarmMap)[2];
-    
+
     swarmMap = &sSwarmMapLUT[rand % SWARM_MAP_COUNT];
     WildEncounters_ReadFromNarc(&encData, (*swarmMap)[0]);
     switch((*swarmMap)[1]) {
@@ -59,6 +60,6 @@ void sub_02097F9C(u32 rand, u16 *mapno, u16 *species) {
         *species = encData.swarmSpecies[0];
         break;
     }
-    GF_ASSERT(*species != 0);
+    GF_ASSERT(*species != SPECIES_NONE);
     *mapno = (*swarmMap)[0];
 }

@@ -9,6 +9,7 @@
 #include "fielddata/script/scr_seq/event_D24R0204.h"
 #include "constants/party_menu.h"
 	.include "asm/macros.inc"
+	.include "unk_0206793C.inc"
 	.include "global.inc"
 
 	.text
@@ -17,9 +18,9 @@
 sub_0206793C: ; 0x0206793C
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r2, r0, #0
 	ldr r1, _02067958 ; =_020FE79C
 	add r0, r4, #0
@@ -30,15 +31,15 @@ sub_0206793C: ; 0x0206793C
 _02067958: .word _020FE79C
 	thumb_func_end sub_0206793C
 
-	thumb_func_start Task_FieldTradeAnim
-Task_FieldTradeAnim: ; 0x0206795C
+	thumb_func_start Task_NPCTrade
+Task_NPCTrade: ; 0x0206795C
 	push {r4, r5, r6, lr}
 	sub sp, #8
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	cmp r0, #6
@@ -99,14 +100,14 @@ _020679D4:
 	b _02067A16
 _020679E2:
 	add r0, r5, #0
-	bl sub_020552A4
+	bl CallTask_RestoreOverworld
 	ldr r0, [r4, #4]
 	add r0, r0, #1
 	str r0, [r4, #4]
 	b _02067A16
 _020679F0:
 	add r0, r5, #0
-	bl sub_0205532C
+	bl CallTask_FadeFromBlack
 	ldr r0, [r4, #4]
 	add r0, r0, #1
 	str r0, [r4, #4]
@@ -125,10 +126,10 @@ _02067A16:
 	mov r0, #0
 	add sp, #8
 	pop {r4, r5, r6, pc}
-	thumb_func_end Task_FieldTradeAnim
+	thumb_func_end Task_NPCTrade
 
-	thumb_func_start Field_CreateTask_TradeAnim
-Field_CreateTask_TradeAnim: ; 0x02067A1C
+	thumb_func_start CallTask_NPCTrade
+CallTask_NPCTrade: ; 0x02067A1C
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
 	add r5, r1, #0
@@ -151,14 +152,14 @@ Field_CreateTask_TradeAnim: ; 0x02067A1C
 	ldr r0, [sp]
 	bl AllocMonZeroed
 	str r0, [r4, #0x28]
-	ldr r1, _02067A5C ; =Task_FieldTradeAnim
+	ldr r1, _02067A5C ; =Task_NPCTrade
 	add r0, r7, #0
 	add r2, r4, #0
 	bl TaskManager_Call
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
-_02067A5C: .word Task_FieldTradeAnim
-	thumb_func_end Field_CreateTask_TradeAnim
+_02067A5C: .word Task_NPCTrade
+	thumb_func_end CallTask_NPCTrade
 
 	.rodata
 

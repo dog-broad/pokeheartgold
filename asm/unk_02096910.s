@@ -5,6 +5,7 @@
 #include "constants/pokemon.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02096910.inc"
 	.include "global.inc"
 
 	.text
@@ -287,7 +288,7 @@ sub_02096AF4: ; 0x02096AF4
 	ldr r0, [r5]
 	add r4, r1, #0
 	add r6, r2, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r5, #0
 	add r1, #0x6a
 	strb r4, [r1]
@@ -313,7 +314,7 @@ sub_02096AF4: ; 0x02096AF4
 	b _02096B7E
 _02096B30:
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #MON_DATA_SPECIES
 	mov r2, #0
 	add r4, r0, #0
@@ -330,7 +331,7 @@ _02096B30:
 	strh r0, [r1]
 	add r0, r7, #0
 	add r1, r6, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #MON_DATA_SPECIES
 	mov r2, #0
 	add r4, r0, #0

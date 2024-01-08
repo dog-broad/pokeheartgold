@@ -1,4 +1,6 @@
+#include "config.h"
 	.include "asm/macros.inc"
+	.include "overlay_39_thumb.inc"
 	.include "global.inc"
 
 	.text
@@ -14,7 +16,7 @@ ov39_02227060: ; 0x02227060
 	add r0, r5, #0
 	add r1, r4, #0
 	mov r2, #0x5c
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	add r4, #0x5c
 	strh r0, [r4]
 	pop {r3, r4, r5, pc}
@@ -44,7 +46,7 @@ ov39_02227088: ; 0x02227088
 	bl MI_CpuFill8
 	ldr r1, [sp, #0x28]
 	mov r0, #0x3c
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	add r0, r5, #0
 	add r1, r6, #0
@@ -55,7 +57,7 @@ ov39_02227088: ; 0x02227088
 	mov r2, #0x14
 	bl CopyStringToU16Array
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	mov r4, #0
 	str r7, [sp, #0xc]
 	str r7, [sp, #8]
@@ -139,7 +141,7 @@ _02227130:
 	ldr r0, [sp, #4]
 	add r1, r7, #0
 	add r2, #0x22
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	mov r1, #0x66
 	lsl r1, r1, #2
 	strh r0, [r7, r1]
@@ -158,7 +160,7 @@ ov39_02227188: ; 0x02227188
 	strb r2, [r4, r3]
 	add r3, #0x21
 	add r2, r3, #0
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	mov r1, #0x66
 	lsl r1, r1, #2
 	strh r0, [r4, r1]
@@ -292,14 +294,14 @@ _0222722C:
 	lsl r1, r1, #2
 	str r0, [r5, r1]
 	ldr r0, [r4, #4]
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	mov r1, #0xfe
 	lsl r1, r1, #2
 	str r0, [r5, r1]
 	mov r0, #1
 	ldr r1, [r4, #4]
 	lsl r0, r0, #8
-	bl String_ctor
+	bl String_New
 	mov r1, #0xff
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -344,11 +346,11 @@ ov39_022272EC: ; 0x022272EC
 	str r1, [r4, r0]
 	add r0, #0x38
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0xfe
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r0, #0xfd
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -609,7 +611,7 @@ ov39_022274D4: ; 0x022274D4
 	pop {r3, r4, r5, r6, r7, pc}
 _022274E8:
 	ldr r0, [r5]
-	bl Sav2_PlayerData_GetIGTAddr
+	bl Save_PlayerData_GetIGTAddr
 	mov r1, #0x66
 	lsl r1, r1, #2
 	add r1, r5, r1
@@ -1788,7 +1790,7 @@ _02227D6E:
 	add r2, r5, #0
 	bl StringExpandPlaceholders
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	mov r1, #0xff
 	lsl r1, r1, #2
 	ldr r1, [r4, r1]
@@ -2243,7 +2245,7 @@ _02228048:
 	ldr r0, [r0]
 	add r1, #0x80
 	mov r2, #0x58
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	ldr r1, [r4]
 	add r1, #0xe0
 	strh r0, [r1]
@@ -2329,7 +2331,7 @@ ov39_022280D4: ; 0x022280D4
 	ldr r0, [r6]
 	add r1, #0x80
 	mov r2, #0x58
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	ldr r1, [r5]
 	add r1, #0xe0
 	strh r0, [r1]
@@ -2370,8 +2372,8 @@ ov39_02228140: ; 0x02228140
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -2429,7 +2431,7 @@ ov39_02228140: ; 0x02228140
 	mov r0, #0xb
 	mov r1, #0x40
 	mov r2, #0x7c
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r5, #0x20]
 	ldr r2, _022282F8 ; =0x00000307
 	mov r0, #0
@@ -2452,12 +2454,12 @@ ov39_02228140: ; 0x02228140
 	str r0, [r5, #0x2c]
 	mov r0, #0xb4
 	mov r1, #0x7c
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x34]
 	mov r0, #1
 	lsl r0, r0, #8
 	mov r1, #0x7c
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x3c]
 	ldr r0, [r5, #0x24]
 	mov r1, #0x1f
@@ -2479,23 +2481,23 @@ ov39_02228140: ; 0x02228140
 	bl BeginNormalPaletteFade
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _02228300 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	bl TextFlags_SetCanABSpeedUpPrint
 	mov r0, #0
@@ -2530,7 +2532,7 @@ _022282CA:
 	ldr r0, [r5]
 	ldr r0, [r0]
 	ldr r0, [r0, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	add r1, r5, #0
 	add r1, #0x90
@@ -2635,13 +2637,13 @@ _02228394:
 	ldr r0, [r4, #0x24]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x20]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x38]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x3c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x34]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl ov39_02228948
 	ldr r0, [r4, #4]
@@ -2668,7 +2670,7 @@ _02228394:
 	ldr r0, _02228414 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -2682,7 +2684,7 @@ ov39_02228418: ; 0x02228418
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	ldr r0, [r4, #4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _02228438 ; =0x027E0000
 	ldr r1, _0222843C ; =0x00003FF8
 	mov r0, #1
@@ -2700,8 +2702,8 @@ ov39_02228440: ; 0x02228440
 	push {r3, r4, r5, lr}
 	sub sp, #0xa8
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	ldr r5, _02228598 ; =ov39_0222A8E4
 	add r3, sp, #0x80
 	mov r2, #5
@@ -2711,7 +2713,7 @@ _02228454:
 	sub r2, r2, #1
 	bne _02228454
 	add r0, sp, #0x80
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -2878,7 +2880,7 @@ ov39_022285CC: ; 0x022285CC
 	ldr r4, [r0, #4]
 	mov r0, #0x58
 	mov r1, #0x7c
-	bl NARC_ctor
+	bl NARC_New
 	mov r2, #0
 	str r2, [sp]
 	mov r1, #0x7c
@@ -2909,7 +2911,7 @@ ov39_022285CC: ; 0x022285CC
 	ldr r0, [r0]
 	ldr r0, [r0]
 	ldr r0, [r0, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -3124,7 +3126,7 @@ _022287A2:
 	str r0, [r1]
 	ldr r0, [sp, #0x2c]
 	str r1, [sp, #0x10]
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x3c
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -3372,7 +3374,7 @@ ov39_0222899C: ; 0x0222899C
 	add r0, r5, #0
 	mov r1, #1
 	add r2, r6, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	thumb_func_end ov39_0222899C
@@ -3386,7 +3388,7 @@ ov39_022289D0: ; 0x022289D0
 	add r6, r1, #0
 	lsl r0, r0, #8
 	mov r1, #0x7c
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0x2c]
 	add r1, r6, #0
@@ -3418,7 +3420,7 @@ ov39_022289D0: ; 0x022289D0
 	mov r0, #0xff
 	str r0, [r5, #0x40]
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -3486,7 +3488,7 @@ ov39_02228A8C: ; 0x02228A8C
 	add r0, r4, #0
 	add r0, #0x44
 	mov r1, #1
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	add r4, #0x88
 	str r0, [r4]
 _02228AA6:
@@ -3516,7 +3518,7 @@ ov39_02228AC0: ; 0x02228AC0
 	add r5, r0, #0
 	mov r0, #0x7c
 	add r4, r1, #0
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	mov r1, #0
 	mov r2, #0xe
 	str r2, [sp, #0xc]
@@ -3539,7 +3541,7 @@ ov39_02228AC0: ; 0x02228AC0
 	strb r4, [r3, #0x12]
 	strb r1, [r3, #0x13]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r6, #0
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
@@ -3560,7 +3562,7 @@ ov39_02228B04: ; 0x02228B04
 	add r2, r6, #0
 	bl StringExpandPlaceholders
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0x44
 	mov r1, #0xf
@@ -3713,13 +3715,13 @@ _02228C30:
 	add r0, r4, #0
 	add r0, #0x84
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02228C56
 	add r0, r4, #0
 	add r0, #0x84
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	add r0, #0x94
 	ldr r0, [r0]
@@ -3733,7 +3735,7 @@ _02228C56:
 	add r0, r4, #0
 	add r0, #0x84
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #8
 	str r0, [r4, #8]
 	b _02228C6E
@@ -4003,22 +4005,22 @@ ov39_02228E54: ; 0x02228E54
 	ldr r0, [r5]
 	ldr r0, [r0]
 	ldr r0, [r0, #4]
-	bl Sav2_SysInfo_get
+	bl Save_SysInfo_Get
 	add r4, r0, #0
 	add r0, r6, #0
 	bl sub_0202C08C
 	add r0, r4, #0
-	bl Sav2_SysInfo_GetField4C
+	bl Save_SysInfo_GetField4C
 	cmp r0, #0
 	bne _02228E8E
 	add r0, r6, #0
 	bl sub_0203A040
 	add r1, r0, #0
 	add r0, r4, #0
-	bl Sav2_SysInfo_SetField4C
+	bl Save_SysInfo_SetField4C
 _02228E8E:
 	add r0, r4, #0
-	bl Sav2_SysInfo_GetField4C
+	bl Save_SysInfo_GetField4C
 	mov r0, #9
 	str r0, [r5, #8]
 	ldr r0, [r5]

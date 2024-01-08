@@ -69,26 +69,27 @@ _00B8:
 	scrcmd_309 1
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _00D0:
 	step 17, 2
 	step 63, 1
 	step_end
+
 scr_seq_T27_005:
 	scrcmd_609
 	lockall
 	clearflag FLAG_HIDE_ECRUTEAK_RIVAL
 	show_person obj_T27_gsrivel
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	apply_movement obj_T27_gsrivel, _019C
 	apply_movement obj_player, _01B0
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_WALL_HIT2
 	npc_msg msg_0612_T27_00016
 	wait 30, VAR_SPECIAL_RESULT
@@ -102,15 +103,15 @@ scr_seq_T27_005:
 	npc_msg msg_0612_T27_00018
 	closemsg
 	play_se SEQ_SE_DP_WALL_HIT2
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	apply_movement obj_T27_gsrivel, _01D4
 	apply_movement obj_player, _01B0
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	apply_movement obj_T27_gsrivel, _01E0
 	apply_movement obj_player, _01F0
 	wait_movement
@@ -122,8 +123,13 @@ scr_seq_T27_005:
 	clearflag FLAG_HIDE_DANCE_STUDIO_KIMONO_GIRLS
 	setflag FLAG_UNK_241
 	end
-	.byte 0x4b, 0x00, 0x01, 0x00, 0xfe, 0x00, 0x00, 0x00
 
+	.balign 4, 0
+_0194:
+	step 75, 1
+	step_end
+
+	.balign 4, 0
 _019C:
 	step 71, 1
 	step 17, 1
@@ -131,6 +137,7 @@ _019C:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _01B0:
 	step 0, 1
 	step 71, 1
@@ -138,27 +145,32 @@ _01B0:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _01C4:
 	step 75, 1
 	step 63, 1
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01D4:
 	step 17, 1
 	step 37, 1
 	step_end
 
+	.balign 4, 0
 _01E0:
 	step 10, 3
 	step 63, 3
 	step 18, 6
 	step_end
 
+	.balign 4, 0
 _01F0:
 	step 63, 3
 	step 34, 1
 	step_end
+
 scr_seq_T27_013:
 	simple_npc_msg msg_0612_T27_00019
 	end
@@ -180,9 +192,9 @@ scr_seq_T27_014:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _0288
@@ -201,9 +213,9 @@ _02A3:
 	apply_movement obj_T27_gsmiddleman1, _0374
 _02B3:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _02DA
@@ -241,7 +253,7 @@ _0328:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _033C:
 	step 15, 1
 	step 12, 2
@@ -250,11 +262,13 @@ _033C:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0354:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0360:
 	step 12, 1
 	step 14, 1
@@ -262,16 +276,19 @@ _0360:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0374:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0380:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_T27_001:
 	direction_signpost msg_0612_T27_00011, 0, 18, VAR_SPECIAL_RESULT
 	scrcmd_057 3

@@ -1,20 +1,44 @@
+MSGDATA_DIR     := files/msgdata
 MSGDATA_MSG_DIR := files/msgdata/msg
 
 # TRNAME_GMM is autogenned from json
 TRNAME_GMM 	:= $(MSGDATA_MSG_DIR)/msg_0729.gmm
-MSGFILE_GMM := $(sort $(wildcard $(MSGDATA_MSG_DIR)/*.gmm) $(TRNAME_GMM))
+BUILT_GMMS  := $(sort $(TRNAME_GMM)) # add any built GMMs here
+MSGFILE_GMM := $(sort $(wildcard $(MSGDATA_MSG_DIR)/*.gmm) $(BUILT_GMMS))
 MSGFILE_BIN := $(patsubst %.gmm,%.bin,$(MSGFILE_GMM))
-MSGFILE_H := $(patsubst %.gmm,%.h,$(MSGFILE_GMM))
+MSGFILE_H   := $(patsubst %.gmm,%.h,$(MSGFILE_GMM))
+
+TRAINER_JSON := files/poketool/trainer/trainers.json
+TRNAME_TEMPLATE := files/poketool/trainer/trname.json.txt
+
+FIRST_MSG_H_GEN := $(MSGDATA_DIR)/headers.done
+TOUCH_ONCE      := $(MSGDATA_DIR)/touch_once.sh
+
+$(TRNAME_GMM):
+	$(JSONPROC) $(TRAINER_JSON) $(TRNAME_TEMPLATE) $(TRNAME_GMM)
+	$(SED) -i 's/&/&amp;/g' $(TRNAME_GMM)
 
 $(MSGDATA_MSG_DIR).narc: %.narc: $(MSGFILE_BIN)
 
+# extremely ugly hack to get it actually building
+#$(MSGDATA_MSG_DIR)/msg_0729.bin: $(TRNAME_GMM)
+
 $(MSGFILE_BIN): MSGENCFLAGS = -e -c charmap.txt --gmm -H $*.h
-$(MSGFILE_BIN): %.bin: %.gmm charmap.txt
+$(MSGFILE_BIN): %.bin: %.gmm charmap.txt | $(BUILT_GMMS)
 	$(MSGENC) $(MSGENCFLAGS) $< $@
 
 $(MSGFILE_H): %.h: %.bin
 
-FS_CLEAN_TARGETS += $(MSGDATA_MSG_DIR).narc $(MSGFILE_BIN) $(MSGFILE_H)
+# This target only runs once when the header files are first generated. All the
+# headers need to built by the time we start assembling the scripts. But we
+# don't want to re-build all the scripts whenever a header changes later.
+#
+# Any scripts affected by a header change will be re-built outside this rule
+# (since the scripts are assembled with DEPFLAGS).
+$(FIRST_MSG_H_GEN): $(MSGFILE_H)
+	$(TOUCH_ONCE) $(FIRST_MSG_H_GEN)
+
+FS_CLEAN_TARGETS += $(MSGDATA_MSG_DIR).narc $(MSGFILE_BIN) $(MSGFILE_H) $(FIRST_MSG_H_GEN) $(TRNAME_GMM)
 
 files/msgdata/msg/msg_0000.bin: MSGENCFLAGS += -k 0xFEE8
 files/msgdata/msg/msg_0001.bin: MSGENCFLAGS += -k 0x9140

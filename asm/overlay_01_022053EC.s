@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_022053EC.inc"
 	.include "global.inc"
 
 	.text
@@ -22,7 +23,7 @@ ScrCmd_808: ; 0x022053EC
 	add r0, r5, #0
 	add r0, #0x80
 	ldr r0, [r0]
-	bl VarGet
+	bl FieldSystem_VarGet
 	ldr r6, _02205420 ; =FS_OVERLAY_ID(OVY_25)
 	add r4, r0, #0
 	add r0, r6, #0
@@ -31,7 +32,7 @@ ScrCmd_808: ; 0x022053EC
 	add r5, #0x80
 	ldr r0, [r5]
 	add r1, r4, #0
-	bl ov25_022598C0
+	bl TrainerHouse_StartBattle
 	add r0, r6, #0
 	bl UnloadOverlayByID
 	mov r0, #1
@@ -567,7 +568,7 @@ _022057BE:
 ov01_022057C4: ; 0x022057C4
 	push {r3, lr}
 	bl FollowingPokemon_GetMapObject
-	bl MapObject_CheckFlag9
+	bl MapObject_CheckVisible
 	pop {r3, pc}
 	thumb_func_end ov01_022057C4
 
@@ -897,7 +898,7 @@ _02205A5C:
 ov01_02205A60: ; 0x02205A60
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
 	bl TaskManager_GetStatePtr
@@ -989,10 +990,10 @@ ov01_02205B14: ; 0x02205B14
 	push {r4, r5, r6, lr}
 	sub sp, #0x30
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4]
 	cmp r1, #7
@@ -1313,10 +1314,10 @@ ov01_02205DB4: ; 0x02205DB4
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x14
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r6, r0, #0
 	add r0, r4, #0
 	bl TaskManager_GetStatePtr
@@ -1464,10 +1465,10 @@ _02205EFC: .word ov01_02205F00
 ov01_02205F00: ; 0x02205F00
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r6, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -1724,10 +1725,10 @@ _02206108: .word ov01_0220610C
 ov01_0220610C: ; 0x0220610C
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -1942,7 +1943,7 @@ _022062C8:
 ov01_022062CC: ; 0x022062CC
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetIdxOfFirstAliveMonInParty_CrashIfNone
 	pop {r3, pc}
 	.balign 4, 0

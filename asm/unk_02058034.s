@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02058034.inc"
 	.include "global.inc"
 
 	.bss
@@ -112,7 +113,7 @@ sub_020580E4: ; 0x020580E4
 	cmp r0, #0
 	bne _0205811C
 	add r0, r5, #0
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	mov r1, #0
 	add r3, r5, #0
 	str r1, [sp]
@@ -144,7 +145,7 @@ sub_02058124: ; 0x02058124
 	cmp r0, #0
 	bne _0205815C
 	add r0, r5, #0
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	mov r1, #0
 	add r3, r5, #0
 	str r1, [sp]
@@ -812,14 +813,14 @@ sub_02058640: ; 0x02058640
 	add r4, r1, #0
 	beq _0205865E
 	mov r0, #0xb
-	bl SavArray_Party_alloc
+	bl SaveArray_Party_Alloc
 	ldr r1, _02058684 ; =_021D41C8
 	ldr r2, [r1]
 	str r0, [r2, #0x40]
 	ldr r1, [r1]
 	add r0, r4, #0
 	ldr r1, [r1, #0x40]
-	bl Party_copy
+	bl Party_Copy
 _0205865E:
 	cmp r5, #0
 	beq _0205866C

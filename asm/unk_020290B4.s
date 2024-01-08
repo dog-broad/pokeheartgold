@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_020290B4.inc"
 	.include "global.inc"
 
 	.data
@@ -81,7 +82,7 @@ sub_020290E4: ; 0x020290E4
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	mov r0, #0x18
-	bl String_ctor
+	bl String_New
 	add r1, r5, #0
 	add r4, r0, #0
 	bl CopyU16ArrayToString
@@ -205,7 +206,7 @@ sub_020291A4: ; 0x020291A4
 _020291B2:
 	add r0, r4, #0
 	mov r1, #0xb
-	bl SavArray_get
+	bl SaveArray_Get
 	add r4, r0, #0
 	lsl r5, r5, #5
 	add r0, r4, r5
@@ -226,7 +227,7 @@ sub_020291D4: ; 0x020291D4
 	push {r4, lr}
 	add r4, r1, #0
 	mov r1, #0xb
-	bl SavArray_get
+	bl SaveArray_Get
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_020290BC
@@ -239,7 +240,7 @@ sub_020291E8: ; 0x020291E8
 	cmp r1, #5
 	bne _020291F6
 	mov r1, #0xb
-	bl SavArray_get
+	bl SaveArray_Get
 	pop {r3, pc}
 _020291F6:
 	cmp r1, #0xa

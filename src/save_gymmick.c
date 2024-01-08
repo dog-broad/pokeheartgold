@@ -1,20 +1,21 @@
+#include "global.h"
 #include "gymmick.h"
 
-void SavGymmick_Clear(struct Gymmick *gymmick) {
-    MI_CpuClear8(gymmick, sizeof(struct Gymmick));
+void Save_Gymmick_Clear(Gymmick *gymmick) {
+    MI_CpuClear8(gymmick, sizeof(Gymmick));
 }
 
-union GymmickUnion *SavGymmick_Init(struct Gymmick *gymmick, int kind) {
-    SavGymmick_Clear(gymmick);
-    gymmick->kind = kind;
+GymmickUnion *Save_Gymmick_Init(Gymmick *gymmick, GymmickType type) {
+    Save_Gymmick_Clear(gymmick);
+    gymmick->type = type;
     return &gymmick->data;
 }
 
-union GymmickUnion *SavGymmick_AssertMagic_GetData(struct Gymmick *gymmick, int kind) {
-    GF_ASSERT(gymmick->kind == kind);
+GymmickUnion *Save_Gymmick_AssertMagic_GetData(Gymmick *gymmick, GymmickType type) {
+    GF_ASSERT(gymmick->type == type);
     return &gymmick->data;
 }
 
-int SavGymmick_GetType(struct Gymmick *gymmick) {
-    return gymmick->kind;
+GymmickType Save_Gymmick_GetType(Gymmick *gymmick) {
+    return gymmick->type;
 }

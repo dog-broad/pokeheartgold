@@ -12,7 +12,7 @@ ALL_BUILDDIRS  := $(BUILD_DIR)/lib
 include common.mk
 include filesystem.mk
 
-$(ASM_OBJS): MWASFLAGS += -DPM_ASM -include config.h
+$(ASM_OBJS): MWASFLAGS += -DPM_ASM
 
 $(BUILD_DIR)/asm/nitrocrypto.o:  MWCCVER := 1.2/sp2p3
 $(BUILD_DIR)/lib/msl/src/*.o:    EXCCFLAGS := -Cpp_exceptions on
@@ -31,9 +31,13 @@ HEADER_TEMPLATE := $(buildname)/rom_header_template.sbin
 
 MAKEFLAGS += --no-print-directory
 
-all: $(ROM)
+all:
+	$(MAKE) tools
+	$(MAKE) patch_mwasmarm
+	$(MAKE) $(ROM)
 
 tidy:
+	@$(MAKE) -C lib/syscall tidy
 	@$(MAKE) -C sub tidy
 	$(RM) -r $(BUILD_DIR)
 	$(RM) -r $(PROJECT_CLEAN_TARGETS)
@@ -57,9 +61,10 @@ sub: ; @$(MAKE) -C sub
 ROMSPEC        := rom.rsf
 MAKEROM_FLAGS  := $(DEFINES)
 
-$(NEF): libsyscall
+$(ALL_OBJS): filesystem
+$(ELF): filesystem libsyscall
 
-libsyscall:
+libsyscall: filesystem
 	$(MAKE) -C lib/syscall all install INSTALL_PREFIX=$(abspath $(WORK_DIR)/$(BUILD_DIR)) GAME_CODE=$(GAME_CODE)
 
 $(SBIN_LZ): $(BUILD_DIR)/component.files
@@ -82,7 +87,7 @@ $(BANNER): $(BANNER_SPEC) $(ICON_PNG:%.png=%.nbfp) $(ICON_PNG:%.png=%.nbfc)
 # TODO: move to NitroSDK makefile
 FX_CONST_H := $(WORK_DIR)/lib/include/nitro/fx/fx_const.h
 PROJECT_CLEAN_TARGETS += $(FX_CONST_H)
-$(FX_CONST_H): $(TOOLSDIR)/gen_fx_consts/fx_const.csv
+$(FX_CONST_H): $(MKFXCONST) $(TOOLSDIR)/gen_fx_consts/fx_const.csv
 	$(MKFXCONST) $@
 sdk: $(FX_CONST_H)
 $(WORK_DIR)/include/global.h: $(FX_CONST_H) ;
@@ -90,9 +95,11 @@ $(WORK_DIR)/include/global.h: $(FX_CONST_H) ;
 # Convenience targets
 heartgold:          ; @$(MAKE) GAME_VERSION=HEARTGOLD
 soulsilver:         ; @$(MAKE) GAME_VERSION=SOULSILVER
-compare-heartgold:  ; @$(MAKE) GAME_VERSION=HEARTGOLD  COMPARE=1
-compare-soulsilver: ; @$(MAKE) GAME_VERSION=SOULSILVER COMPARE=1
+compare_heartgold:  ; @$(MAKE) GAME_VERSION=HEARTGOLD  COMPARE=1
+compare_soulsilver: ; @$(MAKE) GAME_VERSION=SOULSILVER COMPARE=1
+clean_heartgold:    ; @$(MAKE) GAME_VERSION=HEARTGOLD clean
+clean_soulsilver:   ; @$(MAKE) GAME_VERSION=SOULSILVER clean
 
-compare:             compare-heartgold
+compare:             compare_heartgold
 
-.PHONY: heartgold soulsilver compare compare-heartgold compare-soulsilver
+.PHONY: heartgold soulsilver compare compare_heartgold compare_soulsilver clean_heartgold clean_soulsilver

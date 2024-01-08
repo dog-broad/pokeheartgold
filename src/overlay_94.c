@@ -1,3 +1,4 @@
+#include "global.h"
 #include "assert.h"
 #include "heap.h"
 #include "party.h"
@@ -20,42 +21,42 @@
 static void _DestroyLocalWork(struct PartyMenuStruct* unkPtr);
 static void _InitEffects(struct PartyMenuStruct* unkPtr);
 static void _CleanupEffects(struct PartyMenuStruct* unkPtr);
-static void _CreateParticleSystem(struct IconFormeChangeWork* unkPtr);
-static void _EmitParticles(struct IconFormeChangeWork* unkPtr);
+static void _CreateParticleSystem(struct IconFormChangeData* unkPtr);
+static void _EmitParticles(struct IconFormChangeData* unkPtr);
 static void particleEmitCallback(struct SPLEmitter* unkPtr);
 static s32 _RunParticleSystem(void);
-static void _DestroyParticleSystem(struct IconFormeChangeWork* unkPtr);
+static void _DestroyParticleSystem(struct IconFormChangeData* unkPtr);
 static u32 texAlloc(u32 szByte, BOOL is4x4comp);
 static u32 plttAlloc(u32 szByte, BOOL is4pltt);
 
-void PartyMenu_InitIconFormeChangeWork(PartyMenuStruct* unkPtr) {
-    if (unkPtr->iconFormeChange != NULL) {
+void PartyMenu_InitIconFormChangeData(PartyMenuStruct* unkPtr) {
+    if (unkPtr->iconFormChange != NULL) {
         GF_ASSERT(FALSE);
     }
-    unkPtr->iconFormeChange = AllocFromHeap(HEAPID_PARTY_MENU, sizeof(IconFormeChangeWork));
-    MI_CpuClear8(unkPtr->iconFormeChange, sizeof(IconFormeChangeWork));
-    unkPtr->iconFormeChange->partyMonIndex = unkPtr->partyMonIndex;
+    unkPtr->iconFormChange = AllocFromHeap(HEAP_ID_PARTY_MENU, sizeof(IconFormChangeData));
+    MI_CpuClear8(unkPtr->iconFormChange, sizeof(IconFormChangeData));
+    unkPtr->iconFormChange->partyMonIndex = unkPtr->partyMonIndex;
 }
 
 // TODO: Create NAIX
 #define NARC_particle_giratina 0
 #define NARC_particle_shaymin  1
 
-BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
-    IconFormeChangeWork* work = unkPtr->iconFormeChange;
-    POKEMON* pokemon = GetPartyMonByIndex(unkPtr->unk654->party, unkPtr->partyMonIndex);
+BOOL PartyMenu_AnimateIconFormChange(PartyMenuStruct* unkPtr) {
+    IconFormChangeData* work = unkPtr->iconFormChange;
+    Pokemon *mon = Party_GetMonByIndex(unkPtr->unk654->party, unkPtr->partyMonIndex);
 
     switch (work->state) {
     case 0:
-        work->species = GetMonData(pokemon, MON_DATA_SPECIES, NULL);
+        work->species = GetMonData(mon, MON_DATA_SPECIES, NULL);
         switch (work->species) {
         case SPECIES_GIRATINA:
-            Mon_UpdateGiratinaForme(pokemon);
+            Mon_UpdateGiratinaForm(mon);
             work->duration = 65;
             work->fileId = NARC_particle_giratina;
             break;
         case SPECIES_SHAYMIN:
-            Mon_UpdateShayminForme(pokemon, SHAYMIN_SKY);
+            Mon_UpdateShayminForm(mon, SHAYMIN_SKY);
             work->duration = 35;
             work->fileId = NARC_particle_shaymin;
             break;
@@ -63,8 +64,8 @@ BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
         default:
             GF_ASSERT(FALSE);
             break;
-        } 
-        Pokedex_SetMonCaughtFlag(Sav2_Pokedex_get(Fsys_GetSaveDataPtr(unkPtr->unk654->fsys)), pokemon);
+        }
+        Pokedex_SetMonCaughtFlag(Save_Pokedex_Get(FieldSystem_GetSaveData(unkPtr->unk654->fieldSystem)), mon);
         work->state++;
         break;
     case 1:
@@ -76,7 +77,7 @@ BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
         work->state++;
         break;
     case 4:
-        GX_EngineAToggleLayers(1, GX_LAYER_TOGGLE_ON);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
         _EmitParticles(work);
         work->state++;
         break;
@@ -97,7 +98,7 @@ BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
         work->state++;
         break;
     case 7:
-        sub_020720D4(pokemon);
+        sub_020720D4(mon);
         work->state++;
         break;
     case 8:
@@ -106,10 +107,10 @@ BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
         }
         break;
     case 9:
-        STRING* str = NewString_ReadMsgData(unkPtr->msgData, msg_0300_00188); //" changed Forme!"
-        BufferBoxMonNickname(unkPtr->unk7c4, 0, Mon_GetBoxMon(pokemon));
+        String* str = NewString_ReadMsgData(unkPtr->msgData, msg_0300_00188); //" changed Form!"
+        BufferBoxMonNickname(unkPtr->unk7c4, 0, Mon_GetBoxMon(mon));
         StringExpandPlaceholders(unkPtr->unk7c4, unkPtr->unk7c8, str);
-        String_dtor(str);
+        String_Delete(str);
         sub_0207DAEC(unkPtr, -1, 1);
         work->state++;
         break;
@@ -125,42 +126,42 @@ BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr) {
 }
 
 static void _DestroyLocalWork(PartyMenuStruct* unkPtr) {
-    FreeToHeap(unkPtr->iconFormeChange);
-    unkPtr->iconFormeChange = 0;
+    FreeToHeap(unkPtr->iconFormChange);
+    unkPtr->iconFormChange = 0;
 }
 
 static void _InitEffects(PartyMenuStruct* unkPtr) {
     sub_0207991C(unkPtr, 0);
-    _CreateParticleSystem(unkPtr->iconFormeChange);
+    _CreateParticleSystem(unkPtr->iconFormChange);
     G2_SetBlendAlpha(0, 63, 31, 0);
 }
 
 static void _CleanupEffects(PartyMenuStruct* unkPtr) {
-    _DestroyParticleSystem(unkPtr->iconFormeChange);
+    _DestroyParticleSystem(unkPtr->iconFormChange);
     sub_0207991C(unkPtr, 1);
     G2_BlendNone();
 }
 
-static void _CreateParticleSystem(IconFormeChangeWork* unkPtr) {
+static void _CreateParticleSystem(IconFormChangeData* unkPtr) {
     sub_02014DA0();
-    void* particleHeap = AllocFromHeap(HEAPID_PARTY_MENU, PARTICLE_HEAP_SIZE);
+    void* particleHeap = AllocFromHeap(HEAP_ID_PARTY_MENU, PARTICLE_HEAP_SIZE);
 
-    unkPtr->particleSystem = sub_02014DB4(texAlloc, plttAlloc, particleHeap, PARTICLE_HEAP_SIZE, 1, HEAPID_PARTY_MENU);
+    unkPtr->particleSystem = sub_02014DB4(texAlloc, plttAlloc, particleHeap, PARTICLE_HEAP_SIZE, 1, HEAP_ID_PARTY_MENU);
 
-    GF_Camera_SetClipBounds(1 * FX32_ONE, 900 * FX32_ONE, sub_02015524(unkPtr->particleSystem));
+    Camera_SetPerspectiveClippingPlane(1 * FX32_ONE, 900 * FX32_ONE, sub_02015524(unkPtr->particleSystem));
 }
 
-static void _EmitParticles(IconFormeChangeWork* unkPtr) {
-    sub_0201526C(unkPtr->particleSystem, sub_02015264(NARC_a_2_0_6, unkPtr->fileId, HEAPID_PARTY_MENU), 0xA, 1);
+static void _EmitParticles(IconFormChangeData* unkPtr) {
+    sub_0201526C(unkPtr->particleSystem, sub_02015264(NARC_a_2_0_6, unkPtr->fileId, HEAP_ID_PARTY_MENU), 0xA, 1);
 
     switch (unkPtr->species) {
-    case SPECIES_GIRATINA: 
+    case SPECIES_GIRATINA:
         sub_02015494(unkPtr->particleSystem, 0, particleEmitCallback, unkPtr);
         sub_02015494(unkPtr->particleSystem, 1, particleEmitCallback, unkPtr);
         sub_02015494(unkPtr->particleSystem, 2, particleEmitCallback, unkPtr);
         PlaySE(SEQ_SE_PL_W467109);
         break;
-    case SPECIES_SHAYMIN: 
+    case SPECIES_SHAYMIN:
         sub_02015494(unkPtr->particleSystem, 0, particleEmitCallback, unkPtr);
         sub_02015494(unkPtr->particleSystem, 1, particleEmitCallback, unkPtr);
         PlaySE(SEQ_SE_PL_W363);
@@ -178,7 +179,7 @@ static const fx32 sPartyMonSpritePositions[][2] = {
 };
 
 static void particleEmitCallback(struct SPLEmitter* emitter) {
-    struct IconFormeChangeWork* unkA = sub_02015504();
+    struct IconFormChangeData* unkA = sub_02015504();
     SPL_SetEmitterPositionX(emitter, sPartyMonSpritePositions[unkA->partyMonIndex][0]);
     SPL_SetEmitterPositionY(emitter, sPartyMonSpritePositions[unkA->partyMonIndex][1]);
 }
@@ -194,7 +195,7 @@ static s32 _RunParticleSystem(void) {
     return val;
 }
 
-static void _DestroyParticleSystem(IconFormeChangeWork* unkPtr) {
+static void _DestroyParticleSystem(IconFormChangeData* unkPtr) {
     void* unkA = sub_020154D0(unkPtr->particleSystem);
     sub_02014EBC(unkPtr->particleSystem);
     FreeToHeap(unkA);
@@ -204,15 +205,15 @@ static u32 texAlloc(u32 szByte, BOOL is4x4comp) {
     NNSGfdTexKey unkC = NNS_GfdDefaultFuncAllocTexVram(szByte, is4x4comp, 0);
 
     GF_ASSERT(unkC != NNS_GFD_ALLOC_ERROR_TEXKEY);
-     
+
     sub_02015354(unkC);
-    
+
     return NNS_GfdGetTexKeyAddr(unkC);
 }
 
 static u32 plttAlloc(u32 szByte, BOOL is4pltt) {
     NNSGfdPlttKey unkC = NNS_GfdDefaultFuncAllocPlttVram(szByte, is4pltt, 1);
-    
+
     GF_ASSERT(unkC != NNS_GFD_ALLOC_ERROR_PLTTKEY);
 
     sub_02015394(unkC);

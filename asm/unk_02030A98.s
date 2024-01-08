@@ -1,4 +1,6 @@
+#include "config.h"
 	.include "asm/macros.inc"
+	.include "unk_02030A98.inc"
 	.include "global.inc"
 
 	.bss
@@ -968,7 +970,7 @@ _02031080: .word _021D2AFC
 sub_02031084: ; 0x02031084
 	push {r3, lr}
 	mov r1, #0x13
-	bl SavArray_get
+	bl SaveArray_Get
 	add r1, r0, #0
 	ldr r0, _02031098 ; =_021D2AFC
 	ldr r2, _0203109C ; =0x00001628
@@ -983,7 +985,7 @@ _0203109C: .word 0x00001628
 sub_020310A0: ; 0x020310A0
 	push {r3, lr}
 	mov r1, #0x13
-	bl SavArray_get
+	bl SaveArray_Get
 	ldr r1, _020310B4 ; =_021D2AFC
 	ldr r2, _020310B8 ; =0x00001628
 	bl MI_CpuCopy8
@@ -1587,15 +1589,15 @@ sub_020314C4: ; 0x020314C4
 	add r6, r1, #0
 	add r5, r0, #0
 	add r0, r6, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r4, r0, #0
 	add r0, r6, #0
 	bl sub_0202CA44
 	str r0, [sp]
 	add r0, r6, #0
-	bl Sav2_SysInfo_get
+	bl Save_SysInfo_Get
 	add r0, r6, #0
-	bl Sav2_Misc_const_get
+	bl Save_Misc_Const_Get
 	add r7, r0, #0
 	add r0, sp, #0x10
 	bl OS_GetOwnerInfo
@@ -1671,7 +1673,7 @@ _02031566:
 	add r1, r0, #0
 	add r0, r7, #0
 	mov r2, #0
-	bl sub_0205B46C
+	bl GetUnionRoomAvatarAttrBySprite
 	strb r0, [r5, #0x16]
 	mov r0, #GAME_VERSION
 	strb r0, [r5, #0x19]
@@ -1680,7 +1682,7 @@ _02031566:
 	add r0, r6, #0
 	add r1, r5, #0
 	mov r2, #0x7c
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	add r5, #0x7c
 	strh r0, [r5]
 	add sp, #0x64
@@ -1694,7 +1696,7 @@ sub_020315B8: ; 0x020315B8
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	mov r0, #0xf
-	bl String_ctor
+	bl String_New
 	add r1, r5, #0
 	mov r2, #0xf
 	add r4, r0, #0
@@ -1850,7 +1852,7 @@ _020316AA:
 	ble _020316C8
 	add r0, r4, #0
 	mov r1, #4
-	bl MailMsg_init_withBank
+	bl MailMsg_Init_WithBank
 	mov r0, #0
 	strh r0, [r4, #2]
 	ldr r0, _020316EC ; =0x0000011F
@@ -1866,7 +1868,7 @@ _020316C8:
 _020316CE:
 	mov r0, #0x28
 	add r1, r2, #0
-	bl String_ctor
+	bl String_New
 	add r5, #0x20
 	add r1, r5, #0
 	mov r2, #0x28

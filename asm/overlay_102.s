@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_102.inc"
 	.include "global.inc"
 
 	.text
@@ -638,21 +639,21 @@ _021E7BD4:
 
 	thumb_func_start ov102_021E7BD8
 ov102_021E7BD8: ; 0x021E7BD8
-	ldr r3, _021E7BE0 ; =sub_02025224
+	ldr r3, _021E7BE0 ; =TouchscreenHitbox_FindRectAtTouchNew
 	ldr r0, _021E7BE4 ; =ov102_021EC610
 	bx r3
 	nop
-_021E7BE0: .word sub_02025224
+_021E7BE0: .word TouchscreenHitbox_FindRectAtTouchNew
 _021E7BE4: .word ov102_021EC610
 	thumb_func_end ov102_021E7BD8
 
 	thumb_func_start ov102_021E7BE8
 ov102_021E7BE8: ; 0x021E7BE8
-	ldr r3, _021E7BF0 ; =sub_02025224
+	ldr r3, _021E7BF0 ; =TouchscreenHitbox_FindRectAtTouchNew
 	ldr r0, _021E7BF4 ; =ov102_021EC620
 	bx r3
 	nop
-_021E7BF0: .word sub_02025224
+_021E7BF0: .word TouchscreenHitbox_FindRectAtTouchNew
 _021E7BF4: .word ov102_021EC620
 	thumb_func_end ov102_021E7BE8
 
@@ -1139,7 +1140,7 @@ ov102_021E7F6C: ; 0x021E7F6C
 	add r1, #2
 	add r2, sp, #0
 	add r6, r0, #0
-	bl sub_0200DE00
+	bl Sprite_GetPositionXY
 	add r0, r5, #0
 	add r0, #0x6c
 	ldrb r0, [r0]
@@ -1191,7 +1192,7 @@ _021E7FD8:
 	ldrsh r2, [r3, r2]
 	add r0, r6, #0
 	add r1, r4, #0
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	add r0, r5, #0
 	add r0, #0x6e
 	strh r4, [r0]
@@ -1251,7 +1252,7 @@ _021E8030:
 	pop {r3, r4, r5, r6, r7, pc}
 _021E8060:
 	ldr r0, _021E80B8 ; =ov102_021EC634
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1274,7 +1275,7 @@ _021E807E:
 	ldrh r1, [r1, #0x20]
 	ldrh r2, [r2, #0x22]
 	add r0, r7, #0
-	bl sub_020253F0
+	bl TouchscreenHitbox_PointIsIn
 	cmp r0, #0
 	beq _021E80A2
 	add sp, #8
@@ -1674,7 +1675,7 @@ ov102_021E839C: ; 0x021E839C
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, _021E83E0 ; =ov102_021EC600
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1747,7 +1748,7 @@ _021E8412:
 	ldrh r1, [r7, #0x20]
 	ldrh r2, [r7, #0x22]
 	add r0, sp, #8
-	bl sub_020253F0
+	bl TouchscreenHitbox_PointIsIn
 	cmp r0, #0
 	beq _021E8434
 	ldr r0, [sp, #4]
@@ -1781,7 +1782,7 @@ _021E8454: .word gSystem + 0x40
 ov102_021E8458: ; 0x021E8458
 	push {r3, lr}
 	ldr r0, _021E8484 ; =ov102_021EC5E0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -2480,7 +2481,7 @@ ov102_021E896C: ; 0x021E896C
 	pop {r3, r4, r5, r6, r7, pc}
 _021E8980:
 	ldr r0, _021E8A2C ; =ov102_021EC5F4
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	cmp r0, #0
 	beq _021E8990
 	cmp r0, #1
@@ -2529,7 +2530,7 @@ _021E89CC:
 	ldrh r2, [r2, #0x22]
 	ldrh r1, [r1, #0x20]
 	add r0, sp, #0xc
-	bl sub_020253F0
+	bl TouchscreenHitbox_PointIsIn
 	cmp r0, #0
 	beq _021E89F2
 	add r7, #0x62
@@ -3635,7 +3636,7 @@ _021E9166:
 	bl DestroySysTask
 	bl OamManager_Free
 	ldr r0, [r6, #0x24]
-	bl sub_02024504
+	bl SpriteList_Delete
 	add r0, r6, #0
 	bl ov102_021E91BC
 	ldr r0, [r6, #0x20]
@@ -3745,11 +3746,11 @@ ov102_021E91C4: ; 0x021E91C4
 	str r0, [sp, #0x20]
 	mov r0, #0x15
 	mov r1, #0x23
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x24]
 	mov r0, #0x15
 	mov r1, #0x23
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	mov r0, #0
 	str r0, [sp, #0x2c]
@@ -3779,7 +3780,7 @@ _021E927E:
 	add r1, #0xb
 	bl ReadMsgDataIntoString
 	ldr r0, [sp, #0x24]
-	bl StringCountLines
+	bl String_CountLines
 	str r0, [sp, #0x1c]
 	mov r0, #0x81
 	lsl r0, r0, #2
@@ -3799,7 +3800,7 @@ _021E92CA:
 	ldr r1, [sp, #0x24]
 	add r0, r4, #0
 	add r2, r6, #0
-	bl StringGetLineN
+	bl String_GetLineN
 	mov r0, #4
 	add r1, r4, #0
 	mov r2, #0
@@ -3818,7 +3819,7 @@ _021E92CA:
 	lsl r0, r0, #2
 	add r0, r7, r0
 	add r2, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x1c]
 	add r6, r6, #1
 	add r5, #0x10
@@ -3866,9 +3867,9 @@ _021E9308:
 	cmp r0, #2
 	blt _021E927E
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x24]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x20]
 	bl DestroyMsgData
 	add sp, #0x60
@@ -3940,7 +3941,7 @@ ov102_021E93E0: ; 0x021E93E0
 	push {r4, lr}
 	add r4, r1, #0
 	ldr r0, [r4, #0x20]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r0, [r4, #0x24]
 	bl sub_0202457C
 	bl OamManager_ApplyAndResetBuffers
@@ -4074,8 +4075,8 @@ ov102_021E94A4: ; 0x021E94A4
 ov102_021E94CC: ; 0x021E94CC
 	push {r3, r4, r5, lr}
 	add r4, r1, #0
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -4101,7 +4102,7 @@ ov102_021E94CC: ; 0x021E94CC
 	str r1, [r0]
 	mov r0, #0x4c
 	mov r1, #0x23
-	bl NARC_ctor
+	bl NARC_New
 	add r5, r0, #0
 	add r0, r4, #0
 	bl ov102_021E978C
@@ -4171,13 +4172,13 @@ ov102_021E94CC: ; 0x021E94CC
 	bl ov102_021EC248
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	bl GX_DispOn
 	add r0, r5, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #0
 	bl ov102_021E94A4
 	pop {r3, r4, r5, pc}
@@ -4406,7 +4407,7 @@ ov102_021E978C: ; 0x021E978C
 	add r2, r0, #0
 	bl GX_SetGraphicsMode
 	ldr r0, _021E981C ; =ov102_021EC760
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r0, _021E9820 ; =ov102_021EC6A8
 	bl SetBothScreensModesAndDisable
 	mov r1, #0
@@ -5904,7 +5905,7 @@ ov102_021EA314: ; 0x021EA314
 	str r0, [r4, #0x74]
 	mov r0, #0x80
 	mov r1, #0x23
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x7c]
 	ldr r2, _021EA37C ; =0x0000011B
 	mov r0, #0
@@ -5942,32 +5943,32 @@ _021EA390:
 	ldr r0, [r4, #0x60]
 	cmp r0, #0
 	beq _021EA39A
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA39A:
 	ldr r0, [r4, #0x64]
 	cmp r0, #0
 	beq _021EA3A4
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA3A4:
 	ldr r0, [r4, #0x68]
 	cmp r0, #0
 	beq _021EA3AE
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA3AE:
 	ldr r0, [r4, #0x6c]
 	cmp r0, #0
 	beq _021EA3B8
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA3B8:
 	ldr r0, [r4, #0x70]
 	cmp r0, #0
 	beq _021EA3C2
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA3C2:
 	ldr r0, [r4, #0x74]
 	cmp r0, #0
 	beq _021EA3CC
-	bl sub_02024758
+	bl Sprite_Delete
 _021EA3CC:
 	ldr r0, [r4, #0x78]
 	cmp r0, #0
@@ -5977,7 +5978,7 @@ _021EA3D6:
 	ldr r0, [r4, #0x7c]
 	cmp r0, #0
 	beq _021EA3E0
-	bl String_dtor
+	bl String_Delete
 _021EA3E0:
 	add r0, r4, #0
 	add r0, #0xc
@@ -5997,7 +5998,7 @@ _021EA3E0:
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -6162,7 +6163,7 @@ ov102_021EA41C: ; 0x021EA41C
 	add r1, #0xa2
 	strh r1, [r5, r0]
 	mov r0, #0x23
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	mov r1, #0x7a
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -6459,12 +6460,12 @@ _021EA794:
 	ldr r0, [r5, #0x60]
 	mov r1, #0
 	asr r2, r2, #0x10
-	bl sub_0200DEA0
+	bl Sprite_AddPositionXY
 	lsl r2, r4, #0x10
 	ldr r0, [r5, #0x64]
 	mov r1, #0
 	asr r2, r2, #0x10
-	bl sub_0200DEA0
+	bl Sprite_AddPositionXY
 	mov r0, #0x79
 	lsl r0, r0, #2
 	ldrb r1, [r5, r0]
@@ -6931,7 +6932,7 @@ _021EAB84:
 	ldr r0, [sp, #0x14]
 	mov r1, #1
 	add r3, r5, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r1, [sp, #0x20]
 	mov r0, #1
 	mov r2, #0
@@ -6988,7 +6989,7 @@ _021EABFC:
 	str r0, [sp, #0x10]
 	bl ov102_021EAC70
 	ldr r0, [sp, #0x20]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x1c]
 	add sp, #0x28
 	pop {r3, r4, r5, r6, r7, pc}
@@ -7012,7 +7013,7 @@ ov102_021EAC20: ; 0x021EAC20
 	lsl r1, r1, #0x10
 	asr r1, r1, #0x10
 	mov r2, #0x40
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 _021EAC40:
 	pop {r4, pc}
 	.balign 4, 0
@@ -7026,7 +7027,7 @@ ov102_021EAC44: ; 0x021EAC44
 	mov r1, #0x23
 	bl ov102_021E8FA8
 	str r0, [r4]
-	bl String_c_str
+	bl String_cstr
 	str r0, [r4, #4]
 	ldrh r1, [r0]
 	ldr r0, _021EAC6C ; =0x0000FFFE
@@ -7045,11 +7046,11 @@ _021EAC6C: .word 0x0000FFFE
 
 	thumb_func_start ov102_021EAC70
 ov102_021EAC70: ; 0x021EAC70
-	ldr r3, _021EAC78 ; =String_dtor
+	ldr r3, _021EAC78 ; =String_Delete
 	ldr r0, [r0]
 	bx r3
 	nop
-_021EAC78: .word String_dtor
+_021EAC78: .word String_Delete
 	thumb_func_end ov102_021EAC70
 
 	thumb_func_start ov102_021EAC7C
@@ -7256,7 +7257,7 @@ ov102_021EAD98: ; 0x021EAD98
 	ldrsh r3, [r3, r6]
 	ldr r2, [r5, #0x7c]
 	add r0, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _021EADE2:
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
@@ -7335,12 +7336,12 @@ _021EAE68:
 	mov r0, #2
 	mov r1, #0x3c
 	mov r2, #0
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	add r5, r0, #0
 	mov r0, #0x4b
 	lsl r0, r0, #2
 	mov r1, #0
-	bl String_ctor
+	bl String_New
 	mov r1, #0
 	add r6, r0, #0
 	add r0, r5, #0
@@ -7366,11 +7367,11 @@ _021EAE68:
 	str r3, [sp, #0xc]
 	ldr r0, [r4, #0x5c]
 	add r2, r6, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	b _021EAF34
 _021EAECA:
 	ldr r0, [r4, #0x78]
@@ -7387,7 +7388,7 @@ _021EAECA:
 	str r3, [sp, #0xc]
 	ldr r0, [r4, #0x5c]
 	ldr r2, [r4, #0x7c]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	b _021EAF34
 _021EAEEE:
 	ldr r0, [r4, #0x78]
@@ -7404,7 +7405,7 @@ _021EAEEE:
 	str r3, [sp, #0xc]
 	ldr r0, [r4, #0x5c]
 	ldr r2, [r4, #0x7c]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	b _021EAF34
 _021EAF12:
 	ldr r0, [r4, #0x78]
@@ -7421,7 +7422,7 @@ _021EAF12:
 	str r3, [sp, #0xc]
 	ldr r0, [r4, #0x5c]
 	ldr r2, [r4, #0x7c]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _021EAF34:
 	ldr r0, [r4, #0x5c]
 	bl CopyWindowToVram
@@ -7564,7 +7565,7 @@ _021EB022:
 _021EB032:
 	ldr r0, [r4, #0x60]
 	add r1, sp, #4
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, _021EB084 ; =0x000001E2
 	ldrsh r1, [r4, r0]
 	mov r0, #0xc0
@@ -7591,7 +7592,7 @@ _021EB066:
 	str r0, [sp, #8]
 	ldr r0, [r4, #0x64]
 	add r1, sp, #4
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r4, #0
 	mov r1, #1
 	bl ov102_021EB088
@@ -7682,7 +7683,7 @@ ov102_021EB0C0: ; 0x021EB0C0
 	sub r0, r2, #6
 	ldr r0, [r5, r0]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -7696,7 +7697,7 @@ ov102_021EB130: ; 0x021EB130
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021EB148
 	cmp r0, #2
@@ -7883,7 +7884,7 @@ ov102_021EB29C: ; 0x021EB29C
 	ldr r0, [r7, #0xc]
 	cmp r0, #0
 	beq _021EB2B2
-	bl sub_02024758
+	bl Sprite_Delete
 _021EB2B2:
 	add r4, r7, #0
 	mov r6, #0
@@ -7895,7 +7896,7 @@ _021EB2BA:
 	add r0, r4, #0
 	bl RemoveWindow
 	ldr r0, [r5, #0x18]
-	bl String_dtor
+	bl String_Delete
 	add r6, r6, #1
 	add r4, #0x10
 	add r5, r5, #4
@@ -7993,7 +7994,7 @@ _021EB366:
 	add r0, r4, #0
 	mov r1, #4
 	asr r3, r7, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r6, r6, #1
 	add r4, #0x10
 	add r5, r5, #4
@@ -8086,7 +8087,7 @@ _021EB3F6:
 	add r0, #0x44
 	mov r1, #4
 	asr r3, r4, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
 	mov r1, #0
 	bl ScheduleBgTilemapBufferTransfer
@@ -8232,7 +8233,7 @@ _021EB550:
 _021EB55C:
 	ldr r0, [r4, #0xc]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0xc]
 	mov r1, #2
 	bl Set2dSpriteAnimSeqNo
@@ -8435,7 +8436,7 @@ ov102_021EB6C8: ; 0x021EB6C8
 	ldr r0, [r4, #0x5c]
 	cmp r0, #0
 	beq _021EB6D6
-	bl sub_02024758
+	bl Sprite_Delete
 _021EB6D6:
 	add r0, r4, #0
 	bl FreeToHeap
@@ -8610,13 +8611,13 @@ _021EB7EC:
 	str r0, [sp, #0xc]
 	add r0, sp, #0x28
 	add r2, r5, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, sp, #0x28
 	bl PutWindowTilemap
 	add r0, sp, #0x28
 	bl CopyWindowPixelsToVram_TextMode
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, sp, #0x28
 	bl RemoveWindow
 	add r4, r4, #1
@@ -8668,7 +8669,7 @@ _021EB898:
 	bl AddWindowParameterized
 	mov r0, #4
 	mov r1, #0x23
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	add r0, sp, #0x20
 	mov r1, #0xf
@@ -8707,7 +8708,7 @@ _021EB8FC:
 	add r0, sp, #0x20
 	mov r1, #0
 	add r3, r3, #3
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r5, r5, #1
 	cmp r5, r7
 	blo _021EB8D8
@@ -8717,7 +8718,7 @@ _021EB91E:
 	add r0, sp, #0x20
 	bl PutWindowTilemap
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, sp, #0x20
 	bl RemoveWindow
 	ldr r0, [sp, #0x14]
@@ -8852,7 +8853,7 @@ _021EBA22:
 	lsl r0, r0, #0xc
 	str r0, [sp, #0xc]
 	ldr r0, [r4, #0x5c]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x5c]
 	add r1, r5, #0
 	bl Set2dSpriteAnimSeqNo
@@ -9172,7 +9173,7 @@ ov102_021EBC34: ; 0x021EBC34
 	str r0, [r4, #0xc]
 	mov r0, #0x20
 	mov r1, #0x23
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x3c]
 	mov r0, #0
 	str r0, [sp]
@@ -9226,22 +9227,22 @@ ov102_021EBCBC: ; 0x021EBCBC
 	ldr r0, [r4, #0x30]
 	cmp r0, #0
 	beq _021EBCCA
-	bl sub_02024758
+	bl Sprite_Delete
 _021EBCCA:
 	ldr r0, [r4, #0x34]
 	cmp r0, #0
 	beq _021EBCD4
-	bl sub_02024758
+	bl Sprite_Delete
 _021EBCD4:
 	ldr r0, [r4, #0x38]
 	cmp r0, #0
 	beq _021EBCDE
-	bl sub_02024758
+	bl Sprite_Delete
 _021EBCDE:
 	ldr r0, [r4, #0x3c]
 	cmp r0, #0
 	beq _021EBCE8
-	bl String_dtor
+	bl String_Delete
 _021EBCE8:
 	add r0, r4, #0
 	add r0, #0x20
@@ -9558,7 +9559,7 @@ ov102_021EBF38: ; 0x021EBF38
 	str r0, [sp, #8]
 	ldr r0, [r4, #0x30]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x30]
 	mov r1, #0x10
 	bl Set2dSpriteAnimSeqNo
@@ -9583,7 +9584,7 @@ _021EBF6A:
 	str r0, [sp, #8]
 	ldr r0, [r4, #0x30]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x30]
 	mov r1, #8
 	bl Set2dSpriteAnimSeqNo
@@ -9836,7 +9837,7 @@ ov102_021EC13C: ; 0x021EC13C
 	ldr r2, [r5, #0x3c]
 	add r0, #0x10
 	mul r3, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
 _021EC178:
@@ -9858,7 +9859,7 @@ _021EC178:
 	add r0, r5, #0
 	ldr r2, [r5, #0x3c]
 	add r0, #0x20
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r2, #0
 	mov r0, #1
 	add r1, r7, #0

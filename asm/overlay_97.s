@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_97.inc"
 	.include "global.inc"
 
 	.text
@@ -215,10 +216,10 @@ ov97_0221E700: ; 0x0221E700
 	mov r6, #1
 _0221E76A:
 	ldr r0, [r5]
-	bl GetStoragePCPointer
+	bl SaveArray_PCStorage_Get
 	add r7, r0, #0
 	ldr r0, [r5]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r3, r0, #0
 	mov r0, #0
 	str r0, [sp]
@@ -286,7 +287,7 @@ _0221E7FE:
 	sub r2, r2, #1
 	bne _0221E7FE
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -517,9 +518,9 @@ _0221E9B4:
 	cmp r6, #0x12
 	bne _0221EA20
 	ldr r0, [r0]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	ldr r1, [r5, #0x14]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	add r6, r0, #0
@@ -549,7 +550,7 @@ _0221E9B4:
 	strb r0, [r4, #0x1d]
 	ldr r0, [r7]
 	ldr r0, [r0]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	ldr r1, [r5, #0x14]
 	ldr r2, [sp]
 	lsl r1, r1, #0x18
@@ -558,7 +559,7 @@ _0221E9B4:
 	b _0221EA6A
 _0221EA20:
 	ldr r0, [r0]
-	bl GetStoragePCPointer
+	bl SaveArray_PCStorage_Get
 	ldr r2, [r5, #0x14]
 	add r1, r6, #0
 	add r3, sp, #0xc
@@ -582,7 +583,7 @@ _0221EA20:
 	strb r0, [r4, #0x1d]
 	ldr r0, [r7]
 	ldr r0, [r0]
-	bl GetStoragePCPointer
+	bl SaveArray_PCStorage_Get
 	ldr r1, [r5, #0x10]
 	ldr r2, [r5, #0x14]
 	bl PCStorage_GetMonByIndexPair
@@ -619,7 +620,7 @@ ov97_0221EA88: ; 0x0221EA88
 	bl Party_GetUnkSubSlot
 	add r0, r6, #0
 	add r1, r5, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r0, #0
 	add r0, sp, #0
 	add r2, sp, #8
@@ -837,10 +838,10 @@ _0221EC3C:
 	cmp r6, #0x12
 	ldr r0, [r5, #0x2c]
 	bne _0221ED1C
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r4, #0
 	add r7, r0, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0
 	add r6, r0, #0
 	add r2, r1, #0
@@ -875,7 +876,7 @@ _0221EC3C:
 	strb r0, [r1, #8]
 	add r0, r7, #0
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	bl Mon_GetBoxMon
 	lsl r1, r4, #0x18
 	add r6, r0, #0
@@ -902,7 +903,7 @@ _0221EC3C:
 	add r7, sp, #0x5c
 _0221ECE2:
 	ldr r0, [r5, #0x2c]
-	bl Save_Pokeathlon_get
+	bl Save_Pokeathlon_Get
 	lsl r1, r4, #2
 	ldrh r2, [r6, #4]
 	ldr r1, [r7, r1]
@@ -930,7 +931,7 @@ _0221ED04:
 	add sp, #0xc0
 	pop {r3, r4, r5, r6, r7, pc}
 _0221ED1C:
-	bl GetStoragePCPointer
+	bl SaveArray_PCStorage_Get
 	add r1, r6, #0
 	add r2, r4, #0
 	add r3, sp, #0x2c
@@ -955,7 +956,7 @@ _0221ED1C:
 	ldrh r1, [r1, #0x3e]
 	strb r1, [r0, #8]
 	ldr r0, [r5, #0x2c]
-	bl GetStoragePCPointer
+	bl SaveArray_PCStorage_Get
 	add r1, r6, #0
 	add r2, r4, #0
 	bl PCStorage_GetMonByIndexPair
@@ -983,7 +984,7 @@ _0221ED1C:
 	add r7, sp, #0x5c
 _0221ED94:
 	ldr r0, [r5, #0x2c]
-	bl Save_Pokeathlon_get
+	bl Save_Pokeathlon_Get
 	lsl r1, r4, #2
 	ldrh r2, [r6, #4]
 	ldr r1, [r7, r1]
@@ -1228,11 +1229,11 @@ ov97_0221EEA4: ; 0x0221EEA4
 	bl NewMsgDataFromNarc
 	str r0, [r5, #0x6c]
 	ldr r0, [r5]
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r5, #0x70]
 	ldr r1, [r5]
 	mov r0, #0xb
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x74]
 	add r0, r5, #0
 	add r0, #0x68
@@ -1250,10 +1251,10 @@ ov97_0221EEA4: ; 0x0221EEA4
 	bl ov97_0221F294
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}
 	thumb_func_end ov97_0221EEA4
@@ -1272,19 +1273,19 @@ ov97_0221EFD0: ; 0x0221EFD0
 	bl ov97_0221F428
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r3, r4, r5, pc}
 _0221EFFA:
 	bl ov97_0221F74C
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov97_0221EFD0
 
@@ -1307,9 +1308,9 @@ ov97_0221F020: ; 0x0221F020
 	ldr r0, [r7, #0x6c]
 	bl DestroyMsgData
 	ldr r0, [r7, #0x70]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r7, #0x74]
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
 	add r0, #8
 	bl RemoveWindow
@@ -1376,7 +1377,7 @@ _0221F0BC:
 	cmp r4, #6
 	blo _0221F0BC
 	ldr r0, [r5, #4]
-	bl sub_02024504
+	bl SpriteList_Delete
 	add r0, r7, #0
 	bl FreeToHeap
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1394,7 +1395,7 @@ ov97_0221F0E0: ; 0x0221F0E0
 	lsl r6, r6, #2
 _0221F0EE:
 	ldr r0, [r5, r6]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
@@ -1408,12 +1409,12 @@ _0221F106:
 	mov r0, #0x77
 	lsl r0, r0, #2
 	ldr r0, [r7, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r4, #0
 	add r5, r7, #0
 _0221F114:
 	ldr r0, [r5, r6]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
@@ -1428,7 +1429,7 @@ _0221F114:
 	ldr r0, [sp]
 	lsl r1, r1, #2
 	ldr r0, [r0, r1]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r1, #0x96
 	ldr r0, [sp]
 	lsl r1, r1, #2
@@ -1625,12 +1626,12 @@ ov97_0221F294: ; 0x0221F294
 	add r0, #8
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	add r0, #8
 	bl CopyWindowToVram
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0x18
 	mov r1, #0
@@ -1655,9 +1656,9 @@ ov97_0221F294: ; 0x0221F294
 	add r0, #0x18
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 _0221F32A:
 	add r0, r4, #0
 	add r0, #0x18
@@ -1681,9 +1682,9 @@ _0221F32A:
 	add r0, #0x48
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
 	mov r1, #4
 	bl NewString_ReadMsgData
@@ -1700,9 +1701,9 @@ _0221F32A:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
 	mov r1, #6
 	bl NewString_ReadMsgData
@@ -1719,9 +1720,9 @@ _0221F32A:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
 	mov r1, #5
 	bl NewString_ReadMsgData
@@ -1738,9 +1739,9 @@ _0221F32A:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
 	mov r1, #7
 	bl NewString_ReadMsgData
@@ -1757,9 +1758,9 @@ _0221F32A:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r4, #0x48
 	add r0, r4, #0
 	bl CopyWindowToVram
@@ -1793,7 +1794,7 @@ ov97_0221F428: ; 0x0221F428
 	add r0, r5, #0
 	ldr r2, [r5, #0x74]
 	add r0, #0x28
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	add r0, #0x28
 	bl CopyWindowToVram
@@ -1819,12 +1820,12 @@ ov97_0221F428: ; 0x0221F428
 	add r0, #0x38
 	mov r3, #4
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	add r0, #0x38
 	bl CopyWindowToVram
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	b _0221F4FE
 _0221F4A8:
 	cmp r0, #1
@@ -1849,12 +1850,12 @@ _0221F4A8:
 	add r2, r6, #0
 	mov r3, #4
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	add r0, #0x38
 	bl CopyWindowToVram
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	b _0221F4FE
 _0221F4EC:
 	add r0, r5, #0
@@ -1878,7 +1879,7 @@ _0221F4FE:
 	add r2, r4, #0
 	bl BufferString
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r5, #0x70]
 	ldr r1, [r5, #0x6c]
 	ldr r3, [r5]
@@ -1900,12 +1901,12 @@ _0221F4FE:
 	add r0, #0x58
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r5, #0x58
 	add r0, r5, #0
 	bl CopyWindowToVram
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -2250,7 +2251,7 @@ ov97_0221F7DC: ; 0x0221F7DC
 	bl G2dRenderer_SetSubSurfaceCoords
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r7, #0x13
 	mov r6, #0
 	add r4, r5, #0
@@ -2666,7 +2667,7 @@ ov97_0221FAEC: ; 0x0221FAEC
 	bl Set2dSpriteAnimSeqNo
 	add r0, r4, #0
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r1, [sp, #0x9c]
 	add r0, r4, #0
 	bl Set2dSpriteVisibleFlag

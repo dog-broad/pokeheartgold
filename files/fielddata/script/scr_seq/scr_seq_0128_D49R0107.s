@@ -65,15 +65,15 @@ scr_seq_D49R0107_005:
 	wait_movement
 	npc_msg msg_0143_D49R0107_00002
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_D49R0107_thlonowner, _0174
 	apply_movement obj_player, _0180
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	npc_msg msg_0143_D49R0107_00003
 	closemsg
@@ -97,39 +97,46 @@ scr_seq_D49R0107_005:
 _0154:
 	clearflag FLAG_HIDE_POKEATHLON_SUPREME_CUP_RECEPTIONIST
 	return
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _015C:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _0164:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _016C:
 	step 13, 3
 	step_end
 
+	.balign 4, 0
 _0174:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0180:
 	step 12, 3
 	step_end
 
+	.balign 4, 0
 _0188:
 	step 8, 1
 	step_end
 
+	.balign 4, 0
 _0190:
 	step 34, 1
 	step 71, 1
 	step 11, 2
 	step 72, 1
 	step_end
+
 scr_seq_D49R0107_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall

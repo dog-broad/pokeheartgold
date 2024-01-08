@@ -1,5 +1,6 @@
 #include "msgdata/msg/msg_0252.h"
 	.include "asm/macros.inc"
+	.include "overlay_trainer_card_signature.inc"
 	.include "global.inc"
 
 	.text
@@ -29,8 +30,8 @@ _021E80D6:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -58,10 +59,10 @@ _021E80D6:
 	str r0, [r4]
 	mov r0, #0x5b
 	mov r1, #0x27
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	mov r0, #0x27
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x10]
 	mov r0, #0
 	mov r1, #0x1b
@@ -91,17 +92,17 @@ _021E80D6:
 	bl BeginNormalPaletteFade
 	add r0, r6, #0
 	bl OverlayManager_GetArgs
-	bl Save_TrainerCard_get
+	bl Save_TrainerCard_Get
 	bl TrainerCard_GetSignature
 	ldr r1, _021E8238 ; =0x00005B98
 	str r0, [r4, r1]
 	add r0, r6, #0
 	bl OverlayManager_GetArgs
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	str r0, [r4, #8]
 	add r0, r6, #0
 	bl OverlayManager_GetArgs
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #0xc]
 	add r0, r4, #0
 	add r1, r7, #0
@@ -136,7 +137,7 @@ _021E80D6:
 	and r0, r1
 	strh r0, [r2]
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -258,7 +259,7 @@ _021E82FC:
 	cmp r4, #4
 	blt _021E82FC
 	ldr r0, [r6, #0x3c]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	bl sub_0202168C
 	bl sub_02022608
@@ -276,7 +277,7 @@ _021E82FC:
 	ldr r0, [r6, #0x14]
 	bl DestroyMsgData
 	ldr r0, [r6, #0x10]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r6, #0
 	bl ov52_021E8568
 	ldr r0, [sp]
@@ -305,7 +306,7 @@ ov52_021E837C: ; 0x021E837C
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	add r0, r4, #0
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E839C ; =0x027E0000
 	ldr r1, _021E83A0 ; =0x00003FF8
 	mov r0, #1
@@ -331,7 +332,7 @@ _021E83AE:
 	sub r2, r2, #1
 	bne _021E83AE
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -470,7 +471,7 @@ ov52_021E84CC: ; 0x021E84CC
 _021E84DC:
 	mov r0, #8
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x18]
 	ldrb r1, [r5]
 	ldr r0, [sp]
@@ -486,15 +487,15 @@ _021E84DC:
 	blt _021E84DC
 	mov r0, #0x14
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r7, #0x2c]
 	mov r0, #0x28
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r7, #0x30]
 	mov r0, #0x50
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	str r0, [r7, #0x34]
 	ldr r0, _021E8560 ; =0x0000431A
 	mov r1, #0
@@ -512,7 +513,7 @@ _021E84DC:
 	mov r1, #msg_0252_00009 ; Sign your autograph!
 	bl ReadMsgDataIntoString
 	mov r0, #0x27
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	ldr r1, _021E8564 ; =0x00005C9C
 	mov r2, #5
 	str r0, [r7, r1]
@@ -534,22 +535,22 @@ ov52_021E8568: ; 0x021E8568
 	add r6, r0, #0
 	ldr r0, _021E859C ; =0x00005C9C
 	ldr r0, [r6, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r4, #0
 	add r5, r6, #0
 _021E8578:
 	ldr r0, [r5, #0x18]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #5
 	blt _021E8578
 	ldr r0, [r6, #0x34]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x30]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	pop {r4, r5, r6, pc}
 	nop
 _021E859C: .word 0x00005C9C
@@ -1016,18 +1017,18 @@ ov52_021E888C: ; 0x021E888C
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #0
-	bl sub_02024A14
+	bl Sprite_SetPalIndex
 	mov r0, #0x25
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #2
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x5c
 	pop {r3, r4, pc}
 	.balign 4, 0
@@ -1061,7 +1062,7 @@ ov52_021E8994: ; 0x021E8994
 	lsr r3, r4, #0x1f
 	add r3, r4, r3
 	asr r3, r3, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r5, #0xc]
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1222,7 +1223,7 @@ _021E8A8A:
 	add r0, r5, r0
 	mov r1, #1
 	asr r3, r3, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0
 	str r0, [sp, #0x14]
 	mov r0, #0x9d
@@ -1321,7 +1322,7 @@ ov52_021E8BDC: ; 0x021E8BDC
 	sub sp, #0x44
 	add r4, r0, #0
 	ldr r0, _021E8CA4 ; =ov52_021E94BA
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r1, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -1357,7 +1358,7 @@ _021E8C22:
 	bl ov52_021E8CBC
 _021E8C30:
 	ldr r0, _021E8CB0 ; =ov52_021E94B2
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1530,7 +1531,7 @@ ov52_021E8D64: ; 0x021E8D64
 	strb r2, [r0, #0x11]
 	add r0, r1, #0
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add sp, #0x14
 	pop {pc}
 	thumb_func_end ov52_021E8D64
@@ -1572,7 +1573,7 @@ ov52_021E8DC4: ; 0x021E8DC4
 	ldr r0, _021E8E5C ; =0x00005C9C
 	add r4, r1, #0
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021E8DDE
 	cmp r0, #2
@@ -1647,7 +1648,7 @@ ov52_021E8E64: ; 0x021E8E64
 	ldr r0, _021E8ED8 ; =0x00005C9C
 	add r4, r1, #0
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021E8E7C
 	cmp r0, #2
@@ -2229,7 +2230,7 @@ ov52_021E927C: ; 0x021E927C
 	add r6, r1, #0
 	mov r0, #0x50
 	mov r1, #0x27
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0x14]
 	add r1, r6, #0
@@ -2240,7 +2241,7 @@ ov52_021E927C: ; 0x021E927C
 	add r2, r4, #0
 	bl StringExpandPlaceholders
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0xb5
 	lsl r0, r0, #2
 	add r0, r5, r0

@@ -75,9 +75,9 @@ scr_seq_T11_014:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _0142
@@ -96,9 +96,9 @@ _015D:
 	apply_movement obj_T11_gsmiddleman1_2, _0208
 _016D:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0194
@@ -119,8 +119,8 @@ _0194:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _01D0:
 	step 14, 1
 	step 12, 2
@@ -129,11 +129,13 @@ _01D0:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01E8:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01F4:
 	step 12, 1
 	step 15, 1
@@ -141,16 +143,19 @@ _01F4:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0208:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0214:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_T11_015:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -168,9 +173,9 @@ scr_seq_T11_015:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _029D
@@ -196,9 +201,9 @@ _02DB:
 	apply_movement obj_T11_gsmiddleman1_3, _0208
 _02EB:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0312
@@ -236,7 +241,7 @@ _0360:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0374:
 	step 15, 1
 	step 12, 2
@@ -245,12 +250,14 @@ _0374:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _038C:
 	step 12, 1
 	step 14, 1
 	step 12, 3
 	step 33, 1
 	step_end
+
 scr_seq_T11_002:
 	play_se SEQ_SE_DP_SELECT
 	lockall

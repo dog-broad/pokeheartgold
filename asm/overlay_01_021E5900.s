@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021E5900.inc"
 	.include "global.inc"
 
 	.public ov01_02208BFC
@@ -20,7 +21,7 @@ ov01_021E5900: ; 0x021E5900
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #8]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	ldr r0, [r4, #0x3c]
@@ -181,7 +182,7 @@ _021E5A50:
 	bl sub_0201F590
 	bl ov01_021E61E0
 	bl ov01_021E6178
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #4
 	bl BgConfig_Alloc
 	str r0, [r4, #8]
@@ -238,8 +239,8 @@ _021E5AB6:
 	add r0, r4, #0
 	bl ov01_021E6580
 	ldr r0, [r4, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetWeatherType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetWeatherType
 	add r1, r0, #0
 	ldr r0, [r4, #4]
 	ldr r0, [r0, #0xc]
@@ -633,9 +634,9 @@ _021E5EB4: .word FS_OVERLAY_ID(OVY_3)
 	thumb_func_start ov01_021E5EB8
 ov01_021E5EB8: ; 0x021E5EB8
 	push {r3, lr}
-	bl Fsys_GetSaveDataPtr
-	bl Sav2_GetGymmickPtr
-	bl SavGymmick_GetType
+	bl FieldSystem_GetSaveData
+	bl Save_GetGymmickPtr
+	bl Save_Gymmick_GetType
 	cmp r0, #0
 	bne _021E5ECE
 	mov r0, #1
@@ -704,7 +705,7 @@ ov01_021E5F04: ; 0x021E5F04
 	pop {r3, r4, r5, r6, r7, pc}
 _021E5F3E:
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
+	bl Save_LocalFieldData_Get
 	add r7, r0, #0
 	ldr r0, [r5, #0x20]
 	add r1, r4, #0
@@ -728,15 +729,15 @@ _021E5F3E:
 	ldr r1, [r5, #0x20]
 	add r0, r5, #0
 	ldr r1, [r1]
-	bl Fsys_GetSurfOverriddenMusicId
+	bl FieldSystem_GetOverriddenMusicId
 	add r1, r0, #0
 	add r0, r5, #0
 	mov r2, #1
-	bl Fsys_PlayOrFadeToNewMusicId
+	bl FieldSystem_PlayOrFadeToNewMusicId
 	add r0, r5, #0
 	bl Field_InitMapObjectsFromZoneEventData
 	add r0, r7, #0
-	bl FlyPoints_GetWeatherType
+	bl LocalFieldData_GetWeatherType
 	add r1, r0, #0
 	ldr r0, [r5, #4]
 	ldr r0, [r0, #0xc]
@@ -762,11 +763,11 @@ ov01_021E5FC0: ; 0x021E5FC0
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	add r4, r1, #0
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _021E5FD4
 	add r0, r5, #0
-	bl FieldSys_StartBugContestTimer
+	bl FieldSystem_StartBugContestTimer
 _021E5FD4:
 	ldr r0, [r5, #0x50]
 	bl ov01_021EA2A4
@@ -821,7 +822,7 @@ _021E6032:
 	sub r2, r2, #1
 	bne _021E6032
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -951,16 +952,16 @@ ov01_021E6138: ; 0x021E6138
 	add r4, r0, #0
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	mov r1, #1
 	bl FreeBgTilemapBuffer
@@ -1071,7 +1072,7 @@ ov01_021E6220: ; 0x021E6220
 	sub sp, #0x88
 	add r4, r0, #0
 	bl Thunk_G3X_Reset
-	bl sub_02023154
+	bl Camera_PushLookAtToNNSGlb
 	ldr r0, [r4, #0x2c]
 	ldr r1, [r4, #0x48]
 	bl ov01_021F61A8
@@ -1082,7 +1083,7 @@ ov01_021E6220: ; 0x021E6220
 	bl ov01_021F3C9C
 	ldr r1, [r4, #0x24]
 	add r0, sp, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r2, sp, #0
 	ldrh r2, [r2]
 	mov r0, #0x47
@@ -1166,7 +1167,7 @@ _021E6294:
 	ldr r0, [r4, #4]
 	ldr r0, [r0, #4]
 	bl ov01_021E6768
-	ldr r1, _021E6318 ; =_0210F6DC
+	ldr r1, _021E6318 ; =gG3dDepthBufferingMode
 	add r0, r5, #0
 	ldr r1, [r1]
 	bl sub_02026E50
@@ -1176,7 +1177,7 @@ _021E6294:
 _021E630C: .word FX_SinCosTable_
 _021E6310: .word NNS_G3dGlb + 0x8
 _021E6314: .word NNS_G3dGlb + 0x80
-_021E6318: .word _0210F6DC
+_021E6318: .word gG3dDepthBufferingMode
 	thumb_func_end ov01_021E6220
 
 	thumb_func_start ov01_021E631C
@@ -1280,8 +1281,8 @@ ov01_021E63B8: ; 0x021E63B8
 	add r5, r0, #0
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
-	ldr r0, _021E6454 ; =_0210F6DC
+	bl GfGfx_EngineATogglePlanes
+	ldr r0, _021E6454 ; =gG3dDepthBufferingMode
 	ldr r0, [r0]
 	lsl r1, r0, #1
 	ldr r0, _021E6458 ; =0x04000540
@@ -1341,7 +1342,7 @@ _021E6406:
 	str r0, [r5, #0x58]
 	pop {r3, r4, r5, pc}
 	nop
-_021E6454: .word _0210F6DC
+_021E6454: .word gG3dDepthBufferingMode
 _021E6458: .word 0x04000540
 _021E645C: .word 0x00000226
 	thumb_func_end ov01_021E63B8
@@ -1465,7 +1466,7 @@ _021E654E:
 	ldr r0, [r5, #0x3c]
 	beq _021E6566
 	mov r1, #2
-	bl MapObjectMan_ClearFlagsBits
+	bl MapObjectManager_ClearFlagsBits
 	b _021E656A
 _021E6566:
 	bl sub_0205F568
@@ -1486,16 +1487,16 @@ ov01_021E6580: ; 0x021E6580
 	add r4, r0, #0
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
-	bl GX_BothDispOn
+	bl GfGfx_EngineATogglePlanes
+	bl GfGfx_BothDispOn
 	bl ov01_021EA8E0
 	str r0, [r4, #0x48]
 	bl ov01_021E61A4
 	bl ov01_021EA824
 	str r0, [r4, #0x4c]
 	ldr r0, [r4, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetCameraType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetCameraType
 	add r5, r0, #0
 	ldr r0, [r4, #0x40]
 	bl PlayerAvatar_GetPositionVecConst
@@ -1509,7 +1510,7 @@ ov01_021E6580: ; 0x021E6580
 	cmp r5, #3
 	bne _021E65D8
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag96A
 	cmp r0, #0
 	beq _021E65D8

@@ -13,13 +13,13 @@
 typedef struct ItemSlot {
     u16 id;          // from constants/items.h
     u16 quantity;    // quantity of that item
-} ITEM_SLOT;
+} ItemSlot;
 
 /*
  * Bit array describing the effects of using the item on a
  * party member.
  */
-typedef struct ItemPartyUseParam
+typedef struct ItemPartyParam
 {
     u8 slp_heal:1;
     u8 psn_heal:1;
@@ -66,7 +66,7 @@ typedef struct ItemPartyUseParam
     s8 friendship_mod_med_param;
     s8 friendship_mod_hi_param;
     u8 paddding[2];
-} ITEMPARTYPARAM;
+} ItemPartyParam;
 
 /*
  * Item parameter data, loaded from itemtool/itemdata/item_data.narc
@@ -91,13 +91,13 @@ typedef struct ItemData
     u8 padding_0D;
     union {
         u8 dummy;
-        ITEMPARTYPARAM partyUseParam;
+        ItemPartyParam partyUseParam;
     };
     u8 padding_22[2];
-} ITEMDATA;
+} ItemData;
 
 /*
- * void MoveItemSlotInList(ITEM_SLOT *slots, int from, int to, int pocket, HeapID heap_id)
+ * void MoveItemSlotInList(ItemSlot *slots, int from, int to, int pocket, HeapID heapId)
  *
  * Move item slot within an array, shifting the intermediate slots.
  * Performs the operation out-of-place using a temporary array from the heap.
@@ -106,9 +106,9 @@ typedef struct ItemData
  * @param from:        Source slot index
  * @param to:          Destination slot index
  * @param pocket:      Pocket ID
- * @param heap_id:     Heap ID to allocate the temporary array from
+ * @param heapId:     Heap ID to allocate the temporary array from
  */
-void MoveItemSlotInList(ITEM_SLOT *slots, int from, int to, int pocket, HeapID heap_id);
+void MoveItemSlotInList(ItemSlot *slots, int from, int to, int pocket, HeapID heapId);
 
 
 /*
@@ -159,60 +159,60 @@ int GetItemIconCell(void);
 int GetItemIconAnim(void);
 
 /*
- * void *LoadItemDataOrGfx(u16 itemId, int attrno, HeapID heap_id)
+ * void *LoadItemDataOrGfx(u16 itemId, int attrno, HeapID heapId)
  *
  * Loads the raw data corresponding to the given item. Allocates a new buffer.
  *
  * @param itemId:      Item ID to look up
  * @param attrno:      Type of object to load
- * @param heap_id:     ID of heap to allocate the result from
+ * @param heapId:     ID of heap to allocate the result from
  *
  * @returns: Pointer to loaded data. If attrNo is ... then ...
- *     ITEMNARC_PARAM:   ITEMDATA* from itemtool/itemdata/item_data.narc
+ *     ITEMNARC_PARAM:   ItemData* from itemtool/itemdata/item_data.narc
  *     ITEMNARC_NCGR:    NCGR from itemtool/itemdata/item_icon.narc
  *     ITEMNARC_NCLR:    NCLR from itemtool/itemdata/item_icon.narc
  *
  * If itemId or attrno is invalid, or if allocation failed, returns NULL
  */
-void *LoadItemDataOrGfx(u16 itemId, int attrno, HeapID heap_id);
+void *LoadItemDataOrGfx(u16 itemId, int attrno, HeapID heapId);
 
 /*
- * void GetItemNameIntoString(STRING *dest, u16 itemId, HeapID heap_id)
+ * void GetItemNameIntoString(String *dest, u16 itemId, HeapID heapId)
  *
  * Reads the name of the indicated item into the preallocated string.
  *
- * @param dest:        Pointer to STRING containing the result
+ * @param dest:        Pointer to String containing the result
  * @param itemId:      The item whose name you want to get
- * @param heap_id:     Heap in which to allocate the temporary MSGDATA
+ * @param heapId:     Heap in which to allocate the temporary MsgData
  */
-void GetItemNameIntoString(STRING *dest, u16 itemId, HeapID heap_id);
+void GetItemNameIntoString(String *dest, u16 itemId, HeapID heapId);
 
 /*
- * void GetItemDescIntoString(STRING *dest, u16 itemId, HeapID heap_id)
+ * void GetItemDescIntoString(String *dest, u16 itemId, HeapID heapId)
  *
  * Reads the description of the indicated item into the preallocated string.
  *
- * @param dest:        Pointer to STRING containing the result
+ * @param dest:        Pointer to String containing the result
  * @param itemId:      The item whose description you want to get
- * @param heap_id:     Heap in which to allocate the temporary MSGDATA
+ * @param heapId:     Heap in which to allocate the temporary MsgData
  */
-void GetItemDescIntoString(STRING *dest, u16 itemId, HeapID heap_id);
+void GetItemDescIntoString(String *dest, u16 itemId, HeapID heapId);
 
 /*
- * s32 GetItemAttr(u16 itemId, u16 attrno, HeapID heap_id)
+ * s32 GetItemAttr(u16 itemId, u16 attrno, HeapID heapId)
  *
  * Gets the specified item effect parameter from itemtool/itemdata/item_data.narc
  *
  * @param itemId:      The item you want to query
  * @param attrno:      The attribute you want to read
- * @param heap_id:     Heap in which to allocate the temporary ITEMDATA
+ * @param heapId:     Heap in which to allocate the temporary ItemData
  *
  * @returns: Integer attribute value
  */
-s32 GetItemAttr(u16 itemId, u16 attrno, HeapID heap_id);
+s32 GetItemAttr(u16 itemId, u16 attrno, HeapID heapId);
 
 /*
- * s32 GetItemAttr_PreloadedItemData(u16 itemId, u16 attrno, HeapID heap_id)
+ * s32 GetItemAttr_PreloadedItemData(u16 itemId, u16 attrno, HeapID heapId)
  *
  * Gets the specified item effect parameter from itemtool/itemdata/item_data.narc
  *
@@ -221,7 +221,7 @@ s32 GetItemAttr(u16 itemId, u16 attrno, HeapID heap_id);
  *
  * @returns: Integer attribute value
  */
-s32 GetItemAttr_PreloadedItemData(ITEMDATA *itemData, u16 attrno);
+s32 GetItemAttr_PreloadedItemData(ItemData *itemData, u16 attrno);
 
 /*
  * u16 TMHMGetMove(u16 itemId)
@@ -334,30 +334,30 @@ BOOL ItemIdIsBerry(u16 itemId);
 u16 BerryToItemId(u8 berryId);
 
 /*
- * STRING *GetNutName(u16 berryId, HeapID heap_id)
+ * String *GetNutName(u16 berryId, HeapID heapId)
  *
- * Creates a new STRING containing the name of the berry
+ * Creates a new String containing the name of the berry
  *
  * @param berryId:     Berry to get the name of
- * @param heap_id:     Heap to allocate the STRING from
+ * @param heapId:     Heap to allocate the String from
  *
  * @returns: New string containing the name of the berry
  */
-STRING *GetNutName(u16 berryId, HeapID heap_id);
+String *GetNutName(u16 berryId, HeapID heapId);
 
 /*
- * ITEMDATA *LoadAllItemData(HeapID heap_id)
+ * ItemData *LoadAllItemData(HeapID heapId)
  *
  * Reads the entire FIMG of itemtool/itemdata/item_data.narc into a new buffer
  *
- * @param heap_id:     Heap to allocate the array from
+ * @param heapId:     Heap to allocate the array from
  *
  * @returns: Pointer to new array.
  */
-ITEMDATA *LoadAllItemData(HeapID heap_id);
+ItemData *LoadAllItemData(HeapID heapId);
 
 /*
- * ITEMDATA *GetItemDataPtrFromArray(ITEMDATA *itemData, u32 itemDataIdx)
+ * ItemData *GetItemDataPtrFromArray(ItemData *itemData, u32 itemDataIdx)
  *
  * Gets the pointer to the selected member of the array returned by LoadAllItemData above. This function exists because scrub dev is scrub.
  *
@@ -366,7 +366,7 @@ ITEMDATA *LoadAllItemData(HeapID heap_id);
  *
  * @returns: Pointer to &itemData[itemDataIdx]
  */
-ITEMDATA *GetItemDataPtrFromArray(ITEMDATA *itemData, u32 itemDataIdx);
+ItemData *GetItemDataPtrFromArray(ItemData *itemData, u32 itemDataIdx);
 
 /*
  * BOOL ItemIdIsNotJohtoBall(u16 itemId)

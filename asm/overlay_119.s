@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_119.inc"
 	.include "global.inc"
 
 	.text
@@ -103,7 +104,7 @@ _0225F0B8:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, r6, #0
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	ldr r0, [sp, #0x18]
 	add r5, r5, #4
 	add r0, r0, #1
@@ -113,7 +114,7 @@ _0225F0B8:
 	blt _0225F0B8
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r7]
 	add r0, r0, #1
 	str r0, [r7]
@@ -271,7 +272,7 @@ _0225F1FE:
 	mov r0, #7
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #6
 	str r0, [sp]
@@ -335,12 +336,12 @@ _0225F28A:
 	mov r0, #0x6e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x6f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x3c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x71
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -350,7 +351,7 @@ _0225F28A:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	add r0, r7, #0
 	bl ov01_021EFE30
 	cmp r0, #0
@@ -374,7 +375,7 @@ _0225F328:
 	mov r0, #0x6e
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #2
@@ -510,7 +511,7 @@ _0225F40E:
 	blt _0225F40E
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r6]
 	add r0, r0, #1
 	str r0, [r6]
@@ -586,12 +587,12 @@ _0225F482:
 	mov r0, #0x67
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x1a
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x64
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r4, #0
 	ldr r2, _0225F668 ; =0x0001FFFE
 	add r0, #0x14
@@ -637,12 +638,12 @@ _0225F510:
 	mov r0, #0x67
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x1a
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x4c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r4, #0
 	add r0, #0x14
 	bl ov01_021EFE44
@@ -678,7 +679,7 @@ _0225F5A0:
 	mov r0, #0x69
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #8
 	str r0, [sp]
@@ -704,7 +705,7 @@ _0225F5DA:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	add r0, r6, #0
 	bl ov01_021EFE30
 	cmp r0, #1
@@ -728,7 +729,7 @@ _0225F618:
 	mov r0, #0x67
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r7, r7, #1
 	add r5, r5, #4
 	cmp r7, #2
@@ -867,14 +868,14 @@ _0225F710:
 	lsl r0, r0, #6
 	ldr r0, [r5, r0]
 	add r1, r6, #0
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #2
 	blt _0225F710
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r7]
 	add r0, r0, #1
 	str r0, [r7]
@@ -1079,7 +1080,7 @@ _0225F8DE:
 	mov r0, #0x72
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #8
 	str r0, [sp]
@@ -1143,7 +1144,7 @@ _0225F95A:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	ldr r0, [sp, #0x18]
 	cmp r0, #1
 	bne _0225F9F0
@@ -1174,7 +1175,7 @@ _0225F9BC:
 	mov r0, #7
 	lsl r0, r0, #6
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #2
@@ -1332,7 +1333,7 @@ _0225FACC:
 	blt _0225FACC
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
 	bl AllocWindows
@@ -1451,7 +1452,7 @@ _0225FBFE:
 _0225FC00:
 	sub r0, #0x1c
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #0x10
 	str r0, [sp]
@@ -1509,7 +1510,7 @@ _0225FC00:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -1583,7 +1584,7 @@ _0225FCAE:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x5d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -1660,7 +1661,7 @@ _0225FD5E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x5e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -1692,7 +1693,7 @@ _0225FDFC:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	mov r1, #2
 	lsl r1, r1, #8
 	ldr r0, [r4, r1]
@@ -1737,7 +1738,7 @@ _0225FE64:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	ldr r0, [r5, r7]
 	bl ov01_021F0780
 	add r6, r6, #1
@@ -1763,7 +1764,7 @@ _0225FE64:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	mov r0, #3
 	mov r1, #0x20
 	mov r2, #0
@@ -1833,7 +1834,7 @@ _0225FF1A:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r3, r0, #0
 	add r2, sp, #0x2c
 	ldmia r3!, {r0, r1}
@@ -1850,7 +1851,7 @@ _0225FF1A:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 _0225FF68:
 	ldr r0, [sp, #0x24]
 	add r5, r5, #4
@@ -1963,7 +1964,7 @@ _0225FFC8:
 	bl Set2dSpriteVisibleFlag
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -2067,7 +2068,7 @@ _022600F2:
 	mov r0, #0x73
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r4, #0
 	add r0, #0x18
 	bl ov01_021EFF28
@@ -2113,7 +2114,7 @@ _0226017E:
 	mov r0, #0x1d
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #8
 	str r0, [sp]
@@ -2151,7 +2152,7 @@ _022601CC:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	bl IsPaletteFadeFinished
 	cmp r0, #0
 	beq _02260238
@@ -2176,7 +2177,7 @@ _02260210:
 	mov r0, #0x73
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r1, #0x66
 	add r0, r4, #0
 	lsl r1, r1, #2
@@ -2302,7 +2303,7 @@ _022602EA:
 	blt _022602EA
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
 	bl AllocWindows
@@ -2408,7 +2409,7 @@ _022603D2:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -2464,7 +2465,7 @@ _0226043C:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x5d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -2521,7 +2522,7 @@ _022604B8:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x5e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -2598,7 +2599,7 @@ _0226056E:
 	mov r0, #0x82
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	mov r0, #0x40
 	str r0, [sp]
@@ -2636,7 +2637,7 @@ _022605B4:
 	ldr r0, [r4, r1]
 	sub r1, r1, #4
 	ldr r1, [r4, r1]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	cmp r5, #1
 	bne _02260688
 	ldr r0, [sp, #0x18]
@@ -2666,7 +2667,7 @@ _02260616:
 	lsl r7, r7, #4
 _0226061E:
 	ldr r0, [r5, r7]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #3
@@ -2694,7 +2695,7 @@ _0226061E:
 	lsl r0, r0, #8
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	mov r0, #3
 	mov r1, #0x20
 	mov r2, #0
@@ -2741,7 +2742,7 @@ _022606C2:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r3, r0, #0
 	add r2, sp, #0x2c
 	ldmia r3!, {r0, r1}
@@ -2758,7 +2759,7 @@ _022606C2:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r1, #0x6e
 	lsl r1, r1, #2
 	mov r0, #0x17

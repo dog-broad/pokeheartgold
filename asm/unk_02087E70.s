@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_02087E70.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -45,7 +46,7 @@ _02087EB0:
 	mov r0, #0x83
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl Sav2_Misc_get
+	bl Save_Misc_Get
 	add r1, r4, #0
 	add r1, #0x5c
 	bl sub_0202AC0C
@@ -178,7 +179,7 @@ _02087F9E:
 	ldr r0, _02087FD0 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	bl sub_0203E354
 	mov r0, #1
 	pop {r3, r4, r5, pc}

@@ -2,7 +2,7 @@
 
 #include "fieldmap.h"
 #include "map_header.h"
-#include "event_data.h"
+#include "save_vars_flags.h"
 #include "map_events.h"
 #include "task.h"
 #include "field_map_object.h"
@@ -27,91 +27,89 @@ struct HiddenItemData {
 #include "data/fieldmap.h"
 
 const struct ScriptBankMapping sScriptBankMapping[30] = {
-    {_std_scratch_card, NARC_scr_seq_scr_seq_0263_bin, NARC_msg_msg_0433_bin},
-    {_std_frontier_records, NARC_scr_seq_scr_seq_0264_bin,  NARC_msg_msg_0019_bin},
+    {_std_scratch_card,        NARC_scr_seq_scr_seq_0263_bin, NARC_msg_msg_0433_bin},
+    {_std_frontier_records,    NARC_scr_seq_scr_seq_0264_bin, NARC_msg_msg_0019_bin},
     {_std_frontier_move_tutor, NARC_scr_seq_scr_seq_0002_bin, NARC_msg_msg_0748_bin},
-    {_std_bug_contest, NARC_scr_seq_scr_seq_0151_bin, NARC_msg_msg_0246_bin},
-    {_std_trainer_house, NARC_scr_seq_scr_seq_0952_bin, NARC_msg_msg_0726_bin},
-    {10300, NARC_scr_seq_scr_seq_0734_bin, NARC_msg_msg_0444_bin},
-    {_std_mystery_gift, NARC_scr_seq_scr_seq_0144_bin, NARC_msg_msg_0209_bin},
-    {10150, NARC_scr_seq_scr_seq_0955_bin, NARC_msg_msg_0732_bin},
-    {_std_tv,               NARC_scr_seq_scr_seq_0954_bin, NARC_msg_msg_0733_bin},
-    {_std_field_move,     NARC_scr_seq_scr_seq_0146_bin, NARC_msg_msg_0211_bin},
-    {_std_dex_evaluation, NARC_scr_seq_scr_seq_0148_bin, NARC_msg_msg_0666_bin},
-    { 9900,               NARC_scr_seq_scr_seq_0136_bin, NARC_msg_msg_0040_bin},
-    { _std_pokeathlon,               NARC_scr_seq_scr_seq_0167_bin, NARC_msg_msg_0312_bin},
-    { 9800,               NARC_scr_seq_scr_seq_0166_bin, NARC_msg_msg_0043_bin},
-    { _std_following_mon,               NARC_scr_seq_scr_seq_0163_bin, NARC_msg_msg_0266_bin},
+    {_std_bug_contest,         NARC_scr_seq_scr_seq_0151_bin, NARC_msg_msg_0246_bin},
+    {_std_trainer_house,       NARC_scr_seq_scr_seq_0952_bin, NARC_msg_msg_0726_bin},
+    {10300,                    NARC_scr_seq_scr_seq_0734_bin, NARC_msg_msg_0444_bin},
+    {_std_mystery_gift,        NARC_scr_seq_scr_seq_0144_bin, NARC_msg_msg_0209_bin},
+    {10150,                    NARC_scr_seq_scr_seq_0955_bin, NARC_msg_msg_0732_bin},
+    {_std_tv,                  NARC_scr_seq_scr_seq_0954_bin, NARC_msg_msg_0733_bin},
+    {_std_field_move,          NARC_scr_seq_scr_seq_0146_bin, NARC_msg_msg_0211_bin},
+    {_std_dex_evaluation,      NARC_scr_seq_scr_seq_0148_bin, NARC_msg_msg_0666_bin},
+    { 9900,                    NARC_scr_seq_scr_seq_0136_bin, NARC_msg_msg_0040_bin},
+    { _std_pokeathlon,         NARC_scr_seq_scr_seq_0167_bin, NARC_msg_msg_0312_bin},
+    { 9800,                    NARC_scr_seq_scr_seq_0166_bin, NARC_msg_msg_0043_bin},
+    { _std_following_mon,      NARC_scr_seq_scr_seq_0163_bin, NARC_msg_msg_0266_bin},
     { _std_init,               NARC_scr_seq_scr_seq_0149_bin, NARC_msg_msg_0040_bin},
-    { _std_daycare,               NARC_scr_seq_scr_seq_0265_bin, NARC_msg_msg_0439_bin},
-    { _std_group,               NARC_scr_seq_scr_seq_0143_bin, NARC_msg_msg_0204_bin},
-    {_std_wifi_reception, NARC_scr_seq_scr_seq_0164_bin, NARC_msg_msg_0267_bin},
-    {_std_colosseum,      NARC_scr_seq_scr_seq_0000_bin, NARC_msg_msg_0014_bin},
-    {_std_comm_reception, NARC_scr_seq_scr_seq_0004_bin, NARC_msg_msg_0046_bin},
-    {_std_chatot,         NARC_scr_seq_scr_seq_0165_bin, NARC_msg_msg_0268_bin},
-    {_std_safari,         NARC_scr_seq_scr_seq_0262_bin, NARC_msg_msg_0427_bin},
-    {_std_hidden_item,    NARC_scr_seq_scr_seq_0145_bin, NARC_msg_msg_0210_bin}, // Hidden Items
-    {_std_item_ball,      NARC_scr_seq_scr_seq_0141_bin, NARC_msg_msg_0199_bin},
-    {_std_npc_trainer_2,  NARC_scr_seq_scr_seq_0953_bin, NARC_msg_msg_0040_bin},
-    {_std_npc_trainer,    NARC_scr_seq_scr_seq_0953_bin, NARC_msg_msg_0040_bin},
-    {_std_apricorn_tree,  NARC_scr_seq_scr_seq_0150_bin, NARC_msg_msg_0023_bin},
-    {_std_bookshelves,    NARC_scr_seq_scr_seq_0001_bin, NARC_msg_msg_0020_bin},
-    {_std_misc,           NARC_scr_seq_scr_seq_0003_bin, NARC_msg_msg_0040_bin},
+    { _std_daycare,            NARC_scr_seq_scr_seq_0265_bin, NARC_msg_msg_0439_bin},
+    { _std_group,              NARC_scr_seq_scr_seq_0143_bin, NARC_msg_msg_0204_bin},
+    {_std_wifi_reception,      NARC_scr_seq_scr_seq_0164_bin, NARC_msg_msg_0267_bin},
+    {_std_colosseum,           NARC_scr_seq_scr_seq_0000_bin, NARC_msg_msg_0014_bin},
+    {_std_comm_reception,      NARC_scr_seq_scr_seq_0004_bin, NARC_msg_msg_0046_bin},
+    {_std_chatot,              NARC_scr_seq_scr_seq_0165_bin, NARC_msg_msg_0268_bin},
+    {_std_safari,              NARC_scr_seq_scr_seq_0262_bin, NARC_msg_msg_0427_bin},
+    {_std_hidden_item,         NARC_scr_seq_scr_seq_0145_bin, NARC_msg_msg_0210_bin}, // Hidden Items
+    {_std_item_ball,           NARC_scr_seq_scr_seq_0141_bin, NARC_msg_msg_0199_bin},
+    {_std_npc_trainer_2,       NARC_scr_seq_scr_seq_0953_bin, NARC_msg_msg_0040_bin},
+    {_std_npc_trainer,         NARC_scr_seq_scr_seq_0953_bin, NARC_msg_msg_0040_bin},
+    {_std_apricorn_tree,       NARC_scr_seq_scr_seq_0150_bin, NARC_msg_msg_0023_bin},
+    {_std_bookshelves,         NARC_scr_seq_scr_seq_0001_bin, NARC_msg_msg_0020_bin},
+    {_std_misc,                NARC_scr_seq_scr_seq_0003_bin, NARC_msg_msg_0040_bin},
 };
 
-#define HEAP_ID_FIELDMAP                  11
-
-void StartMapSceneScript(FieldSystem *fsys, u16 script, LocalMapObject *lastTalked) {
-    ScriptEnvironment *r4 = ScriptEnvironment_new();
-    SetupScriptEngine(fsys, r4, script, lastTalked, NULL);
-    FieldSys_CreateTask(fsys, Task_RunScripts, r4);
+void StartMapSceneScript(FieldSystem *fieldSystem, u16 script, LocalMapObject *lastInteracted) {
+    ScriptEnvironment *r4 = ScriptEnvironment_New();
+    SetupScriptEngine(fieldSystem, r4, script, lastInteracted, NULL);
+    FieldSystem_CreateTask(fieldSystem, Task_RunScripts, r4);
 }
 
-void FieldSys_SetEngagedTrainer(FieldSystem *fsys, LocalMapObject *obj, int a2, int a3, int a4, int trainerNum, int encounterType, int idx) {
-    ScriptEnvironment *env = TaskManager_GetEnv(fsys->taskman);
+void FieldSystem_SetEngagedTrainer(FieldSystem *fieldSystem, LocalMapObject *obj, int a2, int a3, int a4, int trainerId, int encounterType, int idx) {
+    ScriptEnvironment *env = TaskManager_GetEnvironment(fieldSystem->taskman);
     EngagedTrainer *r0 = &env->engagedTrainers[idx];
     r0->unk0 = a2;
     r0->unk4 = a3;
     r0->unk8 = a4;
-    r0->trainerNum = trainerNum;
+    r0->trainerId = trainerId;
     r0->encounterType = encounterType;
-    r0->objectEvent = obj;
+    r0->overworldEvent = obj;
 }
 
-void QueueScript(TaskManager *taskman, u16 script, LocalMapObject *lastTalked, void *a3) {
-    FieldSystem *fsys = TaskManager_GetSys(taskman);
-    ScriptEnvironment *env = ScriptEnvironment_new();
-    SetupScriptEngine(fsys, env, script, lastTalked, a3);
+void QueueScript(TaskManager *taskman, u16 script, LocalMapObject *lastInteracted, void *a3) {
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskman);
+    ScriptEnvironment *env = ScriptEnvironment_New();
+    SetupScriptEngine(fieldSystem, env, script, lastInteracted, a3);
     TaskManager_Call(taskman, Task_RunScripts, env);
 }
 
-void StartScriptFromMenu(TaskManager *taskman, u16 script, LocalMapObject *lastTalked) {
-    FieldSystem *fsys = TaskManager_GetSys(taskman);
-    ScriptEnvironment *env = ScriptEnvironment_new();
-    SetupScriptEngine(fsys, env, script, lastTalked, NULL);
+void StartScriptFromMenu(TaskManager *taskman, u16 script, LocalMapObject *lastInteracted) {
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskman);
+    ScriptEnvironment *env = ScriptEnvironment_New();
+    SetupScriptEngine(fieldSystem, env, script, lastInteracted, NULL);
     TaskManager_Jump(taskman, Task_RunScripts, env);
 }
 
 BOOL Task_RunScripts(TaskManager *taskman) {
     int i;
-    FieldSystem *fsys;
+    FieldSystem *fieldSystem;
     ScriptEnvironment *env;
 
-    env = TaskManager_GetEnv(taskman);
-    fsys = TaskManager_GetSys(taskman);
+    env = TaskManager_GetEnvironment(taskman);
+    fieldSystem = TaskManager_GetFieldSystem(taskman);
 
     switch (env->state) {
     case 0:
-        env->scriptContexts[0] = CreateScriptContext(fsys, env->script);
-        env->numActiveScrCtx = 1;
-        env->msgfmt = ScrStrBufs_new_custom(8, 64, HEAP_ID_FIELDMAP);
-        env->strbuf1 = String_ctor(1024, HEAP_ID_FIELDMAP);
-        env->strbuf2 = String_ctor(1024, HEAP_ID_FIELDMAP);
+        env->scriptContexts[0] = CreateScriptContext(fieldSystem, env->activeScriptNumber);
+        env->activeScriptContextCount = 1;
+        env->msgfmt = MessageFormat_New_Custom(8, 64, HEAP_ID_FIELD);
+        env->stringBuffer0 = String_New(1024, HEAP_ID_FIELD);
+        env->stringBuffer1 = String_New(1024, HEAP_ID_FIELD);
         env->state++;
         // fallthrough
     case 1:
         for (i = 0; i < 3; i++) {
-            struct SCRIPTCONTEXT *ctx = env->scriptContexts[i];
+            struct ScriptContext *ctx = env->scriptContexts[i];
             if (ctx == NULL) {
                 continue;
             }
@@ -119,19 +117,19 @@ BOOL Task_RunScripts(TaskManager *taskman) {
                 continue;
             }
             DestroyScriptContext(ctx);
-            GF_ASSERT(env->numActiveScrCtx != 0);
+            GF_ASSERT(env->activeScriptContextCount != 0);
             env->scriptContexts[i] = NULL;
-            env->numActiveScrCtx--;
+            env->activeScriptContextCount--;
         }
-        if (env->numActiveScrCtx == 0) {
+        if (env->activeScriptContextCount == 0) {
             void (*callback)(FieldSystem *a0) = env->scrctx_end_cb;
-            ScrStrBufs_delete(env->msgfmt);
-            String_dtor(env->strbuf1);
-            String_dtor(env->strbuf2);
+            MessageFormat_Delete(env->msgfmt);
+            String_Delete(env->stringBuffer0);
+            String_Delete(env->stringBuffer1);
             env->check = 0;
             FreeToHeap(env);
             if (callback != NULL) {
-                (*callback)(fsys);
+                (*callback)(fieldSystem);
                 return FALSE;
             } else {
                 return TRUE;
@@ -142,165 +140,165 @@ BOOL Task_RunScripts(TaskManager *taskman) {
     return FALSE;
 }
 
-ScriptEnvironment *ScriptEnvironment_new(void) {
-    ScriptEnvironment *ret = AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(ScriptEnvironment));
+ScriptEnvironment *ScriptEnvironment_New(void) {
+    ScriptEnvironment *ret = AllocFromHeap(HEAP_ID_FIELD, sizeof(ScriptEnvironment));
     GF_ASSERT(ret != NULL);
     memset(ret, 0, sizeof(ScriptEnvironment));
     ret->check = Unk80_10_C_MAGIC;
     return ret;
 }
 
-void DestroyScriptContext(SCRIPTCONTEXT *ctx) {
-    DestroyMsgData(ctx->msg_data);
+void DestroyScriptContext(ScriptContext *ctx) {
+    DestroyMsgData(ctx->msgdata);
     FreeToHeap(ctx->mapScripts);
     FreeToHeap(ctx);
 }
 
-void SetupScriptEngine(FieldSystem *fsys, ScriptEnvironment *env, u16 script, LocalMapObject *lastTalked, void* a4) {
-    u16 *varLastTalked = FieldSysGetAttrAddrInternal(env, SCRIPTENV_SPECIAL_VAR_LAST_TALKED);
-    env->facingDirection = PlayerAvatar_GetFacingDirection(fsys->playerAvatar);
-    env->lastTalked = lastTalked;
-    env->script = script;
+void SetupScriptEngine(FieldSystem *fieldSystem, ScriptEnvironment *env, u16 script, LocalMapObject *lastInteracted, void* a4) {
+    u16 *varLastInteracted = FieldSysGetAttrAddrInternal(env, SCRIPTENV_SPECIAL_VAR_LAST_INTERACTED);
+    env->facingDirection = PlayerAvatar_GetFacingDirection(fieldSystem->playerAvatar);
+    env->lastInteracted = lastInteracted;
+    env->activeScriptNumber = script;
     env->unk_34 = a4;
-    if (lastTalked != NULL) {
-        *varLastTalked = MapObject_GetID(lastTalked);
+    if (lastInteracted != NULL) {
+        *varLastInteracted = MapObject_GetID(lastInteracted);
     }
     if (script >= _std_hidden_item && script <= _std_safari - 1) {
         GetHiddenItemParams(env, script);
     }
 }
 
-SCRIPTCONTEXT *CreateScriptContext(FieldSystem *fsys, u16 script) {
-    SCRIPTCONTEXT *ctx = AllocFromHeap(HEAP_ID_FIELDMAP, sizeof(SCRIPTCONTEXT));
+ScriptContext *CreateScriptContext(FieldSystem *fieldSystem, u16 script) {
+    ScriptContext *ctx = AllocFromHeap(HEAP_ID_FIELD, sizeof(ScriptContext));
     GF_ASSERT(ctx != NULL);
     InitScriptContext(ctx, gScriptCmdTable, sNumScriptCmds);
-    SetUpScriptContextForMap(fsys, ctx, script, 0);
+    SetUpScriptContextForMap(fieldSystem, ctx, script, 0);
     return ctx;
 }
 
-void SetUpScriptContextForMap(FieldSystem *fsys, SCRIPTCONTEXT *ctx, u16 scriptId, u32 unused_r3) {
+void SetUpScriptContextForMap(FieldSystem *fieldSystem, ScriptContext *ctx, u16 scriptId, u32 unused_r3) {
 #pragma unused(unused_r3)
     u16 r6;
 
-    ctx->fsys = fsys;
-    r6 = LoadScriptsAndMessagesByMapId(fsys, ctx, scriptId);
+    ctx->fieldSystem = fieldSystem;
+    r6 = LoadScriptsAndMessagesByMapId(fieldSystem, ctx, scriptId);
     SetupBytecodeScript(ctx, ctx->mapScripts);
     ScriptRunByIndex(ctx, r6);
-    sub_0203FD68(ctx, fsys->taskman);
+    sub_0203FD68(ctx, fieldSystem->taskman);
 }
 
-u16 LoadScriptsAndMessagesByMapId(FieldSystem *fsys, SCRIPTCONTEXT *ctx, u16 scriptId) {
+u16 LoadScriptsAndMessagesByMapId(FieldSystem *fieldSystem, ScriptContext *ctx, u16 scriptId) {
     const struct ScriptBankMapping *mapping_p = sScriptBankMapping;
     int i;
     for (i = 0; i < NELEMS(sScriptBankMapping); i++) {
         if (scriptId >= mapping_p[i].scriptIdLo) {
-            LoadScriptsAndMessagesParameterized(fsys, ctx, mapping_p[i].scriptBank, mapping_p[i].msgBank);
+            LoadScriptsAndMessagesParameterized(fieldSystem, ctx, mapping_p[i].scriptBank, mapping_p[i].msgBank);
             return scriptId - mapping_p[i].scriptIdLo;
         }
     }
     if (scriptId >= 1) {
-        LoadScriptsAndMessagesForCurrentMap(fsys, ctx);
+        LoadScriptsAndMessagesForCurrentMap(fieldSystem, ctx);
         return scriptId - 1;
     } else {
-        LoadScriptsAndMessagesParameterized(fsys, ctx, NARC_scr_seq_scr_seq_0140_bin, NARC_msg_msg_0184_bin);
+        LoadScriptsAndMessagesParameterized(fieldSystem, ctx, NARC_scr_seq_scr_seq_0140_bin, NARC_msg_msg_0184_bin);
         return 0;
     }
 }
 
-void LoadScriptsAndMessagesParameterized(FieldSystem *fsys, SCRIPTCONTEXT *ctx, int scriptBank, u32 msgBank) {
-    ctx->mapScripts = AllocAndReadWholeNarcMemberByIdPair(NARC_fielddata_script_scr_seq, scriptBank, HEAP_ID_FIELDMAP);
-    ctx->msg_data = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, msgBank, HEAP_ID_FIELDMAP);
+void LoadScriptsAndMessagesParameterized(FieldSystem *fieldSystem, ScriptContext *ctx, int scriptBank, u32 msgBank) {
+    ctx->mapScripts = AllocAndReadWholeNarcMemberByIdPair(NARC_fielddata_script_scr_seq, scriptBank, HEAP_ID_FIELD);
+    ctx->msgdata = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, msgBank, HEAP_ID_FIELD);
 }
 
-void LoadScriptsAndMessagesForCurrentMap(FieldSystem *fsys, SCRIPTCONTEXT *ctx) {
-    ctx->mapScripts = LoadScriptsForCurrentMap(fsys->location->mapId);
-    ctx->msg_data = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, GetCurrentMapMessageBank(fsys->location->mapId), HEAP_ID_FIELDMAP);
+void LoadScriptsAndMessagesForCurrentMap(FieldSystem *fieldSystem, ScriptContext *ctx) {
+    ctx->mapScripts = LoadScriptsForCurrentMap(fieldSystem->location->mapId);
+    ctx->msgdata = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, GetCurrentMapMessageBank(fieldSystem->location->mapId), HEAP_ID_FIELD);
 }
 
-void *FieldSysGetAttrAddrInternal(ScriptEnvironment *unk, enum ScriptEnvField field) {
+void *FieldSysGetAttrAddrInternal(ScriptEnvironment *environment, enum ScriptEnvField field) {
     switch (field) {
     case SCRIPTENV_MENU_WINDOW:
-        return &unk->unk_10;
+        return &environment->unk_10;
     case SCRIPTENV_WINDOW:
-        return &unk->unk_14;
-    case SCRIPTENV_MENU:
-        return &unk->listMenu;
-    case SCRIPTENV_PRINTER_NUM:
-        return &unk->textPrinterNum;
-    case SCRIPTENV_NUM_ACTIVE_MOVEMENT:
-        return &unk->numActiveMovement;
-    case SCRIPTENV_07:
-        return &unk->unk_7;
-    case SCRIPTENV_08:
-        return &unk->unk_8;
-    case SCRIPTENV_NUM_ACTIVE_SCRCTX:
-        return &unk->numActiveScrCtx;
-    case SCRIPTENV_SCRIPT:
-        return &unk->script;
+        return &environment->unk_14;
+    case SCRIPTENV_LIST_MENU_2D:
+        return &environment->listMenu2D;
+    case SCRIPTENV_TEXT_PRINTER_NUMBER:
+        return &environment->textPrinterNum;
+    case SCRIPTENV_ACTIVE_MOVEMENT_COUNTER:
+        return &environment->activeMovementCounter;
+    case SCRIPTENV_FIELD_07:
+        return &environment->unk_7;
+    case SCRIPTENV_FIELD_08:
+        return &environment->unk_8;
+    case SCRIPTENV_ACTIVE_SCRIPT_CONTEXT_COUNT:
+        return &environment->activeScriptContextCount;
+    case SCRIPTENV_ACTIVE_SCRIPT_NUMBER:
+        return &environment->activeScriptNumber;
     case SCRIPTENV_FACING_DIRECTION:
-        return &unk->facingDirection;
-    case SCRIPTENV_LAST_TALKED:
-        return &unk->lastTalked;
-    case SCRIPTENV_CAMERA_FOCUS_OBJ:
-        return &unk->cameraFocusObj;
-    case SCRIPTENV_34:
-        return &unk->unk_34;
-    case SCRIPTENV_SCRCTX_0:
-    case SCRIPTENV_SCRCTX_1:
-    case SCRIPTENV_SCRCTX_2:
-        return &unk->scriptContexts[field - SCRIPTENV_SCRCTX_0];
-    case SCRIPTENV_MSGFMT:
-        return &unk->msgfmt;
-    case SCRIPTENV_STRBUF1:
-        return &unk->strbuf1;
-    case SCRIPTENV_STRBUF2:
-        return &unk->strbuf2;
+        return &environment->facingDirection;
+    case SCRIPTENV_LAST_INTERACTED:
+        return &environment->lastInteracted;
+    case SCRIPTENV_CAMERA_TARGET:
+        return &environment->cameraTarget;
+    case SCRIPTENV_FIELD_34:
+        return &environment->unk_34;
+    case SCRIPTENV_SCRIPT_CONTEXT_0:
+    case SCRIPTENV_SCRIPT_CONTEXT_1:
+    case SCRIPTENV_SCRIPT_CONTEXT_2:
+        return &environment->scriptContexts[field - SCRIPTENV_SCRIPT_CONTEXT_0];
+    case SCRIPTENV_MESSAGE_FORMAT:
+        return &environment->msgfmt;
+    case SCRIPTENV_STRING_BUFFER_0:
+        return &environment->stringBuffer0;
+    case SCRIPTENV_STRING_BUFFER_1:
+        return &environment->stringBuffer1;
     case SCRIPTENV_WAITING_ICON:
-        return &unk->unk_50;
-    case SCRIPTENV_AC:
-        return &unk->unk_AC;
-    case SCRIPTENV_GENERIC_WORK_PTR:
-        return &unk->genericWorkPtr;
-    case SCRIPTENV_B4:
-        return &unk->unk_B4;
-    case SCRIPTENV_B8:
-        return &unk->unk_B8;
-    case SCRIPTENV_0C:
-        return &unk->unk_C;
-    case SCRIPTENV_54_0_00:
-        return &unk->engagedTrainers[0].unk0;
-    case SCRIPTENV_54_0_04:
-        return &unk->engagedTrainers[0].unk4;
-    case SCRIPTENV_54_0_08:
-        return &unk->engagedTrainers[0].unk8;
-    case SCRIPTENV_EYE_TRAINER_1_NUM:
-        return &unk->engagedTrainers[0].trainerNum;
-    case SCRIPTENV_EYE_TRAINER_1_ENCTYPE:
-        return &unk->engagedTrainers[0].encounterType;
-    case SCRIPTENV_EYE_TRAINER_1_OBJPTR:
-        return &unk->engagedTrainers[0].objectEvent;
-    case SCRIPTENV_54_0_18:
-        return &unk->engagedTrainers[0].unk18;
-    case SCRIPTENV_54_1_00:
-        return &unk->engagedTrainers[1].unk0;
-    case SCRIPTENV_54_1_04:
-        return &unk->engagedTrainers[1].unk4;
-    case SCRIPTENV_54_1_08:
-        return &unk->engagedTrainers[1].unk8;
-    case SCRIPTENV_EYE_TRAINER_2_NUM:
-        return &unk->engagedTrainers[1].trainerNum;
-    case SCRIPTENV_EYE_TRAINER_2_ENCTYPE:
-        return &unk->engagedTrainers[1].encounterType;
-    case SCRIPTENV_EYE_TRAINER_2_OBJPTR:
-        return &unk->engagedTrainers[1].objectEvent;
-    case SCRIPTENV_54_1_18:
-        return &unk->engagedTrainers[1].unk18;
-    case SCRIPTENV_BC:
-        return &unk->unk_BC;
+        return &environment->waitingIcon;
+    case SCRIPTENV_RUNNING_APP_DATA:
+        return &environment->runningAppData;
+    case SCRIPTENV_MISC_DATA_PTR:
+        return &environment->miscDataPtr;
+    case SCRIPTENV_FIELD_B4:
+        return &environment->unk_B4;
+    case SCRIPTENV_FIELD_B8:
+        return &environment->unk_B8;
+    case SCRIPTENV_BATTLE_WIN_FLAG:
+        return &environment->battleWinFlag;
+    case SCRIPTENV_ENGAGED_TRAINER_0_FIELD_00:
+        return &environment->engagedTrainers[0].unk0;
+    case SCRIPTENV_ENGAGED_TRAINER_0_FIELD_04:
+        return &environment->engagedTrainers[0].unk4;
+    case SCRIPTENV_ENGAGED_TRAINER_0_FIELD_08:
+        return &environment->engagedTrainers[0].unk8;
+    case SCRIPTENV_ENGAGED_TRAINER_0_ID:
+        return &environment->engagedTrainers[0].trainerId;
+    case SCRIPTENV_ENGAGED_TRAINER_0_ENCOUNTER_TYPE:
+        return &environment->engagedTrainers[0].encounterType;
+    case SCRIPTENV_ENGAGED_TRAINER_0_EVENT:
+        return &environment->engagedTrainers[0].overworldEvent;
+    case SCRIPTENV_ENGAGED_TRAINER_0_FIELD_18:
+        return &environment->engagedTrainers[0].unk18;
+    case SCRIPTENV_ENGAGED_TRAINER_1_FIELD_00:
+        return &environment->engagedTrainers[1].unk0;
+    case SCRIPTENV_ENGAGED_TRAINER_1_FIELD_04:
+        return &environment->engagedTrainers[1].unk4;
+    case SCRIPTENV_ENGAGED_TRAINER_1_FIELD_08:
+        return &environment->engagedTrainers[1].unk8;
+    case SCRIPTENV_ENGAGED_TRAINER_1_ID:
+        return &environment->engagedTrainers[1].trainerId;
+    case SCRIPTENV_ENGAGED_TRAINER_1_ENCOUNTER_TYPE:
+        return &environment->engagedTrainers[1].encounterType;
+    case SCRIPTENV_ENGAGED_TRAINER_1_EVENT:
+        return &environment->engagedTrainers[1].overworldEvent;
+    case SCRIPTENV_ENGAGED_TRAINER_1_FIELD_18:
+        return &environment->engagedTrainers[1].unk18;
+    case SCRIPTENV_POINTS_BOX:
+        return &environment->pointsBox;
     case SCRIPTENV_MONEY_BOX:
-        return &unk->moneyBox;
-    case SCRIPTENV_DC:
-        return &unk->unk_DC;
+        return &environment->moneyBox;
+    case SCRIPTENV_SAVE_STATS_PRINTER:
+        return &environment->saveStatsPrinter;
     case SCRIPTENV_SPECIAL_VAR_8000:
     case SCRIPTENV_SPECIAL_VAR_8001:
     case SCRIPTENV_SPECIAL_VAR_8002:
@@ -314,62 +312,62 @@ void *FieldSysGetAttrAddrInternal(ScriptEnvironment *unk, enum ScriptEnvField fi
     case SCRIPTENV_SPECIAL_VAR_800A:
     case SCRIPTENV_SPECIAL_VAR_800B:
     case SCRIPTENV_SPECIAL_VAR_RESULT:
-    case SCRIPTENV_SPECIAL_VAR_LAST_TALKED:
-        return &unk->specialVars[field - SCRIPTENV_SPECIAL_VAR_8000];
+    case SCRIPTENV_SPECIAL_VAR_LAST_INTERACTED:
+        return &environment->specialVars[field - SCRIPTENV_SPECIAL_VAR_8000];
     default:
-        GF_ASSERT(0);
+        GF_ASSERT(FALSE);
         return NULL;
     }
 }
 
-void* FieldSysGetAttrAddr(FieldSystem *fsys, enum ScriptEnvField field) {
-    ScriptEnvironment *unk = TaskManager_GetEnv(fsys->taskman);
+void* FieldSysGetAttrAddr(FieldSystem *fieldSystem, enum ScriptEnvField field) {
+    ScriptEnvironment *unk = TaskManager_GetEnvironment(fieldSystem->taskman);
     GF_ASSERT(unk != NULL);
     GF_ASSERT(unk->check == Unk80_10_C_MAGIC);
     return FieldSysGetAttrAddrInternal(unk, field);
 }
 
-void sub_0204031C(FieldSystem *fsys) {
-    ScriptEnvironment *unk = TaskManager_GetEnv(fsys->taskman);
-    if (sub_0203BC10(fsys) == TRUE) {
+void sub_0204031C(FieldSystem *fieldSystem) {
+    ScriptEnvironment *unk = TaskManager_GetEnvironment(fieldSystem->taskman);
+    if (sub_0203BC10(fieldSystem) == TRUE) {
         unk->scrctx_end_cb = sub_0203BD64;
     }
 }
 
-void ScriptRunByIndex(SCRIPTCONTEXT *ctx, int idx) {
+void ScriptRunByIndex(ScriptContext *ctx, int idx) {
     ctx->script_ptr += 4 * idx;
     ctx->script_ptr += ScriptReadWord(ctx);
 }
 
 u8 *LoadScriptsForCurrentMap(u32 mapno) {
-    return AllocAndReadWholeNarcMemberByIdPair(NARC_fielddata_script_scr_seq, MapHeader_GetScriptsBank(mapno), HEAP_ID_FIELDMAP);
+    return AllocAndReadWholeNarcMemberByIdPair(NARC_fielddata_script_scr_seq, MapHeader_GetScriptsBank(mapno), HEAP_ID_FIELD);
 }
 
 u32 GetCurrentMapMessageBank(u32 mapno) {
     return MapHeader_GetMsgBank(mapno);
 }
 
-u16 *GetVarPointer(FieldSystem *fsys, u16 varIdx) {
-    SCRIPT_STATE *state = SavArray_Flags_get(fsys->savedata);
+u16 *GetVarPointer(FieldSystem *fieldSystem, u16 varIdx) {
+    SaveVarsFlags *state = Save_VarsFlags_Get(fieldSystem->saveData);
     if (varIdx < VAR_BASE) {
         return NULL;
     } else if (varIdx < SPECIAL_VAR_BASE) {
-        return GetVarAddr(state, varIdx);
+        return Save_VarsFlags_GetVarAddr(state, varIdx);
     } else {
-        return FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8000 + varIdx - SPECIAL_VAR_BASE);
+        return FieldSysGetAttrAddr(fieldSystem, (enum ScriptEnvField)(SCRIPTENV_SPECIAL_VAR_8000 + varIdx - SPECIAL_VAR_BASE));
     }
 }
 
-u16 VarGet(FieldSystem *fsys, u16 varIdx) {
-    u16 *ptr = GetVarPointer(fsys, varIdx);
+u16 FieldSystem_VarGet(FieldSystem *fieldSystem, u16 varIdx) {
+    u16 *ptr = GetVarPointer(fieldSystem, varIdx);
     if (ptr != NULL) {
         varIdx = *ptr;
     }
     return varIdx;
 }
 
-BOOL VarSet(FieldSystem *fsys, u16 varIdx, u16 value) {
-    u16 *ptr = GetVarPointer(fsys, varIdx);
+BOOL FieldSystem_VarSet(FieldSystem *fieldSystem, u16 varIdx, u16 value) {
+    u16 *ptr = GetVarPointer(fieldSystem, varIdx);
     if (ptr == NULL) {
         return FALSE;
     }
@@ -377,47 +375,47 @@ BOOL VarSet(FieldSystem *fsys, u16 varIdx, u16 value) {
     return TRUE;
 }
 
-u16 VarGetObjectEventGraphicsId(FieldSystem *fsys, u16 varobjId) {
+u16 FieldSystem_VarGetObjectEventGraphicsId(FieldSystem *fieldSystem, u16 varobjId) {
     GF_ASSERT(varobjId < NUM_OBJ_GFX_VARS);
-    return VarGet(fsys, VAR_OBJ_GFX_BASE + varobjId);
+    return FieldSystem_VarGet(fieldSystem, VAR_OBJ_GFX_BASE + varobjId);
 }
 
-BOOL FlagGet(FieldSystem *fsys, u16 flagId) {
-    return CheckFlagInArray(SavArray_Flags_get(fsys->savedata), flagId);
+BOOL FieldSystem_FlagGet(FieldSystem *fieldSystem, u16 flagId) {
+    return Save_VarsFlags_CheckFlagInArray(Save_VarsFlags_Get(fieldSystem->saveData), flagId);
 }
 
-void FlagSet(FieldSystem *fsys, u16 flagId) {
-    return SetFlagInArray(SavArray_Flags_get(fsys->savedata), flagId);
+void FieldSystem_FlagSet(FieldSystem *fieldSystem, u16 flagId) {
+    return Save_VarsFlags_SetFlagInArray(Save_VarsFlags_Get(fieldSystem->saveData), flagId);
 }
 
-void FlagClear(FieldSystem *fsys, u16 flagId) {
-    return ClearFlagInArray(SavArray_Flags_get(fsys->savedata), flagId);
+void FieldSystem_FlagClear(FieldSystem *fieldSystem, u16 flagId) {
+    return Save_VarsFlags_ClearFlagInArray(Save_VarsFlags_Get(fieldSystem->saveData), flagId);
 }
 
-void ClearTempFieldEventData(FieldSystem *fsys) {
+void ClearTempFieldEventData(FieldSystem *fieldSystem) {
     u8 *flags;
     u16 *vars;
 
-    SCRIPT_STATE *state = SavArray_Flags_get(fsys->savedata);
-    flags = GetFlagAddr(state, MAPTEMP_FLAG_BASE);
+    SaveVarsFlags *state = Save_VarsFlags_Get(fieldSystem->saveData);
+    flags = Save_VarsFlags_GetFlagAddr(state, MAPTEMP_FLAG_BASE);
     memset(flags, 0, NUM_MAPTEMP_FLAGS / 8);
-    vars = GetVarAddr(state, TEMP_VAR_BASE);
+    vars = Save_VarsFlags_GetVarAddr(state, TEMP_VAR_BASE);
     memset(vars, 0, NUM_TEMP_VARS * 2);
 }
 
-void ClearDailyFlags(FieldSystem *fsys) {
+void ClearDailyFlags(FieldSystem *fieldSystem) {
     u8 *flags;
 
-    SCRIPT_STATE *state = SavArray_Flags_get(fsys->savedata);
-    flags = GetFlagAddr(state, DAILY_FLAG_BASE);
+    SaveVarsFlags *state = Save_VarsFlags_Get(fieldSystem->saveData);
+    flags = Save_VarsFlags_GetFlagAddr(state, DAILY_FLAG_BASE);
     memset(flags, 0, NUM_DAILY_FLAGS / 8);
 }
 
-void FieldMoveArgsSet(FieldSystem *fsys, u16 v8000, u16 v8001, u16 v8002, u16 v8003) {
-    *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8000) = v8000;
-    *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8001) = v8001;
-    *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8002) = v8002;
-    *(u16 *)FieldSysGetAttrAddr(fsys, SCRIPTENV_SPECIAL_VAR_8003) = v8003;
+void FieldMoveArgsSet(FieldSystem *fieldSystem, u16 v8000, u16 v8001, u16 v8002, u16 v8003) {
+    *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8000) = v8000;
+    *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8001) = v8001;
+    *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8002) = v8002;
+    *(u16 *)FieldSysGetAttrAddr(fieldSystem, SCRIPTENV_SPECIAL_VAR_8003) = v8003;
 }
 
 u16 ScriptNumToTrainerNum(u16 script) {
@@ -436,19 +434,19 @@ BOOL TrainerNumIsDouble(u32 trainer) {
     return TrainerData_GetAttr(trainer, TRATTR_DOUBLEBTL) != 0;
 }
 
-BOOL TrainerFlagCheck(SAVEDATA *saveData, u32 trainer) {
-    SCRIPT_STATE *scriptState = SavArray_Flags_get(saveData);
-    return CheckFlagInArray(scriptState, trainer + TRAINER_FLAG_BASE);
+BOOL TrainerFlagCheck(SaveData *saveData, u32 trainer) {
+    SaveVarsFlags *varsFlags = Save_VarsFlags_Get(saveData);
+    return Save_VarsFlags_CheckFlagInArray(varsFlags, trainer + TRAINER_FLAG_BASE);
 }
 
-void TrainerFlagSet(SAVEDATA *saveData, u32 trainer) {
-    SCRIPT_STATE *scriptState = SavArray_Flags_get(saveData);
-    SetFlagInArray(scriptState, trainer + TRAINER_FLAG_BASE);
+void TrainerFlagSet(SaveData *saveData, u32 trainer) {
+    SaveVarsFlags *varsFlags = Save_VarsFlags_Get(saveData);
+    Save_VarsFlags_SetFlagInArray(varsFlags, trainer + TRAINER_FLAG_BASE);
 }
 
-void TrainerFlagClear(SAVEDATA *saveData, u32 trainer) {
-    SCRIPT_STATE *scriptState = SavArray_Flags_get(saveData);
-    ClearFlagInArray(scriptState, trainer + TRAINER_FLAG_BASE);
+void TrainerFlagClear(SaveData *saveData, u32 trainer) {
+    SaveVarsFlags *varsFlags = Save_VarsFlags_Get(saveData);
+    Save_VarsFlags_ClearFlagInArray(varsFlags, trainer + TRAINER_FLAG_BASE);
 }
 
 u16 HiddenItemScriptNoToFlagId(u16 script) {
@@ -507,7 +505,7 @@ BOOL GetHiddenItemParams(ScriptEnvironment *env, u16 script) {
     return TRUE;
 }
 
-HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fsys, HeapID heapId) {
+HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fieldSystem, HeapID heapId) {
     HiddenItemResponse *ret;
     const BG_EVENT *bgEvents;
     int i;
@@ -521,7 +519,7 @@ HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fsys, HeapID hea
     int bottom;
 
     j = 0;
-    num_bgs = Field_GetNumBgEvents(fsys);
+    num_bgs = Field_GetNumBgEvents(fieldSystem);
     num_bgs++;
     ret = AllocFromHeap(heapId, num_bgs * sizeof(HiddenItemResponse));
     if (num_bgs == 1) {
@@ -530,15 +528,15 @@ HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fsys, HeapID hea
         ret[0].y = -1;
         return ret;
     }
-    bgEvents = Field_GetBgEvents(fsys);
+    bgEvents = Field_GetBgEvents(fieldSystem);
     if (bgEvents == NULL) {
         ret[0].unk4 = 0xFF;
         ret[0].x = -1;
         ret[0].y = -1;
         return ret;
     }
-    x = GetPlayerXCoord(fsys->playerAvatar);
-    y = GetPlayerYCoord(fsys->playerAvatar);
+    x = GetPlayerXCoord(fieldSystem->playerAvatar);
+    y = GetPlayerYCoord(fieldSystem->playerAvatar);
     left = x - 17;
     right = x + 17;
     top = y - 17;
@@ -553,7 +551,7 @@ HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fsys, HeapID hea
     // To fix, subtract 1 from num_bgs in the condition clause
     for (i = 0; i < num_bgs; i++) {
         if (bgEvents[i].type == 2
-        && !FlagGet(fsys, HiddenItemScriptNoToFlagId(bgEvents[i].scr))) {
+        && !FieldSystem_FlagGet(fieldSystem, HiddenItemScriptNoToFlagId(bgEvents[i].scr))) {
             if (bgEvents[i].x >= left
                && bgEvents[i].x <= right
                && bgEvents[i].y >= top
@@ -572,45 +570,45 @@ HiddenItemResponse* AllocAndFetchNearbyHiddenItems(FieldSystem *fsys, HeapID hea
     return ret;
 }
 
-void RunInitScript(FieldSystem *fsys) {
-    StartMapLoadScript(fsys, _std_init);
+void RunInitScript(FieldSystem *fieldSystem) {
+    StartMapLoadScript(fieldSystem, _std_init);
 }
 
-void StartMapLoadScript(FieldSystem *fsys, u16 script) {
-    SCRIPTCONTEXT *ctx = CreateScriptContext(fsys, script);
+void StartMapLoadScript(FieldSystem *fieldSystem, u16 script) {
+    ScriptContext *ctx = CreateScriptContext(fieldSystem, script);
     while (RunScriptCommand(ctx) == TRUE) {}
     DestroyScriptContext(ctx);
 }
 
-BOOL TryStartMapScriptByType(FieldSystem *fsys, u8 type) {
+BOOL TryStartMapScriptByType(FieldSystem *fieldSystem, u8 type) {
     u8 *header;
     u16 script;
-    if (fsys->unkAC != 0) {
+    if (fieldSystem->unkAC != 0) {
         return FALSE;
     }
-    header = MapEvents_GetScriptHeader(fsys);
+    header = MapEvents_GetScriptHeader(fieldSystem);
     if (header == NULL) {
         return FALSE;
     }
-    script = (type == 1) ? GetMapSceneScriptId(fsys, header, type) : GetMapLoadScriptId(header, type);
+    script = (type == 1) ? GetMapSceneScriptId(fieldSystem, header, type) : GetMapLoadScriptId(header, type);
     if (script == 0xFFFF) {
         return FALSE;
     }
-    (type == 1) ? StartMapSceneScript(fsys, script, NULL) : StartMapLoadScript(fsys, script);
+    (type == 1) ? StartMapSceneScript(fieldSystem, script, NULL) : StartMapLoadScript(fieldSystem, script);
     return TRUE;
 }
 
-BOOL MapSceneScriptCheck(FieldSystem *fsys) {
+BOOL MapSceneScriptCheck(FieldSystem *fieldSystem) {
     u8 *header;
     u16 script;
-    if (fsys->unkAC != 0) {
+    if (fieldSystem->unkAC != 0) {
         return FALSE;
     }
-    header = MapEvents_GetScriptHeader(fsys);
+    header = MapEvents_GetScriptHeader(fieldSystem);
     if (header == NULL) {
         return FALSE;
     }
-    script = GetMapSceneScriptId(fsys, header, 1);
+    script = GetMapSceneScriptId(fieldSystem, header, 1);
     return script != 0xFFFF;
 }
 
@@ -626,7 +624,7 @@ u16 GetMapLoadScriptId(u8 *header, u8 type) {
     }
 }
 
-u16 GetMapSceneScriptId(FieldSystem *fsys, u8 *header, u8 type) {
+u16 GetMapSceneScriptId(FieldSystem *fieldSystem, u8 *header, u8 type) {
     u32 ofs;
     while (1) {
         if (header[0] == 0) {
@@ -651,7 +649,7 @@ u16 GetMapSceneScriptId(FieldSystem *fsys, u8 *header, u8 type) {
             return 0xFFFF;
         }
         var2 = header[2] + (header[3] << 8);
-        if (VarGet(fsys, var1) == VarGet(fsys, var2)) {
+        if (FieldSystem_VarGet(fieldSystem, var1) == FieldSystem_VarGet(fieldSystem, var2)) {
             return header[4] + (header[5] << 8);
         }
         header += 6;

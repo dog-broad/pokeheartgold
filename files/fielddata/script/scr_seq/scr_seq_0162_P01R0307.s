@@ -58,43 +58,49 @@ _00A5:
 	wait_movement
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _00C4:
 	step 0, 2
 	step 12, 1
 	step 2, 2
 	step_end
 
+	.balign 4, 0
 _00D4:
 	step 1, 2
 	step 13, 1
 	step 2, 2
 	step_end
 
+	.balign 4, 0
 _00E4:
 	step 1, 2
 	step 13, 1
 	step 2, 2
 	step_end
 
+	.balign 4, 0
 _00F4:
 	step 0, 2
 	step 12, 1
 	step 2, 2
 	step_end
 
+	.balign 4, 0
 _0104:
 	step 71, 1
 	step 14, 1
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0114:
 	step 71, 1
 	step 14, 1
 	step 72, 1
 	step_end
+
 scr_seq_P01R0307_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -124,9 +130,9 @@ scr_seq_P01R0307_003:
 	scrcmd_729 VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 0
 	goto_if_eq _0180
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 _0180:
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
@@ -142,9 +148,9 @@ _01B7:
 	wait_movement
 	compare VAR_TEMP_x4002, 0
 	goto_if_eq _01D0
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 _01D0:
 	npc_msg msg_0263_P01R0307_00006
 	closemsg
@@ -158,30 +164,34 @@ _01D0:
 	wait_fade
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _020C:
 	step 75, 1
 	step 63, 1
 	step_end
 
+	.balign 4, 0
 _0218:
 	step 71, 1
 	step 8, 1
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0228:
 	step 71, 1
 	step 11, 2
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _0238:
 	step 0, 2
 	step 8, 1
 	step_end
 
+	.balign 4, 0
 _0244:
 	step 3, 2
 	step 11, 2

@@ -10,15 +10,15 @@
 
 scr_seq_D02R0101_000:
 	callstd std_play_rival_intro_music
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_D02R0101_gsrivel, _00D0
 	apply_movement obj_player, _00DC
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	buffer_rivals_name 1
 	npc_msg msg_0049_D02R0101_00000
@@ -60,21 +60,26 @@ _007D:
 _00C9:
 	white_out
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _00D0:
 	step 75, 1
 	step 14, 4
 	step_end
 
+	.balign 4, 0
 _00DC:
 	step 63, 4
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _00E8:
 	step 19, 5
 	step 17, 9
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+
+_00F4:
+	end
+
 	.balign 4, 0

@@ -1,6 +1,7 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 	.include "asm/macros.inc"
+	.include "unk_02074E5C.inc"
 	.include "global.inc"
 
 	.rodata
@@ -49,7 +50,7 @@ _020FFE30:
 sub_02074E5C: ; 0x02074E5C
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
-	bl ov12_0223B514
+	bl BattleSystem_GetBattleSpecial
 	mov r1, #0x10
 	tst r0, r1
 	bne _02074EB6
@@ -275,7 +276,7 @@ sub_02074F9C: ; 0x02074F9C
 	bl AllocFromHeap
 	add r6, r0, #0
 	ldr r0, [sp]
-	bl ov12_0223A940
+	bl BattleSystem_GetSendBufferPtr
 	add r5, r0, #0
 	ldr r0, [sp]
 	bl ov12_0223A960
@@ -342,7 +343,7 @@ sub_02075028: ; 0x02075028
 	add r0, r3, #0
 	add r5, r1, #0
 	add r6, r2, #0
-	bl ov12_0223A948
+	bl BattleSystem_GetRecvBufferPtr
 	add r7, r0, #0
 	ldr r0, [sp]
 	bl ov12_0223A984
@@ -453,7 +454,7 @@ _020750F4:
 	add r0, #0xf8
 	ldr r0, [r0]
 	add r1, r4, #0
-	bl PlayerProfile_copy
+	bl PlayerProfile_Copy
 	mov r0, #1
 	pop {r4, pc}
 	.balign 4, 0
@@ -579,7 +580,7 @@ _020751CC:
 	add r4, #0x20
 	ldr r0, [r0, #4]
 	add r1, r4, #0
-	bl Party_copy
+	bl Party_Copy
 	mov r0, #1
 	pop {r4, pc}
 	thumb_func_end sub_020751B8
@@ -640,7 +641,7 @@ _02075234:
 	add r0, r4, #0
 	ldr r1, [r2, r1]
 	add r0, #0x20
-	bl Chatot_copy
+	bl Chatot_Copy
 	mov r0, #1
 	pop {r4, pc}
 	.balign 4, 0
@@ -864,7 +865,7 @@ _020753BE:
 	add r5, #0x20
 	ldr r0, [r0, #4]
 	add r1, r5, #0
-	bl Party_copy
+	bl Party_Copy
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -929,7 +930,7 @@ sub_02075434: ; 0x02075434
 	add r5, r1, #0
 	str r0, [sp]
 	ldr r0, [r5]
-	bl ov12_0223A940
+	bl BattleSystem_GetSendBufferPtr
 	add r6, r0, #0
 	ldr r0, [r5]
 	bl ov12_0223A954
@@ -998,7 +999,7 @@ sub_020754C0: ; 0x020754C0
 	add r5, r1, #0
 	str r0, [sp]
 	ldr r0, [r5]
-	bl ov12_0223A948
+	bl BattleSystem_GetRecvBufferPtr
 	add r6, r0, #0
 	ldr r0, [r5]
 	bl ov12_0223A978

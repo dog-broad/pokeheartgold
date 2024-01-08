@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_02078834.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -16,10 +17,10 @@
 sub_02078834: ; 0x02078834
 	push {r4, r5, r6, lr}
 	add r6, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #4]
 	cmp r1, #0x19
@@ -96,7 +97,7 @@ _020788CA:
 	cmp r0, #0
 	beq _020788DE
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl SetFlag970
 _020788DE:
 	ldr r0, [r4]
@@ -217,7 +218,7 @@ _0207899C:
 	ldrb r3, [r4, #0xd]
 	ldr r1, [r1, #8]
 	add r0, r6, #0
-	bl sub_020514A4
+	bl CallTask_02050960
 	ldr r0, [r4, #4]
 	add r0, r0, #1
 	str r0, [r4, #4]
@@ -271,7 +272,7 @@ _020789FE:
 	b _02078B20
 _02078A16:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	ldr r0, [r4, #0x10]
@@ -290,7 +291,7 @@ _02078A2C:
 	b _02078B20
 _02078A3E:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	add r0, r4, #0
@@ -309,7 +310,7 @@ _02078A52:
 	b _02078B20
 _02078A66:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	mov r0, #2
@@ -328,7 +329,7 @@ _02078A7C:
 	b _02078B20
 _02078A8E:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	add r0, r4, #0
@@ -347,7 +348,7 @@ _02078AA2:
 	b _02078B20
 _02078AB6:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	mov r0, #2
@@ -366,7 +367,7 @@ _02078ACC:
 	b _02078B20
 _02078ADE:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	add r0, r4, #0
@@ -385,7 +386,7 @@ _02078AF2:
 	b _02078B20
 _02078B06:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02078B20
 	mov r0, #2
@@ -486,7 +487,7 @@ sub_02078B9C: ; 0x02078B9C
 	str r0, [r2, #8]
 	add r0, r5, #0
 	str r2, [r6, #0x10]
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
 _02078BD0: .word _0210125C
@@ -560,7 +561,7 @@ sub_02078C18: ; 0x02078C18
 	ldr r1, _02078C5C ; =_02101260
 	add r0, r5, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	add r0, r4, #0
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -602,7 +603,7 @@ sub_02078C74: ; 0x02078C74
 	ldr r1, _02078CB0 ; =_02101270
 	add r0, r5, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	add r0, r4, #0
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -648,7 +649,7 @@ sub_02078CC8: ; 0x02078CC8
 	ldr r1, _02078D0C ; =_021012A0
 	add r0, r5, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	add r0, r4, #0
 	pop {r4, r5, r6, pc}
 	.balign 4, 0

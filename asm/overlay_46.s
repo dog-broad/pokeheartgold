@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_46.inc"
 	.include "global.inc"
 
 	.text
@@ -127,7 +128,7 @@ ov46_02258800: ; 0x02258800
 	ldr r0, _02258928 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	add sp, #0x1c
 	pop {r4, r5, pc}
@@ -227,12 +228,12 @@ _022589D0:
 	add r0, r5, #0
 	add r0, #0xd0
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _022589EC
 	add r5, #0xd0
 	ldr r0, [r5]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #4
 	str r0, [r4]
 	b _02258C28
@@ -245,7 +246,7 @@ _022589F2:
 	add r0, r5, #0
 	add r0, #0xd0
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r5, #0x40
 	add r0, r5, #0
 	bl ov46_022593F8
@@ -313,7 +314,7 @@ _02258A80:
 	add r0, #0x70
 	bl ov46_02259474
 	ldr r0, [r5]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0x21
 	bl GameStats_AddSpecial
 	bl GF_RTC_DateTimeToSec
@@ -419,12 +420,12 @@ _02258B74:
 	add r0, r5, #0
 	add r0, #0xd0
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02258B94
 	add r5, #0xd0
 	ldr r0, [r5]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	bl sub_020397C8
 	mov r0, #0xd
 	str r0, [r4]
@@ -434,7 +435,7 @@ _02258B94:
 	bne _02258C28
 	add r5, #0xd0
 	ldr r0, [r5]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0xe
 	str r0, [r4]
 	b _02258C28
@@ -555,7 +556,7 @@ _02258C68:
 	ldr r0, _02258CB0 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	pop {r4, pc}
 	.balign 4, 0
@@ -660,7 +661,7 @@ ov46_02258CB4: ; 0x02258CB4
 	ldr r0, _02258DA4 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	add sp, #0x1c
 	pop {r4, r5, pc}
@@ -888,7 +889,7 @@ _02258F2C:
 	ldr r0, _02258F6C ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	pop {r4, pc}
 	.balign 4, 0
@@ -915,7 +916,7 @@ ov46_02258F78: ; 0x02258F78
 	ldr r0, _022591F8 ; =0x04001050
 	strh r1, [r0]
 	ldr r0, _022591FC ; =ov46_022595B4
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r0, #0
 	add r1, r0, #0
 	bl BG_SetMaskColor
@@ -957,7 +958,7 @@ _02258FAE:
 	blt _02258FAE
 	ldr r0, [sp, #0x10]
 	ldr r0, [r0]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	mov r1, #5
@@ -1050,10 +1051,10 @@ _02258FAE:
 	bl GfGfxLoader_LoadScrnData
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x58
 	add r1, r6, #0
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [sp, #0x2c]
 	ldr r0, [sp, #0x10]
 	mov r2, #0x33
@@ -1195,7 +1196,7 @@ _022591A6:
 	str r0, [r1]
 	ldr r0, [sp, #0x2c]
 	str r1, [sp, #0x10]
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x3c
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -1323,11 +1324,11 @@ _022592DC: .word _02259598
 
 	thumb_func_start ov46_022592E0
 ov46_022592E0: ; 0x022592E0
-	ldr r3, _022592E8 ; =BgConfig_HandleScheduledScrollAndTransferOps
+	ldr r3, _022592E8 ; =DoScheduledBgGpuUpdates
 	ldr r0, [r0, #0xc]
 	bx r3
 	nop
-_022592E8: .word BgConfig_HandleScheduledScrollAndTransferOps
+_022592E8: .word DoScheduledBgGpuUpdates
 	thumb_func_end ov46_022592E0
 
 	thumb_func_start ov46_022592EC
@@ -1340,7 +1341,7 @@ ov46_022592EC: ; 0x022592EC
 	add r0, r4, #0
 	add r7, r1, #0
 	add r6, r2, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r5]
 	ldr r2, [sp, #0x14]
 	mov r0, #0
@@ -1351,16 +1352,16 @@ ov46_022592EC: ; 0x022592EC
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r4, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x18]
 	mov r0, #1
 	lsl r0, r0, #8
 	add r1, r4, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x1c]
 	ldr r0, [sp, #0x44]
 	str r6, [r5, #0x20]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	str r0, [r5, #0x28]
 	mov r0, #0
@@ -1410,7 +1411,7 @@ ov46_02259374: ; 0x02259374
 	ldr r0, [r5, #0x2c]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _02259394:
 	add r0, r5, #0
 	add r0, #8
@@ -1472,7 +1473,7 @@ ov46_022593F8: ; 0x022593F8
 	ldr r0, [r4, #0x2c]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _02259414:
 	ldr r0, [r4, #0x20]
 	cmp r0, #0
@@ -1518,7 +1519,7 @@ _02259464:
 	add r0, r4, #0
 	add r0, #8
 	mov r1, #1
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	str r0, [r4, #0x24]
 _02259470:
 	pop {r4, pc}
@@ -1558,7 +1559,7 @@ ov46_02259494: ; 0x02259494
 	ldr r0, [r4, #0x2c]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _022594B0:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0
@@ -1570,13 +1571,13 @@ _022594BC:
 	add r0, #8
 	bl RemoveWindow
 	ldr r0, [r4, #0x1c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x18]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #4]
 	bl DestroyMsgData
 	ldr r0, [r4]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov46_02259494
@@ -1614,7 +1615,7 @@ ov46_022594E0: ; 0x022594E0
 	ldr r2, [r4, #0x18]
 	add r0, #8
 	mov r1, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	nop
@@ -1645,7 +1646,7 @@ ov46_02259550: ; 0x02259550
 	add r5, r0, #0
 	mov r0, #0x77
 	add r4, r1, #0
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	mov r1, #1
 	str r1, [sp, #4]
 	mov r1, #0xd
@@ -1669,7 +1670,7 @@ ov46_02259550: ; 0x02259550
 	mov r1, #0
 	strb r1, [r2, #0x13]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r6, #0
 	add sp, #0x14
 	pop {r3, r4, r5, r6, pc}

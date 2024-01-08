@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_87.inc"
 	.include "global.inc"
 
 	.text
@@ -41,7 +42,7 @@ ov87_021E5900: ; 0x021E5900
 	lsl r0, r0, #2
 	str r2, [r4, r0]
 	ldr r0, [r4, r1]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	mov r1, #0x59
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -339,7 +340,7 @@ _021E5B68:
 	bl ov87_021E7048
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #3
 	strh r0, [r6, #0x12]
 	mov r0, #0x56
@@ -419,7 +420,7 @@ ov87_021E5C38: ; 0x021E5C38
 _021E5C4E:
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x1e
 	strb r0, [r5, #0xf]
 	mov r0, #1
@@ -431,7 +432,7 @@ _021E5C60:
 	bne _021E5C7C
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0xd
 	lsl r0, r0, #6
 	ldr r0, [r5, r0]
@@ -443,7 +444,7 @@ _021E5C7C:
 	strb r0, [r5, #0xf]
 _021E5C80:
 	ldr r0, _021E5CE4 ; =ov87_021E81C0
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	add r4, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -451,7 +452,7 @@ _021E5C80:
 	beq _021E5CDE
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0xd
 	lsl r0, r0, #6
 	ldr r0, [r5, r0]
@@ -467,7 +468,7 @@ _021E5C80:
 	add r0, r0, #1
 	strb r0, [r5, #0xe]
 	add r0, sp, #4
-	bl sub_02025364
+	bl System_GetTouchHeldCoords
 	mov r0, #0x53
 	lsl r0, r0, #2
 	add r0, r5, r0
@@ -475,7 +476,7 @@ _021E5C80:
 	bl ClearFrameAndWindow2
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	strb r0, [r5, #8]
 	b _021E5CDE
@@ -692,13 +693,13 @@ _021E5E20:
 	bl BgSetPosTextAndCommit
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0xff
 	mvn r0, r0
 	strh r0, [r4, #0x10]
@@ -1036,10 +1037,10 @@ _021E610A:
 _021E613E:
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	strb r0, [r4, #8]
 	b _021E64F4
@@ -1074,7 +1075,7 @@ _021E6184:
 	mov r2, #2
 	bl sub_02021280
 	ldr r0, _021E63F8 ; =ov87_021E8308
-	bl sub_02025204
+	bl TouchscreenHitbox_FindRectAtTouchHeld
 	add r5, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -1211,7 +1212,7 @@ _021E62AC:
 	cmp r0, #2
 	bne _021E62F6
 	ldr r0, _021E6408 ; =ov87_021E8184
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1239,7 +1240,7 @@ _021E62AC:
 	b _021E64F4
 _021E62F6:
 	ldr r0, _021E6410 ; =ov87_021E818C
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1336,7 +1337,7 @@ _021E63BA:
 	bne _021E63DE
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	bl ov87_021E7998
 	add r0, r4, #0
@@ -1485,10 +1486,10 @@ ov87_021E64F8: ; 0x021E64F8
 _021E650C:
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0xcf
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -1907,7 +1908,7 @@ _021E6816:
 	mov r0, #0x57
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
-	bl sub_02003104
+	bl PaletteData_Free
 	mov r0, #0x57
 	mov r1, #0
 	lsl r0, r0, #2
@@ -1920,15 +1921,15 @@ _021E6816:
 	ldr r0, [r6, #0x38]
 	bl DestroyMsgData
 	ldr r0, [r6, #0x3c]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r6, #0x40]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x44]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r6, r0]
-	bl MessagePrinter_delete
+	bl MessagePrinter_Delete
 	mov r0, #0xe1
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
@@ -1945,7 +1946,7 @@ _021E6816:
 	mov r0, #0xe
 	lsl r0, r0, #6
 	ldr r0, [r6, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov87_021E6780
 
@@ -1958,8 +1959,8 @@ ov87_021E68A4: ; 0x021E68A4
 	mov r0, #0
 	add r1, r0, #0
 	bl Main_SetHBlankIntrCB
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -1983,7 +1984,7 @@ ov87_021E68DC: ; 0x021E68DC
 	add r5, r0, #0
 	mov r0, #0xcf
 	mov r1, #0x7a
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0xe
 	lsl r1, r1, #6
 	str r0, [r5, r1]
@@ -1998,17 +1999,17 @@ ov87_021E68DC: ; 0x021E68DC
 	bl NewMsgDataFromNarc
 	str r0, [r5, #0x38]
 	mov r0, #0x7a
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r5, #0x3c]
 	mov r0, #0x96
 	lsl r0, r0, #2
 	mov r1, #0x7a
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x40]
 	mov r0, #0x96
 	lsl r0, r0, #2
 	mov r1, #0x7a
-	bl String_ctor
+	bl String_New
 	mov r1, #0x1a
 	str r0, [r5, #0x44]
 	mov r0, #0
@@ -2037,7 +2038,7 @@ ov87_021E68DC: ; 0x021E68DC
 	mov r1, #0xe
 	mov r2, #0
 	mov r3, #0x7a
-	bl MessagePrinter_new
+	bl MessagePrinter_New
 	mov r1, #0x16
 	lsl r1, r1, #4
 	str r0, [r5, r1]
@@ -2057,7 +2058,7 @@ ov87_021E68DC: ; 0x021E68DC
 	bl ov87_021E7A04
 	add r0, r5, #0
 	bl ov87_021E7A2C
-	bl GX_BothDispOn
+	bl GfGfx_BothDispOn
 	mov r7, #0
 	mov r6, #0x1a
 	add r4, r5, #0
@@ -2210,7 +2211,7 @@ ov87_021E6AE0: ; 0x021E6AE0
 	push {r4, lr}
 	add r4, r0, #0
 	mov r0, #0x7a
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	mov r1, #0x39
 	lsl r1, r1, #4
 	str r0, [r4, r1]
@@ -2241,7 +2242,7 @@ ov87_021E6AF4: ; 0x021E6AF4
 	add r3, #0x10
 	ldr r0, [r0, r3]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add sp, #0x14
 	pop {pc}
 	.balign 4, 0
@@ -2251,11 +2252,11 @@ ov87_021E6AF4: ; 0x021E6AF4
 ov87_021E6B28: ; 0x021E6B28
 	mov r1, #0x39
 	lsl r1, r1, #4
-	ldr r3, _021E6B34 ; =sub_02016624
+	ldr r3, _021E6B34 ; =YesNoPrompt_Destroy
 	ldr r0, [r0, r1]
 	bx r3
 	nop
-_021E6B34: .word sub_02016624
+_021E6B34: .word YesNoPrompt_Destroy
 	thumb_func_end ov87_021E6B28
 
 	thumb_func_start ov87_021E6B38
@@ -2266,7 +2267,7 @@ ov87_021E6B38: ; 0x021E6B38
 	ldr r0, [r4, #0x58]
 	bl ov87_021E6C60
 	mov r0, #0x7a
-	bl sub_020030E8
+	bl PaletteData_Init
 	mov r1, #0x57
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -2298,10 +2299,10 @@ ov87_021E6B38: ; 0x021E6B38
 	bl ov87_021E6EF4
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r4, pc}
 	thumb_func_end ov87_021E6B38
 
@@ -2322,10 +2323,10 @@ ov87_021E6BB8: ; 0x021E6BB8
 	add r4, r0, #0
 	mov r0, #0x1f
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x1f
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r4, #0
 	mov r1, #7
 	bl FreeBgTilemapBuffer
@@ -2364,7 +2365,7 @@ ov87_021E6C04: ; 0x021E6C04
 	bl sub_0200398C
 _021E6C1C:
 	ldr r0, [r4, #0x58]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	ldr r3, _021E6C38 ; =0x027E0000
@@ -2393,7 +2394,7 @@ _021E6C4A:
 	sub r2, r2, #1
 	bne _021E6C4A
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -2534,13 +2535,13 @@ ov87_021E6C60: ; 0x021E6C60
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0xb8
 	pop {r3, r4, r5, pc}
 	nop
@@ -2794,7 +2795,7 @@ ov87_021E6F38: ; 0x021E6F38
 	ldrb r1, [r1]
 	ldr r2, [r5, #0x40]
 	add r0, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov87_021E6F38
@@ -2849,7 +2850,7 @@ ov87_021E6F98: ; 0x021E6F98
 	ldrb r1, [r1]
 	ldr r2, [r5, #0x40]
 	add r0, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov87_021E6F98
@@ -4462,10 +4463,10 @@ _021E7B96:
 	blt _021E7B96
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -4870,7 +4871,7 @@ _021E7EC6:
 	cmp r4, #4
 	blo _021E7EC6
 	ldr r0, [r5]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	bl sub_0202168C
 	bl sub_02022608
@@ -4989,7 +4990,7 @@ ov87_021E7FC0: ; 0x021E7FC0
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	mov r0, #0
@@ -5007,11 +5008,11 @@ _021E7FDC: .word Set2dSpriteVisibleFlag
 
 	thumb_func_start ov87_021E7FE0
 ov87_021E7FE0: ; 0x021E7FE0
-	ldr r3, _021E7FE8 ; =sub_02024ADC
+	ldr r3, _021E7FE8 ; =Sprite_SetDrawPriority
 	ldr r0, [r0, #0xc]
 	bx r3
 	nop
-_021E7FE8: .word sub_02024ADC
+_021E7FE8: .word Sprite_SetDrawPriority
 	thumb_func_end ov87_021E7FE0
 
 	thumb_func_start ov87_021E7FEC
@@ -5032,7 +5033,7 @@ ov87_021E7FEC: ; 0x021E7FEC
 _021E8006:
 	ldr r0, [r0, #0xc]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {pc}
 	.balign 4, 0
@@ -5044,7 +5045,7 @@ ov87_021E8014: ; 0x021E8014
 	ldr r0, [r0, #0xc]
 	add r5, r1, #0
 	add r4, r2, #0
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r2, [r0]
 	asr r1, r2, #0xb
 	lsr r1, r1, #0x14
@@ -5072,7 +5073,7 @@ ov87_021E803C: ; 0x021E803C
 	bl sub_02024868
 	ldr r0, [r5, #0xc]
 	add r1, r4, #0
-	bl sub_02024950
+	bl TryChange2dSpriteAnimSeqNo
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 	thumb_func_end ov87_021E803C
@@ -5119,7 +5120,7 @@ ov87_021E8084: ; 0x021E8084
 	lsl r1, r1, #0xc
 	bl sub_02024868
 	ldr r0, [r4, #0xc]
-	bl sub_020249A8
+	bl Get2dSpriteCurrentAnimSeqNo
 	add r1, r0, #0
 	ldr r0, [r4, #0xc]
 	bl Set2dSpriteAnimSeqNo
@@ -5137,11 +5138,11 @@ _021E80B0: .word sub_02024B38
 
 	thumb_func_start ov87_021E80B4
 ov87_021E80B4: ; 0x021E80B4
-	ldr r3, _021E80BC ; =sub_02024B68
+	ldr r3, _021E80BC ; =Sprite_IsCellAnimationFinished
 	ldr r0, [r0, #0xc]
 	bx r3
 	nop
-_021E80BC: .word sub_02024B68
+_021E80BC: .word Sprite_IsCellAnimationFinished
 	thumb_func_end ov87_021E80B4
 
 	thumb_func_start ov87_021E80C0

@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_49.inc"
 	.include "global.inc"
 
 	.text
@@ -2631,7 +2632,7 @@ _02259B02:
 	mov r0, #0
 	bl sub_02002B8C
 	ldr r0, [r5]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	mov r1, #0xfd
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -3791,7 +3792,7 @@ ov49_0225A334: ; 0x0225A334
 	mov r0, #0x77
 	add r4, r1, #0
 	add r7, r2, #0
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	add r6, r0, #0
 	ldr r0, [r5, #0x34]
 	bl ov45_0222A53C
@@ -4218,11 +4219,11 @@ ov49_0225A5EC: ; 0x0225A5EC
 	add r1, r6, #0
 	bl GF_CreateVramTransferManager
 	ldr r0, _0225A7A0 ; =ov49_022697CC
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r0, _0225A7A4 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #0
 	add r1, r0, #0
 	bl BG_SetMaskColor
@@ -4263,7 +4264,7 @@ _0225A636:
 	cmp r0, #4
 	blt _0225A636
 	ldr r0, [sp, #0x14]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	lsl r0, r0, #0x18
 	lsr r4, r0, #0x18
@@ -4368,10 +4369,10 @@ _0225A742:
 	str r0, [r5, r1]
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	str r0, [sp]
 	ldr r0, _0225A7BC ; =ov49_0225A854
@@ -4447,7 +4448,7 @@ _0225A80E:
 	cmp r4, #4
 	blt _0225A80E
 	ldr r0, [r6, #4]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl sub_0202168C
 	bl sub_02022608
 	bl OamManager_Free
@@ -4464,7 +4465,7 @@ _0225A83C: .word ov49_02269734
 ov49_0225A840: ; 0x0225A840
 	push {r3, lr}
 	ldr r0, [r0]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl OamManager_ApplyAndResetBuffers
 	bl GF_RunVramTransferTasks
 	pop {r3, pc}
@@ -4477,7 +4478,7 @@ ov49_0225A854: ; 0x0225A854
 	sub sp, #0xc
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _0225A964 ; =0x04000008
 	mov r1, #3
 	ldrh r2, [r0]
@@ -4794,10 +4795,10 @@ ov49_0225AAC8: ; 0x0225AAC8
 	mov r0, #6
 	lsl r0, r0, #6
 	add r1, r6, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x18]
 	add r0, r4, #0
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	str r0, [r5, #0x14]
 	add sp, #0x14
@@ -4817,12 +4818,12 @@ ov49_0225AB14: ; 0x0225AB14
 	ldr r0, [r4, #0x10]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0225AB30:
 	add r0, r4, #0
 	bl ov49_0225AC38
 	ldr r0, [r4, #0x18]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl RemoveWindow
 	pop {r4, pc}
@@ -4843,14 +4844,14 @@ ov49_0225AB44: ; 0x0225AB44
 	ldr r0, [r5, #0x10]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0225AB64:
 	add r0, r5, #0
 	mov r1, #0xf
 	bl FillWindowPixelBuffer
 	ldr r0, [r5, #0x18]
 	add r1, r4, #0
-	bl StringCopy
+	bl String_Copy
 	mov r3, #0
 	str r3, [sp]
 	ldr r0, [r5, #0x14]
@@ -4861,7 +4862,7 @@ _0225AB64:
 	str r3, [sp, #0xc]
 	ldr r2, [r5, #0x18]
 	add r0, r5, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #1
 	str r0, [r5, #0x10]
 	add r0, r5, #0
@@ -4889,14 +4890,14 @@ ov49_0225ABA4: ; 0x0225ABA4
 	ldr r0, [r5, #0x10]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0225ABC4:
 	add r0, r5, #0
 	mov r1, #0xf
 	bl FillWindowPixelBuffer
 	ldr r0, [r5, #0x18]
 	add r1, r4, #0
-	bl StringCopy
+	bl String_Copy
 	mov r3, #0
 	str r3, [sp]
 	mov r0, #0xff
@@ -4907,7 +4908,7 @@ _0225ABC4:
 	str r3, [sp, #0xc]
 	ldr r2, [r5, #0x18]
 	add r0, r5, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #1
 	add r0, r5, #0
 	add r2, r1, #0
@@ -4932,7 +4933,7 @@ ov49_0225AC08: ; 0x0225AC08
 _0225AC16:
 	add r0, r4, #0
 	mov r1, #1
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	str r0, [r4, #0x1c]
 	pop {r4, pc}
 	.balign 4, 0
@@ -5008,7 +5009,7 @@ ov49_0225AC74: ; 0x0225AC74
 	ldr r0, [r4, #0x10]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0225AC90:
 	add r0, r4, #0
 	bl ov49_0225AC38
@@ -5056,14 +5057,14 @@ ov49_0225ACC4: ; 0x0225ACC4
 	ldr r0, [r5, #0x10]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _0225ACE4:
 	add r0, r5, #0
 	mov r1, #0xf
 	bl FillWindowPixelBuffer
 	ldr r0, [r5, #0x18]
 	add r1, r4, #0
-	bl StringCopy
+	bl String_Copy
 	mov r3, #0
 	str r3, [sp]
 	ldr r0, [r5, #0x14]
@@ -5095,7 +5096,7 @@ ov49_0225AD20: ; 0x0225AD20
 	add r4, r1, #0
 	mov r0, #0x3c
 	add r1, r5, #0
-	bl NARC_ctor
+	bl NARC_New
 	add r6, r0, #0
 	ldr r0, _0225AE44 ; =0x00001388
 	add r1, r6, #0
@@ -5150,7 +5151,7 @@ ov49_0225AD20: ; 0x0225AD20
 	bl AddCellOrAnimResObjFromOpenNarc
 	str r0, [r7, #0x4c]
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r7, #0x40]
 	bl sub_0200ADA4
 	ldr r0, [r7, #0x44]
@@ -5249,7 +5250,7 @@ _0225AE6C:
 	add r4, r5, #0
 _0225AE70:
 	ldr r0, [r4, #0x50]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0
 	str r0, [r4, #0x50]
 	add r7, r7, #1
@@ -5289,7 +5290,7 @@ ov49_0225AEA8: ; 0x0225AEA8
 _0225AEBC:
 	add r0, r4, #0
 	add r1, r7, #0
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	str r0, [r5, #0x34]
 	mov r1, #0
 	strh r4, [r5, #0x38]
@@ -5315,7 +5316,7 @@ ov49_0225AEE0: ; 0x0225AEE0
 	ldr r0, [r4, #0x34]
 	cmp r0, #0
 	beq _0225AEF4
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0
 	str r0, [r4, #0x34]
 	strh r0, [r4, #0x38]
@@ -5670,7 +5671,7 @@ ov49_0225B148: ; 0x0225B148
 	add r2, r6, #0
 	add r3, r5, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	bl ScheduleWindowCopyToVram
 	add sp, #0x10
@@ -5711,7 +5712,7 @@ ov49_0225B198: ; 0x0225B198
 _0225B1AA:
 	mov r0, #2
 	add r1, r6, #0
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	str r0, [r5]
 	add r0, r4, #0
 	mov r1, #1
@@ -5755,7 +5756,7 @@ ov49_0225B200: ; 0x0225B200
 	ldr r0, [r4]
 	cmp r0, #0
 	beq _0225B212
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	mov r0, #0
 	str r0, [r4]
 _0225B212:
@@ -5810,7 +5811,7 @@ ov49_0225B24C: ; 0x0225B24C
 	str r3, [sp, #8]
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	mov r1, #1
 	mov r2, #0x55
@@ -5899,7 +5900,7 @@ ov49_0225B308: ; 0x0225B308
 	mov r0, #8
 	mov r1, #0x40
 	add r2, r7, #0
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	ldr r1, [sp]
 	ldr r4, _0225B358 ; =ov49_02269714
 	str r0, [r1]
@@ -5920,13 +5921,13 @@ _0225B322:
 	mov r0, #0x1e
 	lsl r0, r0, #4
 	add r1, r7, #0
-	bl String_ctor
+	bl String_New
 	ldr r1, [sp]
 	str r0, [r1, #0x14]
 	mov r0, #0x1e
 	lsl r0, r0, #4
 	add r1, r7, #0
-	bl String_ctor
+	bl String_New
 	ldr r1, [sp]
 	str r0, [r1, #0x18]
 	pop {r3, r4, r5, r6, r7, pc}
@@ -5939,7 +5940,7 @@ ov49_0225B35C: ; 0x0225B35C
 	push {r4, r5, r6, lr}
 	add r6, r0, #0
 	ldr r0, [r6]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r4, #0
 	add r5, r6, #0
 _0225B36A:
@@ -5950,9 +5951,9 @@ _0225B36A:
 	cmp r4, #4
 	blt _0225B36A
 	ldr r0, [r6, #0x14]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x18]
-	bl String_dtor
+	bl String_Delete
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
 	thumb_func_end ov49_0225B35C
@@ -6078,11 +6079,11 @@ _0225B434: .word BufferECWord
 
 	thumb_func_start ov49_0225B438
 ov49_0225B438: ; 0x0225B438
-	ldr r3, _0225B440 ; =ScrStrBufs_ResetBuffers
+	ldr r3, _0225B440 ; =MessageFormat_ResetBuffers
 	ldr r0, [r0]
 	bx r3
 	nop
-_0225B440: .word ScrStrBufs_ResetBuffers
+_0225B440: .word MessageFormat_ResetBuffers
 	thumb_func_end ov49_0225B438
 
 	thumb_func_start ov49_0225B444
@@ -6108,7 +6109,7 @@ ov49_0225B450: ; 0x0225B450
 	str r0, [sp, #4]
 	mov r0, #0xd1
 	add r1, r4, #0
-	bl NARC_ctor
+	bl NARC_New
 	mov r2, #0x53
 	lsl r2, r2, #2
 	str r0, [r5, r2]
@@ -6145,16 +6146,16 @@ ov49_0225B450: ; 0x0225B450
 	bl BG_SetMaskColor
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}
 _0225B4DC:
@@ -6185,7 +6186,7 @@ ov49_0225B4E4: ; 0x0225B4E4
 	mov r0, #0x53
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
 	thumb_func_end ov49_0225B4E4
@@ -6267,16 +6268,16 @@ _0225B586:
 	strb r0, [r4, #1]
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldrb r0, [r4]
 	add sp, #0x50
 	add r0, r0, #1
@@ -7212,7 +7213,7 @@ _0225BC40:
 	mov r3, #4
 	bl ov49_0225BB14
 	ldr r0, [sp, #0x34]
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	str r0, [sp, #0x10]
 	ldr r0, [sp, #0x38]
 	ldr r1, [sp, #0x10]
@@ -7796,7 +7797,7 @@ ov49_0225C148: ; 0x0225C148
 	add r5, r0, #0
 	ldr r0, [r5, #0x54]
 	add r4, r1, #0
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0
 	str r0, [r5, #0x54]
 	ldr r0, [r5, #0x58]
@@ -8028,7 +8029,7 @@ ov49_0225C328: ; 0x0225C328
 	bl sub_02024B1C
 	bl sub_02021A50
 	ldr r0, [r5, #0x68]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0
 	str r0, [r5, #0x68]
 	ldr r0, [r5, #0x6c]
@@ -8142,7 +8143,7 @@ ov49_0225C3DC: ; 0x0225C3DC
 	lsl r0, r4, #4
 	ldrb r3, [r3, #0x10]
 	add r0, r5, r0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -8182,7 +8183,7 @@ _0225C43C:
 	add r0, r2, r0
 	add r2, r6, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -8264,7 +8265,7 @@ ov49_0225C4CC: ; 0x0225C4CC
 	add r1, r3, #0
 	str r2, [sp, #0x2c]
 	str r3, [sp, #0x30]
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [sp, #0x50]
 	ldr r0, [sp, #0xb4]
 	bl ov45_0222A99C
@@ -8583,7 +8584,7 @@ _0225C760:
 	b _0225C60E
 _0225C770:
 	ldr r0, [sp, #0x50]
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x98
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -8607,7 +8608,7 @@ _0225C796:
 	cmp r0, #0
 	beq _0225C7CC
 	ldr r0, [r4, #0x7c]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0
 	str r0, [r4, #0x7c]
 	add r0, r4, #0
@@ -8914,7 +8915,7 @@ ov49_0225C970: ; 0x0225C970
 	str r1, [sp, #0xc]
 	add r0, #0xc
 	add r3, r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldrb r0, [r5, #2]
 	cmp r0, #0
 	str r4, [sp]
@@ -9133,7 +9134,7 @@ _0225CB8C:
 	sub r1, r1, #1
 	bne _0225CB8C
 	add r0, r5, #0
-	bl GF_Camera_Create
+	bl Camera_New
 	str r0, [r4]
 	mov r0, #0
 	str r0, [sp]
@@ -9146,15 +9147,15 @@ _0225CB8C:
 	ldr r2, _0225CBD4 ; =ov49_02269A6C
 	ldr r3, _0225CBD8 ; =0x000005C1
 	add r0, #8
-	bl GF_Camera_InitFromTargetDistanceAndAngle
+	bl Camera_Init_FromTargetDistanceAndAngle
 	ldr r0, [r4]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	mov r0, #0x96
 	mov r1, #0xe1
 	ldr r2, [r4]
 	lsl r0, r0, #0xc
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	add r0, r4, #0
 	add sp, #0xc
 	pop {r4, r5, pc}
@@ -9168,9 +9169,9 @@ _0225CBD8: .word 0x000005C1
 ov49_0225CBDC: ; 0x0225CBDC
 	push {r4, lr}
 	add r4, r0, #0
-	bl sub_02023148
+	bl Camera_UnsetStaticPtr
 	ldr r0, [r4]
-	bl sub_02023120
+	bl Camera_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -9197,7 +9198,7 @@ ov49_0225CBF4: ; 0x0225CBF4
 	sub r0, r1, r0
 	str r0, [r4, #0x10]
 _0225CC18:
-	bl sub_02023154
+	bl Camera_PushLookAtToNNSGlb
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov49_0225CBF4
@@ -9477,7 +9478,7 @@ ov49_0225CDEC: ; 0x0225CDEC
 	add r6, r0, #0
 	mov r0, #0xcb
 	add r1, r7, #0
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	ldr r0, _0225CE84 ; =0x00000494
 	add r1, r4, #0
@@ -9513,7 +9514,7 @@ ov49_0225CDEC: ; 0x0225CDEC
 	str r4, [sp]
 	bl ov49_0225D854
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r6, #0
 	bl ov49_0225D520
 	mov r1, #0x4b
@@ -23042,7 +23043,7 @@ _022639D8:
 	mov r0, #0
 	strh r0, [r4, #0xa]
 	ldr r0, [sp, #0x4c]
-	bl StringGetLength
+	bl String_GetLength
 	str r0, [sp, #0x50]
 	add r0, r5, #0
 	bl ov49_0225CB70
@@ -24158,7 +24159,7 @@ _02264392:
 	mov r0, #0
 	strh r0, [r4, #0xa]
 	ldr r0, [sp, #0x20]
-	bl StringGetLength
+	bl String_GetLength
 	str r0, [sp, #0x24]
 	add r0, r5, #0
 	bl ov49_0225CB70
@@ -26117,7 +26118,7 @@ ov49_022652E8: ; 0x022652E8
 	str r0, [r4, #8]
 	mov r0, #0xd1
 	str r7, [r4, #0xc]
-	bl NARC_ctor
+	bl NARC_New
 	add r6, r0, #0
 	ldr r0, _02265358 ; =0x0001081C
 	add r1, r5, #0
@@ -26137,7 +26138,7 @@ ov49_022652E8: ; 0x022652E8
 	add r2, r5, #0
 	bl ov49_022657B4
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #0
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}

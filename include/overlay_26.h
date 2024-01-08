@@ -3,7 +3,7 @@
 
 #include "script.h"
 
-u32 TryGetRematchTrainerIdByBaseTrainerId(SAVEDATA* savedata, u16 trainer_no);
-void ov26_022599D8(FieldSystem *fsys, LocalMapObject *lastTalked);
+u16 TryGetRematchTrainerIdByBaseTrainerId(SaveData* saveData, u16 trainer_no);
+void ov26_022599D8(FieldSystem *fieldSystem, LocalMapObject *lastTalked);
 
 #endif //POKEHEARTGOLD_OVERLAY_26_H

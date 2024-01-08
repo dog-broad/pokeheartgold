@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021FD41C.inc"
 	.include "global.inc"
 
 	.text
@@ -52,7 +53,7 @@ ov01_021FD458: ; 0x021FD458
 	ldr r0, [r4, #0x20]
 	bl ov01_021F1468
 	ldr r0, [r0, #0x3c]
-	bl sub_0205F19C
+	bl MapObjectManager_GetHeapID
 	sub r2, r0, #1
 	ldr r0, _021FD478 ; =ov01_021FD4F4
 	add r1, r4, #0

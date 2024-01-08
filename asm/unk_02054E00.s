@@ -1,6 +1,7 @@
 #include "constants/sndseq.h"
 #include "constants/trainer_class.h"
 	.include "asm/macros.inc"
+	.include "unk_02054E00.inc"
 	.include "global.inc"
 
 	.rodata
@@ -165,7 +166,7 @@ _02054F00:
 	thumb_func_start sub_02054F14
 sub_02054F14: ; 0x02054F14
 	push {r3, lr}
-	bl sub_02005FA0
+	bl Sound_Stop
 	bl sub_020053F0
 	mov r0, #0
 	bl sub_02004AD8
@@ -173,42 +174,42 @@ sub_02054F14: ; 0x02054F14
 	.balign 4, 0
 	thumb_func_end sub_02054F14
 
-	thumb_func_start Fsys_SetSavedMusicId
-Fsys_SetSavedMusicId: ; 0x02054F28
+	thumb_func_start FieldSystem_SetSavedMusicId
+FieldSystem_SetSavedMusicId: ; 0x02054F28
 	push {r4, lr}
 	ldr r0, [r0, #0xc]
 	add r4, r1, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetMusicIdAddr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetMusicIdAddr
 	strh r4, [r0]
 	pop {r4, pc}
 	.balign 4, 0
-	thumb_func_end Fsys_SetSavedMusicId
+	thumb_func_end FieldSystem_SetSavedMusicId
 
-	thumb_func_start Fsys_GetSavedMusicId
-Fsys_GetSavedMusicId: ; 0x02054F3C
+	thumb_func_start FieldSystem_GetSavedMusicId
+FieldSystem_GetSavedMusicId: ; 0x02054F3C
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetMusicIdAddr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetMusicIdAddr
 	ldrh r0, [r0]
 	pop {r3, pc}
-	thumb_func_end Fsys_GetSavedMusicId
+	thumb_func_end FieldSystem_GetSavedMusicId
 
-	thumb_func_start Fsys_ClearSavedMusicId
-Fsys_ClearSavedMusicId: ; 0x02054F4C
+	thumb_func_start FieldSystem_ClearSavedMusicId
+FieldSystem_ClearSavedMusicId: ; 0x02054F4C
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetMusicIdAddr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetMusicIdAddr
 	mov r1, #0
 	strh r1, [r0]
 	pop {r3, pc}
 	.balign 4, 0
-	thumb_func_end Fsys_ClearSavedMusicId
+	thumb_func_end FieldSystem_ClearSavedMusicId
 
-	thumb_func_start Fsys_GetSurfOverriddenMusicId
-Fsys_GetSurfOverriddenMusicId: ; 0x02054F60
+	thumb_func_start FieldSystem_GetOverriddenMusicId
+FieldSystem_GetOverriddenMusicId: ; 0x02054F60
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x40]
@@ -217,7 +218,7 @@ Fsys_GetSurfOverriddenMusicId: ; 0x02054F60
 	cmp r0, #2
 	bne _02054F82
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag99A
 	cmp r0, #0
 	bne _02054F82
@@ -229,18 +230,18 @@ _02054F82:
 	bl GetMapMusic
 	add r5, r0, #0
 	add r0, r4, #0
-	bl Fsys_GetSavedMusicId
+	bl FieldSystem_GetSavedMusicId
 	cmp r0, #0
 	beq _02054F9E
 	add r0, r4, #0
-	bl Fsys_GetSavedMusicId
+	bl FieldSystem_GetSavedMusicId
 	add r5, r0, #0
 _02054F9E:
 	add r0, r5, #0
 	pop {r3, r4, r5, pc}
 	nop
 _02054FA4: .word SEQ_GS_NAMINORI
-	thumb_func_end Fsys_GetSurfOverriddenMusicId
+	thumb_func_end FieldSystem_GetOverriddenMusicId
 
 	thumb_func_start GetMapMusic
 GetMapMusic: ; 0x02054FA8
@@ -259,7 +260,7 @@ _02054FBE:
 _02054FC4:
 	add r6, r0, #0
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r1, r4, #0
 	bl GetOverriddenMapMusic
 	cmp r0, #0
@@ -270,8 +271,8 @@ _02054FD8:
 	pop {r4, r5, r6, pc}
 	thumb_func_end GetMapMusic
 
-	thumb_func_start Fsys_PlayOrFadeToNewMusicId
-Fsys_PlayOrFadeToNewMusicId: ; 0x02054FDC
+	thumb_func_start FieldSystem_PlayOrFadeToNewMusicId
+FieldSystem_PlayOrFadeToNewMusicId: ; 0x02054FDC
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	add r5, r0, #0
@@ -326,7 +327,7 @@ _02055044:
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
-	thumb_func_end Fsys_PlayOrFadeToNewMusicId
+	thumb_func_end FieldSystem_PlayOrFadeToNewMusicId
 
 	thumb_func_start sub_0205504C
 sub_0205504C: ; 0x0205504C
@@ -417,8 +418,8 @@ _020550DC: .word SEQ_GS_EYE_J_SHOUNEN
 _020550E0: .word sTrainerEncounterMusicParam
 	thumb_func_end Trainer_GetEncounterMusic
 
-	thumb_func_start Fsys_BeginFadeOutMusic
-Fsys_BeginFadeOutMusic: ; 0x020550E4
+	thumb_func_start FieldSystem_BeginFadeOutMusic
+FieldSystem_BeginFadeOutMusic: ; 0x020550E4
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
 	add r6, r1, #0
@@ -438,7 +439,7 @@ Fsys_BeginFadeOutMusic: ; 0x020550E4
 _0205510C:
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
-	thumb_func_end Fsys_BeginFadeOutMusic
+	thumb_func_end FieldSystem_BeginFadeOutMusic
 
 	thumb_func_start sub_02055110
 sub_02055110: ; 0x02055110
@@ -486,7 +487,7 @@ sub_02055164: ; 0x02055164
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
 	add r4, r1, #0
-	bl Fsys_GetSurfOverriddenMusicId
+	bl FieldSystem_GetOverriddenMusicId
 	add r6, r0, #0
 	add r0, r5, #0
 	add r1, r4, #0

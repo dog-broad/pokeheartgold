@@ -33,30 +33,32 @@ _0045:
 scr_seq_P01R0104_001:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0090
 	wait_movement
 	apply_movement obj_P01R0104_seaman_2, _0098
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	setvar VAR_BOAT_DIRECTION, 0
 	clearflag FLAG_UNK_092
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _0090:
 	step 13, 3
 	step_end
 
+	.balign 4, 0
 _0098:
 	step 14, 1
 	step 33, 1
 	step_end
+
 scr_seq_P01R0104_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -64,9 +66,9 @@ scr_seq_P01R0104_000:
 	goto_if_set FLAG_BOAT_ARRIVED, _0144
 	npc_msg msg_0258_P01R0104_00000
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_TEMP_x4000
 	compare VAR_TEMP_x4000, 2
 	goto_if_ne _00EF
@@ -89,9 +91,9 @@ _0114:
 	apply_movement obj_player, _01A0
 _0126:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_KAIDAN2
 	scrcmd_723 1, 0, 307, 24, 19
 	releaseall
@@ -103,38 +105,43 @@ _0144:
 	closemsg
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0150:
 	step 2, 1
 	step 14, 1
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0160:
 	step 3, 1
 	step 15, 1
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0170:
 	step 3, 1
 	step 15, 1
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0180:
 	step 14, 1
 	step 0, 1
 	step 12, 2
 	step_end
 
+	.balign 4, 0
 _0190:
 	step 15, 1
 	step 0, 1
 	step 12, 2
 	step_end
 
+	.balign 4, 0
 _01A0:
 	step 12, 2
 	step_end

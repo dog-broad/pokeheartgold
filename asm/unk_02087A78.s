@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_02087A78.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -235,12 +236,12 @@ sub_02087BE8: ; 0x02087BE8
 	bne _02087C06
 	ldr r0, _02087C30 ; =_021028B4
 	add r1, r4, #0
-	bl OverlayManager_new
+	bl OverlayManager_New
 	b _02087C0E
 _02087C06:
 	ldr r0, _02087C34 ; =_021028C4
 	add r1, r4, #0
-	bl OverlayManager_new
+	bl OverlayManager_New
 _02087C0E:
 	str r0, [r4, #8]
 	ldr r0, [r4]
@@ -249,11 +250,11 @@ _02087C0E:
 	b _02087C2C
 _02087C18:
 	ldr r0, [r4, #8]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #0
 	beq _02087C2C
 	ldr r0, [r4, #8]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	mov r0, #1
 	pop {r4, pc}
 _02087C2C:
@@ -294,7 +295,7 @@ _02087C62:
 _02087C6A:
 	add r0, r4, #0
 	mov r1, #0
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [r5, #0x10]
 	bl sub_0202FC48
 	cmp r0, #0
@@ -317,13 +318,13 @@ _02087C92:
 	str r0, [sp, #4]
 _02087C9E:
 	add r0, r4, #0
-	bl BagCursor_new
+	bl BagCursor_New
 	mov r1, #0x43
 	ldr r2, [r5, #0x10]
 	lsl r1, r1, #2
 	str r0, [r2, r1]
 	ldr r0, [r5, #0xc]
-	bl Sav2_GameStats_get
+	bl Save_GameStats_Get
 	mov r1, #0x51
 	ldr r2, [r5, #0x10]
 	lsl r1, r1, #2
@@ -354,7 +355,7 @@ _02087CDA:
 	ldr r0, [r1, r0]
 	bl FreeToHeap
 	ldr r0, [r5, #0x10]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 	mov r0, #0
 	str r0, [r5]
 	add sp, #8
@@ -394,7 +395,7 @@ _02087D46:
 	ldr r0, _02087E0C ; =_020FA484
 	ldr r1, [r5, #0x10]
 	add r2, r4, #0
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r5, #8]
 	ldr r0, [r5]
 	add r0, r0, #1
@@ -402,7 +403,7 @@ _02087D46:
 	b _02087DEC
 _02087D5A:
 	ldr r0, [r5, #8]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #0
 	beq _02087DEC
 	mov r0, #0x71
@@ -430,9 +431,9 @@ _02087D88:
 	ldr r0, [r1, r0]
 	bl FreeToHeap
 	ldr r0, [r5, #0x10]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 	ldr r0, [r5, #8]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	mov r0, #0
 	bl sub_02005B68
 	mov r0, #0
@@ -440,7 +441,7 @@ _02087D88:
 	ldr r0, [r5, #0x28]
 	ldr r1, [r0, #0x20]
 	ldr r1, [r1]
-	bl Fsys_GetSurfOverriddenMusicId
+	bl FieldSystem_GetOverriddenMusicId
 	add r4, r0, #0
 	ldr r0, [r5, #0x28]
 	ldr r1, [r0, #0x20]
@@ -494,10 +495,10 @@ sub_02087E1C: ; 0x02087E1C
 	mov r1, #0x83
 	lsl r1, r1, #4
 	ldr r0, [r0, r1]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #2
 	mov r2, #0x1b
-	bl ScriptState_FlypointFlagAction
+	bl Save_VarsFlags_FlypointFlagAction
 	pop {r3, pc}
 	.balign 4, 0
 	thumb_func_end sub_02087E1C

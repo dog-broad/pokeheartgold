@@ -19,8 +19,8 @@ struct ItemCheckUseData {
     u16 haveRocketCostume:1;
     u16 facingTile;
     u16 standingTile;
-    FIELD_PLAYER_AVATAR *playerAvatar;
-    FieldSystem *fsys;
+    PlayerAvatar *playerAvatar;
+    FieldSystem *fieldSystem;
 };
 
 struct AlphItemUseData {
@@ -31,10 +31,10 @@ struct AlphItemUseData {
     u16 var_8003;
 };
 
-typedef void *(*FieldApplicationWorkCtor)(FieldSystem *fsys);
+typedef void *(*FieldApplicationWorkCtor)(FieldSystem *fieldSystem);
 
 struct ItemFieldUseData {
-    FieldSystem *fsys;             // 00
+    FieldSystem *fieldSystem;      // 00
     struct ItemCheckUseData dat;   // 04
     FieldApplicationWorkCtor ctor; // 1C
     void *work;                    // 20
@@ -51,17 +51,17 @@ struct ItemMenuUseData {
 
 typedef void (*ItemMenuUseFunc)(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2);
 typedef BOOL (*ItemFieldUseFunc)(struct ItemFieldUseData *data);
-typedef u32 (*ItemCheckUseFunc)(const struct ItemCheckUseData *data);
+typedef enum ItemUseError (*ItemCheckUseFunc)(const struct ItemCheckUseData *data);
 
 struct UseItemInPartyTaskEnv {
-    PARTY *party;
-    BAG_DATA *bag;
+    Party *party;
+    Bag *bag;
     MAILBOX *mailbox;
-    OPTIONS *options;
+    Options *options;
     struct UnkStruct_0202E474 *unk10;
     u32 unk14;
     void *unk18;
-    FieldSystem *fsys;
+    FieldSystem *fieldSystem;
     void *unk20;
     u8 unk24;
     u8 unk25;
@@ -72,15 +72,15 @@ struct UseItemInPartyTaskEnv {
 };
 
 struct RegisteredKeyItemUseMessagePrintTaskData {
-    WINDOW window;
-    STRING *strbuf;
+    Window window;
+    String *strbuf;
     u16 printerId;
     u16 state;
 };
 
 void *GetItemFieldUseFunc(int funcType, int itemType);
-void ItemCheckUseData_Init(FieldSystem *fsys, struct ItemCheckUseData *dat);
+void ItemCheckUseData_Init(FieldSystem *fieldSystem, struct ItemCheckUseData *dat);
 BOOL Leftover_CanPlantBerry(const struct ItemCheckUseData *data);
-int UseRegisteredItemButtonInField(FieldSystem *fsys, u8 slot);
+int UseRegisteredItemButtonInField(FieldSystem *fieldSystem, u8 slot);
 
 #endif //POKEHEARTGOLD_FIELD_USE_ITEM_H

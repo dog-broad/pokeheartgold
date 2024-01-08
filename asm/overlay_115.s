@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_115.inc"
 	.include "global.inc"
 
 	.text
@@ -72,7 +73,7 @@ ov115_0225F09C: ; 0x0225F09C
 	mov r4, #0
 _0225F0A2:
 	ldr r0, [r5, #4]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #4
@@ -179,15 +180,15 @@ ov115_0225F158: ; 0x0225F158
 	bl NewMsgDataFromNarc
 	add r6, r0, #0
 	add r0, r5, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r4, r0, #0
 	mov r0, #0x80
 	add r1, r5, #0
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	mov r0, #0x80
 	add r1, r5, #0
-	bl String_ctor
+	bl String_New
 	add r5, r0, #0
 	add r0, r6, #0
 	mov r1, #0
@@ -204,9 +205,9 @@ ov115_0225F158: ; 0x0225F158
 	add r0, r6, #0
 	bl DestroyMsgData
 	add r0, r4, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov115_0225F158
@@ -223,15 +224,15 @@ ov115_0225F1BC: ; 0x0225F1BC
 	bl NewMsgDataFromNarc
 	add r6, r0, #0
 	add r0, r5, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r4, r0, #0
 	mov r0, #0x80
 	add r1, r5, #0
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	mov r0, #0x80
 	add r1, r5, #0
-	bl String_ctor
+	bl String_New
 	add r5, r0, #0
 	add r0, r6, #0
 	mov r1, #0
@@ -248,9 +249,9 @@ ov115_0225F1BC: ; 0x0225F1BC
 	add r0, r6, #0
 	bl DestroyMsgData
 	add r0, r4, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov115_0225F1BC
@@ -312,7 +313,7 @@ _0225F260:
 	bl GfGfxLoader_GXLoadPalFromOpenNarc
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0xa
 	str r0, [sp]
 	mov r0, #0x10
@@ -360,9 +361,9 @@ _0225F2DE:
 	add r0, r4, r0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x14]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0x44
 	mov r1, #8
@@ -511,10 +512,10 @@ _0225F3E2:
 	bl SetBgPriority
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -547,7 +548,7 @@ _0225F470:
 	bge _0225F55E
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x7b
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -576,7 +577,7 @@ _0225F49E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	mov r2, #0x42
 	ldr r1, [r4]
 	add r0, sp, #0x1c
@@ -587,7 +588,7 @@ _0225F49E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -606,7 +607,7 @@ _0225F4EA:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r6, #1
 	bne _0225F55E
 	ldr r0, [r5]
@@ -674,7 +675,7 @@ _0225F560:
 	bl ScheduleSetBgPosText
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -766,7 +767,7 @@ _0225F650:
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r0, #0x7b
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -1191,7 +1192,7 @@ _0225F964: .word _02260374
 ov115_0225F968: ; 0x0225F968
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerGender
 	pop {r3, pc}
 	.balign 4, 0
@@ -1419,7 +1420,7 @@ _0225FB06:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r0, [sp, #0x1c]
 	add r7, r7, #1
 	add r0, #0x34
@@ -1449,7 +1450,7 @@ _0225FB06:
 	bl ov115_02260254
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #6
 	lsl r0, r0, #0x10
 	str r0, [sp]
@@ -1540,7 +1541,7 @@ _0225FC0E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -1554,7 +1555,7 @@ _0225FC0E:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x9a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -1584,7 +1585,7 @@ _0225FC0E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -1598,7 +1599,7 @@ _0225FC0E:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x9b
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -1620,7 +1621,7 @@ _0225FC0E:
 	bl GfGfxLoader_GXLoadPalFromOpenNarc
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0xd
 	str r0, [sp]
 	mov r0, #0xb
@@ -1658,9 +1659,9 @@ _0225FC0E:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	mov r0, #3
 	str r0, [r6, #4]
 	ldr r0, [r6]
@@ -1687,10 +1688,10 @@ _0225FD78:
 	bl ov01_021F0FB8
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	b _0225FDA6
 _0225FD9C:
 	mov r0, #0x29
@@ -1717,7 +1718,7 @@ _0225FDA6:
 	str r0, [r3]
 	ldr r0, [r4, r2]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -1731,7 +1732,7 @@ _0225FDA6:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r4, #0
 	add r0, #0x30
 	bl ov01_021EFF28
@@ -1753,7 +1754,7 @@ _0225FDA6:
 	str r0, [r3]
 	ldr r0, [r4, r2]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -1767,7 +1768,7 @@ _0225FDA6:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r7, #1
 	bne _0225FF3C
 	ldr r0, [r6]
@@ -1981,7 +1982,7 @@ _0225FFFC:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -1995,7 +1996,7 @@ _0225FFFC:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r1, [r6, #4]
 	lsr r0, r1, #0x1f
 	add r0, r1, r0
@@ -2048,7 +2049,7 @@ _02260084:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -2062,7 +2063,7 @@ _02260084:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r5, #0
 	bne _022600B4
 	b _0226021C
@@ -2072,7 +2073,7 @@ _022600B4:
 	add r0, r0, #1
 	str r0, [r6]
 	mov r0, #4
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r2, #3
 	mov r0, #0x10
 	lsl r2, r2, #0x12
@@ -2124,7 +2125,7 @@ _02260102:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -2138,7 +2139,7 @@ _02260102:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r2, #0xa1
 	lsl r2, r2, #2
 	ldr r3, [r4, r2]
@@ -2155,7 +2156,7 @@ _02260102:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp, #0x3c]
 	lsl r0, r0, #0xe
@@ -2169,7 +2170,7 @@ _02260102:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x38
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	bl IsPaletteFadeFinished
 	cmp r0, #0
 	beq _0226021C
@@ -2201,7 +2202,7 @@ _022601BA:
 	lsl r7, r7, #2
 _022601D6:
 	ldr r0, [r5, r7]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #4

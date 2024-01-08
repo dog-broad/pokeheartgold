@@ -1,138 +1,138 @@
 #include "scrcmd.h"
 #include "pokedex.h"
-#include "save_flypoints.h"
+#include "save_local_field_data.h"
 #include "sys_flags.h"
 
-BOOL ScrCmd_CheckPokedex(SCRIPTCONTEXT *ctx) {
-    POKEDEX *pokedex = Sav2_Pokedex_get(ctx->fsys->savedata);
+BOOL ScrCmd_CheckPokedex(ScriptContext *ctx) {
+    Pokedex *pokedex = Save_Pokedex_Get(ctx->fieldSystem->saveData);
     u16 *retPtr = ScriptGetVarPointer(ctx);
     *retPtr = Pokedex_IsEnabled(pokedex);
     return FALSE;
 }
 
-BOOL ScrCmd_GivePokedex(SCRIPTCONTEXT *ctx) {
-    POKEDEX *pokedex = Sav2_Pokedex_get(ctx->fsys->savedata);
+BOOL ScrCmd_GivePokedex(ScriptContext *ctx) {
+    Pokedex *pokedex = Save_Pokedex_Get(ctx->fieldSystem->saveData);
     Pokedex_Enable(pokedex);
     return FALSE;
 }
 
-BOOL ScrCmd_CheckRunningShoes(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_CheckRunningShoes(ScriptContext *ctx) {
     u16 *retPtr = ScriptGetVarPointer(ctx);
-    FLYPOINTS_SAVE *flypointsSave = Save_FlyPoints_get(ctx->fsys->savedata);
-    struct FlypointsPlayerSub *sub = SaveFlyPoints_GetPlayerSub(flypointsSave);
-    *retPtr = FlypointsPlayerSub_CheckRunningShoes(sub);
+    LocalFieldData *localFieldData = Save_LocalFieldData_Get(ctx->fieldSystem->saveData);
+    struct PlayerSaveData *sub = LocalFieldData_GetPlayer(localFieldData);
+    *retPtr = PlayerSaveData_CheckRunningShoes(sub);
     return FALSE;
 }
 
-BOOL ScrCmd_GiveRunningShoes(SCRIPTCONTEXT *ctx) {
-    FLYPOINTS_SAVE *flypointsSave = Save_FlyPoints_get(ctx->fsys->savedata);
-    struct FlypointsPlayerSub *sub = SaveFlyPoints_GetPlayerSub(flypointsSave);
-    FlypointsPlayerSub_SetRunningShoesFlag(sub, TRUE);
+BOOL ScrCmd_GiveRunningShoes(ScriptContext *ctx) {
+    LocalFieldData *localFieldData = Save_LocalFieldData_Get(ctx->fieldSystem->saveData);
+    struct PlayerSaveData *sub = LocalFieldData_GetPlayer(localFieldData);
+    PlayerSaveData_SetRunningShoesFlag(sub, TRUE);
     return FALSE;
 }
 
-BOOL ScrCmd_CheckBadge(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_CheckBadge(ScriptContext *ctx) {
     u16 badgeIdx = ScriptGetVar(ctx);
     u16 *ret = ScriptGetVarPointer(ctx);
 
     GF_ASSERT(badgeIdx < 16);
-    *ret = PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata), badgeIdx);
+    *ret = PlayerProfile_TestBadgeFlag(Save_PlayerData_GetProfileAddr(ctx->fieldSystem->saveData), badgeIdx);
     return FALSE;
 }
 
-BOOL ScrCmd_GiveBadge(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_GiveBadge(ScriptContext *ctx) {
     u16 badgeIdx = ScriptGetVar(ctx);
 
     GF_ASSERT(badgeIdx < 16);
-    PlayerProfile_SetBadgeFlag(Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata), badgeIdx);
+    PlayerProfile_SetBadgeFlag(Save_PlayerData_GetProfileAddr(ctx->fieldSystem->saveData), badgeIdx);
     return FALSE;
 }
 
-BOOL ScrCmd_297(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_297(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = CheckFlag960(SavArray_Flags_get(ctx->fsys->savedata));
+    *ret = CheckFlag960(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_CountBadges(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_CountBadges(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = PlayerProfile_CountBadges(Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata));
+    *ret = PlayerProfile_CountBadges(Save_PlayerData_GetProfileAddr(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_298(SCRIPTCONTEXT *ctx) {
-    SetFlag960(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_298(ScriptContext *ctx) {
+    SetFlag960(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_CheckEscortMode(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_CheckEscortMode(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = ScriptState_CheckHaveFollower(SavArray_Flags_get(ctx->fsys->savedata));
+    *ret = Save_VarsFlags_CheckHaveFollower(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_SetEscortMode(SCRIPTCONTEXT *ctx) {
-    ScriptState_SetHaveFollowerFlag(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_SetEscortMode(ScriptContext *ctx) {
+    Save_VarsFlags_SetHaveFollowerFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_ClearEscortMode(SCRIPTCONTEXT *ctx) {
-    ScriptState_ClearHaveFollowerFlag(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_ClearEscortMode(ScriptContext *ctx) {
+    Save_VarsFlags_ClearHaveFollowerFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_RocketCostumeFlagCheck(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_RocketCostumeFlagCheck(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = ScriptState_CheckRocketCostumeFlag(SavArray_Flags_get(ctx->fsys->savedata));
+    *ret = Save_VarsFlags_CheckRocketCostumeFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_RocketCostumeFlagAction(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_RocketCostumeFlagAction(ScriptContext *ctx) {
     u8 mode = ScriptReadByte(ctx);
 
     if (mode) {
-        ScriptState_SetRocketCostumeFlag(SavArray_Flags_get(ctx->fsys->savedata));
+        Save_VarsFlags_SetRocketCostumeFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     } else {
-        ScriptState_ClearRocketCostumeFlag(SavArray_Flags_get(ctx->fsys->savedata));
+        Save_VarsFlags_ClearRocketCostumeFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     }
     return FALSE;
 }
 
-BOOL ScrCmd_302(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_302(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = CheckFlag965(SavArray_Flags_get(ctx->fsys->savedata));
+    *ret = CheckFlag965(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_303(SCRIPTCONTEXT *ctx) {
-    SetFlag965(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_303(ScriptContext *ctx) {
+    SetFlag965(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_304(SCRIPTCONTEXT *ctx) {
-    ClearFlag965(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_304(ScriptContext *ctx) {
+    ClearFlag965(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_305(SCRIPTCONTEXT *ctx) {
+BOOL ScrCmd_305(ScriptContext *ctx) {
     u16 *ret = ScriptGetVarPointer(ctx);
 
-    *ret = CheckGameClearFlag(SavArray_Flags_get(ctx->fsys->savedata));
+    *ret = CheckGameClearFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_306(SCRIPTCONTEXT *ctx) {
-    SetGameClearFlag(SavArray_Flags_get(ctx->fsys->savedata));
+BOOL ScrCmd_306(ScriptContext *ctx) {
+    SetGameClearFlag(Save_VarsFlags_Get(ctx->fieldSystem->saveData));
     return FALSE;
 }
 
-BOOL ScrCmd_StrengthFlagAction(SCRIPTCONTEXT *ctx) {
-    SCRIPT_STATE *state = SavArray_Flags_get(ctx->fsys->savedata);
+BOOL ScrCmd_StrengthFlagAction(ScriptContext *ctx) {
+    SaveVarsFlags *state = Save_VarsFlags_Get(ctx->fieldSystem->saveData);
     u8 mode = ScriptReadByte(ctx);
     switch (mode) {
     case FLAG_ACTION_SET:
@@ -152,8 +152,8 @@ BOOL ScrCmd_StrengthFlagAction(SCRIPTCONTEXT *ctx) {
     return FALSE;
 }
 
-BOOL ScrCmd_FlashAction(SCRIPTCONTEXT *ctx) {
-    SCRIPT_STATE *state = SavArray_Flags_get(ctx->fsys->savedata);
+BOOL ScrCmd_FlashAction(ScriptContext *ctx) {
+    SaveVarsFlags *state = Save_VarsFlags_Get(ctx->fieldSystem->saveData);
     u8 mode = ScriptReadByte(ctx);
     switch (mode) {
     case FLAG_ACTION_SET:
@@ -174,8 +174,8 @@ BOOL ScrCmd_FlashAction(SCRIPTCONTEXT *ctx) {
 }
 
 // Leftover from DPPt
-BOOL ScrCmd_DefogAction(SCRIPTCONTEXT *ctx) {
-    SCRIPT_STATE *state = SavArray_Flags_get(ctx->fsys->savedata);
+BOOL ScrCmd_DefogAction(ScriptContext *ctx) {
+    SaveVarsFlags *state = Save_VarsFlags_Get(ctx->fieldSystem->saveData);
     u8 mode = ScriptReadByte(ctx);
     switch (mode) {
     case FLAG_ACTION_SET:

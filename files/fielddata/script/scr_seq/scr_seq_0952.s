@@ -24,7 +24,7 @@ scr_seq_0952_000:
 	setvar VAR_TEMP_x4000, 0
 	setvar VAR_TEMP_x4001, 653
 _0042:
-	scrcmd_807 VAR_TEMP_x4000, VAR_TEMP_x4002
+	set_trainer_house_sprite VAR_TEMP_x4000, VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 0
 	goto_if_ne _005F
 	setflagvar VAR_TEMP_x4001
@@ -42,47 +42,58 @@ _0063:
 scr_seq_0952_001:
 	setvar VAR_TEMP_x4000, 10
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_002:
 	setvar VAR_TEMP_x4000, 0
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_003:
 	setvar VAR_TEMP_x4000, 1
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_004:
 	setvar VAR_TEMP_x4000, 2
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_005:
 	setvar VAR_TEMP_x4000, 3
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_006:
 	setvar VAR_TEMP_x4000, 4
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_007:
 	setvar VAR_TEMP_x4000, 5
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_008:
 	setvar VAR_TEMP_x4000, 6
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_009:
 	setvar VAR_TEMP_x4000, 7
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_010:
 	setvar VAR_TEMP_x4000, 8
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 scr_seq_0952_011:
 	setvar VAR_TEMP_x4000, 9
 	goto _0118
-	.byte 0x02, 0x00
+	end
+
 _0118:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -100,7 +111,7 @@ _0118:
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_eq _0186
 	script_overlay_cmd 4, 0
-	scrcmd_809 VAR_TEMP_x4000
+	show_trainer_house_intro_message VAR_TEMP_x4000
 	wait_button
 	closemsg
 	script_overlay_cmd 4, 1

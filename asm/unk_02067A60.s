@@ -9,6 +9,7 @@
 #include "fielddata/script/scr_seq/event_D24R0204.h"
 #include "constants/party_menu.h"
 	.include "asm/macros.inc"
+	.include "unk_02067A60.inc"
 	.include "global.inc"
 
 	.text
@@ -48,7 +49,7 @@ sub_02067A88: ; 0x02067A88
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #0
 	bl StrengthFlagAction
 	ldr r1, [r5, #0x20]
@@ -56,7 +57,7 @@ sub_02067A88: ; 0x02067A88
 	ldr r1, [r1]
 	bl FlypointFlagAction
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	mov r1, #0
 	bl RoamerSave_SetFlute
 	add r0, r5, #0
@@ -67,12 +68,12 @@ sub_02067A88: ; 0x02067A88
 	add r0, #0x7c
 	strh r1, [r0]
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckSafariSysFlag
 	cmp r0, #0
 	bne _02067AE0
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	ldr r1, [r5, #0x20]
 	add r4, r0, #0
 	ldr r1, [r1]
@@ -93,10 +94,10 @@ sub_02067AE4: ; 0x02067AE4
 	cmp r0, #1
 	beq _02067B84
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl ClearFlag972
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #0
 	bl StrengthFlagAction
 	ldr r1, [r5, #0x20]
@@ -104,7 +105,7 @@ sub_02067AE4: ; 0x02067AE4
 	ldr r1, [r1]
 	bl FlypointFlagAction
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	mov r1, #0
 	bl RoamerSave_SetFlute
 	add r0, r5, #0
@@ -115,7 +116,7 @@ sub_02067AE4: ; 0x02067AE4
 	add r0, #0x7c
 	strh r1, [r0]
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	ldr r1, [r5, #0x20]
 	ldr r1, [r1]
 	bl UpdatePlayerLocationHistoryIfAnyRoamersActive
@@ -125,15 +126,15 @@ sub_02067AE4: ; 0x02067AE4
 	cmp r0, #0
 	bne _02067B56
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r4, r0, #0
 	bl SysFlagFlashClear
 	add r0, r4, #0
 	bl SysFlagDefogClear
 _02067B56:
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
-	bl SaveFlyPoints_GetPlayerSub
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetPlayer
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	cmp r0, #1
@@ -162,10 +163,10 @@ sub_02067B88: ; 0x02067B88
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_ClearSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_ClearSafariSysFlag
 	ldr r0, [r4, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl Save_RandomizeRoamersLocation
 	pop {r4, pc}
 	.balign 4, 0
@@ -176,10 +177,10 @@ sub_02067BA4: ; 0x02067BA4
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_ClearSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_ClearSafariSysFlag
 	ldr r0, [r4, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl Save_RandomizeRoamersLocation
 	pop {r4, pc}
 	.balign 4, 0
@@ -189,30 +190,30 @@ sub_02067BA4: ; 0x02067BA4
 sub_02067BC0: ; 0x02067BC0
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_ClearSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_ClearSafariSysFlag
 	pop {r3, pc}
 	.balign 4, 0
 	thumb_func_end sub_02067BC0
 
-	thumb_func_start Fsys_ClearFollowingTrainer
-Fsys_ClearFollowingTrainer: ; 0x02067BD0
+	thumb_func_start FieldSystem_ClearFollowingTrainer
+FieldSystem_ClearFollowingTrainer: ; 0x02067BD0
 	push {r4, lr}
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r4, r0, #0
-	bl ScriptState_ClearHaveFollowerFlag
+	bl Save_VarsFlags_ClearHaveFollowerFlag
 	add r0, r4, #0
 	mov r1, #0
-	bl ScriptState_SetFollowerTrainerNum
+	bl Save_VarsFlags_SetFollowerTrainerNum
 	pop {r4, pc}
-	thumb_func_end Fsys_ClearFollowingTrainer
+	thumb_func_end FieldSystem_ClearFollowingTrainer
 
 	thumb_func_start sub_02067BE8
 sub_02067BE8: ; 0x02067BE8
 	push {r3, lr}
 	ldr r0, [r0, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl Save_RandomizeRoamersLocation
 	pop {r3, pc}
 	.balign 4, 0
@@ -255,10 +256,10 @@ sub_02067C30: ; 0x02067C30
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x1c
 	add r6, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrh r0, [r4, #4]
 	cmp r0, #6
@@ -301,7 +302,7 @@ _02067C78:
 	b _02067DE4
 _02067C8E:
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetIdxOfFirstAliveMonInParty_CrashIfNone
 	ldrh r1, [r4, #0xe]
 	cmp r1, r0
@@ -328,7 +329,7 @@ _02067CAE:
 	ldr r0, [r5, r0]
 	mov r1, #1
 	mov r6, #2
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	b _02067CD6
 _02067CD4:
 	mov r6, #1
@@ -426,7 +427,7 @@ _02067D8C:
 	ldr r0, [r4, #0x14]
 	bl ov02_02249548
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
+	bl Save_LocalFieldData_Get
 	add r7, r0, #0
 	ldrh r0, [r4, #8]
 	bl sub_0203BB50
@@ -439,7 +440,7 @@ _02067DB4:
 	add r1, sp, #8
 	bl GetFlyWarpData
 	add r0, r7, #0
-	bl FlyPoints_GetSpecialSpawnWarpPtr
+	bl LocalFieldData_GetSpecialSpawnWarpPtr
 	add r1, r0, #0
 	add r0, r5, #0
 	bl GetSpecialSpawnWarpData

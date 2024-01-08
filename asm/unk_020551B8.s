@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_020551B8.inc"
 	.include "global.inc"
 
 	.text
@@ -7,10 +8,10 @@
 sub_020551B8: ; 0x020551B8
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4]
 	cmp r0, #0

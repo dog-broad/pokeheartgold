@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_54.inc"
 	.include "global.inc"
 
 	.text
@@ -104,7 +105,7 @@ ov54_021E5900: ; 0x021E5900
 	str r0, [r4, r1]
 	ldr r1, [r4]
 	mov r0, #0x28
-	bl String_ctor
+	bl String_New
 	mov r1, #0xc9
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -246,7 +247,7 @@ _021E5B08:
 	mov r0, #0xc9
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #1
 	bl TextFlags_SetCanABSpeedUpPrint
 	mov r0, #1
@@ -379,7 +380,7 @@ _021E5C14:
 	mov r0, #0xca
 	lsl r0, r0, #2
 	ldrb r0, [r4, r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _021E5C2C:
 	mov r0, #0xb5
 	lsl r0, r0, #2
@@ -424,7 +425,7 @@ _021E5C6E:
 	sub r2, r2, #1
 	bne _021E5C6E
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -457,10 +458,10 @@ ov54_021E5C84: ; 0x021E5C84
 	and r0, r1
 	str r0, [r4, #0x10]
 _021E5CB4:
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 	bl NNS_GfdDoVramTransfer
 	ldr r0, [r4, #0x14]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E5CDC ; =0x027E0000
 	ldr r1, _021E5CE0 ; =0x00003FF8
 	mov r0, #1
@@ -493,8 +494,8 @@ _021E5CF8:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -540,7 +541,7 @@ _021E5D62:
 	bl GF_CreateVramTransferManager
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	bl sub_0203A964
 	add r0, r4, #0
 	bl ov54_021E6B5C
@@ -595,7 +596,7 @@ _021E5DE8:
 	add r0, r5, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	add r0, #0x84
 	ldrh r0, [r0]
@@ -623,8 +624,8 @@ _021E5E24:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -1063,7 +1064,7 @@ ov54_021E61A8: ; 0x021E61A8
 	mov r0, #0xca
 	lsl r0, r0, #2
 	ldrb r0, [r5, r0]
-	bl sub_020200A0
+	bl RemoveTextPrinter
 _021E61D2:
 	ldr r1, _021E6230 ; =0x0000022A
 	ldr r0, [r5, #0x28]
@@ -1088,7 +1089,7 @@ _021E61D2:
 	mov r1, #1
 	add r2, r4, #0
 	mov r3, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 _021E620C:
@@ -1102,7 +1103,7 @@ _021E620C:
 	mov r1, #1
 	add r2, r4, #0
 	mov r3, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r1, #0xca
 	lsl r1, r1, #2
 	strb r0, [r5, r1]
@@ -1120,7 +1121,7 @@ ov54_021E6238: ; 0x021E6238
 	add r6, r0, #0
 	ldr r1, [r6]
 	mov r0, #0x28
-	bl String_ctor
+	bl String_New
 	add r5, r0, #0
 	ldr r0, [r6, #0x28]
 	mov r1, #0
@@ -1137,9 +1138,9 @@ ov54_021E6238: ; 0x021E6238
 	add r2, r5, #0
 	mov r3, #2
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl StringSetEmpty
+	bl String_SetEmpty
 	add r0, r6, #0
 	add r1, r5, #0
 	mov r2, #1
@@ -1149,7 +1150,7 @@ ov54_021E6238: ; 0x021E6238
 	add r7, #0x44
 _021E6282:
 	add r0, r5, #0
-	bl StringSetEmpty
+	bl String_SetEmpty
 	ldr r0, [r6, #0x28]
 	add r1, r4, #1
 	add r2, r5, #0
@@ -1168,14 +1169,14 @@ _021E6282:
 	add r0, r7, #0
 	add r2, r5, #0
 	mov r3, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #1
 	lsl r0, r0, #0x10
 	lsr r4, r0, #0x10
 	cmp r4, #6
 	blo _021E6282
 	add r0, r5, #0
-	bl StringSetEmpty
+	bl String_SetEmpty
 	ldr r0, [r6, #0x28]
 	mov r1, #8
 	add r2, r5, #0
@@ -1192,9 +1193,9 @@ _021E6282:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl StringSetEmpty
+	bl String_SetEmpty
 	ldr r0, [r6, #0x28]
 	mov r1, #7
 	add r2, r5, #0
@@ -1211,7 +1212,7 @@ _021E6282:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r4, #0
 _021E6316:
 	add r0, r6, #0
@@ -1238,7 +1239,7 @@ _021E6316:
 	add r0, r6, #0
 	bl CopyWindowToVram
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -1418,7 +1419,7 @@ _021E6466:
 	lsl r2, r2, #2
 	ldr r2, [r5, r2]
 	add r0, #0x44
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x10]
 	add r0, #0x44
 	bl CopyWindowToVram
@@ -1536,7 +1537,7 @@ _021E6568:
 	ldr r0, [sp, #0x1c]
 	ldr r2, [r2]
 	mov r1, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #1
 	lsl r0, r0, #0x10
 	lsr r4, r0, #0x10
@@ -1855,7 +1856,7 @@ ov54_021E681C: ; 0x021E681C
 	b _021E6998
 _021E682A:
 	ldr r0, _021E69BC ; =ov54_021E6D68
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r3, #0
 	mvn r3, r3
 	cmp r0, r3
@@ -2142,17 +2143,17 @@ ov54_021E6A7C: ; 0x021E6A7C
 	add r4, r0, #0
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, [r4]
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	mov r1, #0x2d
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	ldr r0, [r4, r1]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	mov r7, #0xb5
 	lsl r7, r7, #2
 	add r2, sp, #0x24
@@ -2207,7 +2208,7 @@ _021E6AF2:
 	mov r0, #0x2d
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl sub_0200CF6C
+	bl SpriteRenderer_GetG2dRendererPtr
 	mov r2, #1
 	mov r1, #0
 	lsl r2, r2, #0x14
@@ -2229,11 +2230,11 @@ ov54_021E6B34: ; 0x021E6B34
 	ldr r0, [r4, r1]
 	add r1, r1, #4
 	ldr r1, [r4, r1]
-	bl sub_0200D0E4
+	bl SpriteRenderer_RemoveGfxHandler
 	mov r0, #0x2d
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	mov r0, #0xb5
 	mov r1, #0
 	lsl r0, r0, #2
@@ -2260,14 +2261,14 @@ _021E6B64:
 	ldr r0, [r6, r0]
 	ldr r1, [r6, r1]
 	add r2, r7, r2
-	bl sub_0200D2B4
+	bl SpriteRenderer_CreateSprite
 	mov r1, #0xb6
 	lsl r1, r1, #2
 	str r0, [r5, r1]
 	add r0, r1, #0
 	ldr r0, [r5, r0]
 	mov r1, #2
-	bl sub_0200DD3C
+	bl thunk_Sprite_SetPriority
 	mov r0, #0xb6
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -2302,7 +2303,7 @@ _021E6BC2:
 	ldr r0, [r5, r0]
 	add r1, #2
 	add r2, sp, #0
-	bl sub_0200DE00
+	bl Sprite_GetPositionXY
 	add r0, r6, #0
 	add r0, #0x86
 	ldrh r0, [r0]
@@ -2319,7 +2320,7 @@ _021E6BC2:
 	lsl r0, r0, #2
 	ldrsh r2, [r3, r2]
 	ldr r0, [r5, r0]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	add r7, r7, #1
 	add r5, r5, #4
 	add r4, #0xc
@@ -2338,13 +2339,13 @@ ov54_021E6C08: ; 0x021E6C08
 	mov r0, #0xbd
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _021E6C2C
 	mov r0, #0xbe
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _021E6C2C
 	mov r0, #0
@@ -2360,8 +2361,14 @@ _021E6C30:
 	.byte 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x00, 0x00
 
 ov54_021E6C38: ; 0x021E6C38
-	.byte 0x16, 0x00, 0x17, 0x00, 0x15, 0x00, 0x14, 0x00
-	.byte 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x00, 0x00, 0x00
+	.short 0x0016  // NARC_resdat_resdat_00000022
+	.short 0x0017  // NARC_resdat_resdat_00000023
+	.short 0x0015  // NARC_resdat_resdat_00000021
+	.short 0x0014  // NARC_resdat_resdat_00000020
+	.short 0xFFFF
+	.short 0xFFFF
+	.short 0x004D  // NARC_resdat_resdat_00000077
+	.balign 4, 0
 
 ov54_021E6C48: ; 0x021E6C48
 	.byte 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00

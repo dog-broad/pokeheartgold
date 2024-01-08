@@ -1,6 +1,7 @@
 #include "constants/mmodel.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "overlay_106.inc"
 	.include "global.inc"
 
 	.text
@@ -14,9 +15,9 @@ ov106_021E5900: ; 0x021E5900
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
 	mov r0, #0
-	bl GX_EngineASetLayers
+	bl GfGfx_EngineASetPlanes
 	mov r0, #0
-	bl GX_EngineBSetLayers
+	bl GfGfx_EngineBSetPlanes
 	ldr r0, _021E5940 ; =0x04000050
 	mov r1, #0
 	strh r1, [r0]
@@ -166,13 +167,13 @@ ov106_021E59FC: ; 0x021E59FC
 	ldrh r3, [r4, #0xe]
 	ldr r1, [r4]
 	add r2, r4, #4
-	bl GF_Camera_InitFromTargetDistanceAndAngle
+	bl Camera_Init_FromTargetDistanceAndAngle
 	ldr r0, [r4, #0x20]
 	ldr r1, [r4, #0x24]
 	ldr r2, [r5, #0x18]
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	ldr r0, [r5, #0x18]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	thumb_func_end ov106_021E59FC
@@ -456,7 +457,7 @@ _021E5C3C:
 	str r0, [r1, #4]
 	str r0, [r1, #8]
 	bl Thunk_G3X_Reset
-	bl sub_02023154
+	bl Camera_PushLookAtToNNSGlb
 	mov r1, #0xff
 	ldr r0, [sp]
 	lsl r1, r1, #2
@@ -578,11 +579,11 @@ _021E5D34:
 
 	thumb_func_start ov106_021E5D38
 ov106_021E5D38: ; 0x021E5D38
-	ldr r3, _021E5D40 ; =GX_SetBanks
+	ldr r3, _021E5D40 ; =GfGfx_SetBanks
 	ldr r0, _021E5D44 ; =ov106_021E6DB0
 	bx r3
 	nop
-_021E5D40: .word GX_SetBanks
+_021E5D40: .word GfGfx_SetBanks
 _021E5D44: .word ov106_021E6DB0
 	thumb_func_end ov106_021E5D38
 
@@ -614,7 +615,7 @@ ov106_021E5D70: ; 0x021E5D70
 	sub sp, #8
 	add r4, r0, #0
 	mov r0, #0x99
-	bl GF_Camera_Create
+	bl Camera_New
 	str r0, [r4, #0x18]
 	mov r0, #0x99
 	bl sub_0201F590
@@ -661,7 +662,7 @@ ov106_021E5D70: ; 0x021E5D70
 	bl SetBgPriority
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add sp, #8
 	pop {r4, pc}
 	nop
@@ -676,7 +677,7 @@ ov106_021E5DFC: ; 0x021E5DFC
 	add r4, r0, #0
 	bl sub_0201F63C
 	ldr r0, [r4, #0x18]
-	bl sub_02023120
+	bl Camera_Delete
 	pop {r4, pc}
 	thumb_func_end ov106_021E5DFC
 
@@ -688,7 +689,7 @@ ov106_021E5E0C: ; 0x021E5E0C
 	ldr r3, [r5, #0x28]
 	mov r1, #0x38
 	mov r2, #5
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r6, r0, #0
 	bl sub_0201F988
 	add r4, r0, #0
@@ -779,7 +780,7 @@ _021E5EC8:
 	bl GX_SetBankForLCDC
 _021E5ECE:
 	ldr r0, [r4, #0x34]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	pop {r4, pc}
 	nop
 _021E5ED8: .word 0x06820000
@@ -963,13 +964,13 @@ ov106_021E601C: ; 0x021E601C
 	add r4, r1, #0
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	bl GX_ResetBankForBG
 	ldr r6, _021E6060 ; =ov106_021E6DD8
 	add r3, sp, #0
@@ -1002,7 +1003,7 @@ ov106_021E6064: ; 0x021E6064
 	bl GX_SetBankForBG
 	mov r0, #0xe
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r3, pc}
 	thumb_func_end ov106_021E6064
 
@@ -1448,8 +1449,8 @@ ov106_021E63E0: ; 0x021E63E0
 	add r4, r0, #0
 	bl ov106_021E6A34
 	ldr r0, [r4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
-	bl sub_0200D034
+	bl DoScheduledBgGpuUpdates
+	bl thunk_OamManager_ApplyAndResetBuffers
 	ldr r3, _021E6400 ; =0x027E0000
 	ldr r1, _021E6404 ; =0x00003FF8
 	mov r0, #1
@@ -1464,11 +1465,11 @@ _021E6404: .word 0x00003FF8
 
 	thumb_func_start ov106_021E6408
 ov106_021E6408: ; 0x021E6408
-	ldr r3, _021E6410 ; =GX_SetBanks
+	ldr r3, _021E6410 ; =GfGfx_SetBanks
 	ldr r0, _021E6414 ; =ov106_021E6FE8
 	bx r3
 	nop
-_021E6410: .word GX_SetBanks
+_021E6410: .word GfGfx_SetBanks
 _021E6414: .word ov106_021E6FE8
 	thumb_func_end ov106_021E6408
 
@@ -1599,9 +1600,9 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, _021E661C ; =0x00000418
 	ldr r4, [r7, r0]
 	mov r0, #0x99
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	str r0, [r4, #8]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r2, sp, #0x3c
 	ldr r3, _021E6620 ; =ov106_021E6FC8
 	str r0, [r4, #0xc]
@@ -1642,9 +1643,9 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	add r2, sp, #0x10
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	ldr r0, [r4, #8]
-	bl sub_0200CF6C
+	bl SpriteRenderer_GetG2dRendererPtr
 	mov r2, #1
 	mov r1, #0
 	lsl r2, r2, #0x16
@@ -1657,7 +1658,7 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	ldr r2, [r4, #4]
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #1
 	str r0, [sp]
 	ldr r0, _021E662C ; =0x0000C8E9
@@ -1666,7 +1667,7 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	ldr r2, [r4, #4]
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	mov r0, #1
@@ -1678,7 +1679,7 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	ldr r2, [r4, #4]
-	bl sub_0200D5D4
+	bl SpriteRenderer_LoadPlttResObjFromOpenNarc
 	mov r0, #1
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -1688,19 +1689,19 @@ ov106_021E6520: ; 0x021E6520
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	ldr r2, [r4, #4]
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
 	ldr r2, _021E6630 ; =ov106_021E7010
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	mov r1, #0
 	str r0, [r4, #0x10]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r0, r7, #0
 	bl ov106_021E66FC
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add sp, #0x5c
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -1736,9 +1737,9 @@ ov106_021E664C: ; 0x021E664C
 	bl ov106_021E6634
 	ldr r0, [r4, #8]
 	ldr r1, [r4, #0xc]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	ldr r0, [r4, #8]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov106_021E664C
@@ -1749,7 +1750,7 @@ ov106_021E6668: ; 0x021E6668
 	ldr r0, [r0, #0x10]
 	cmp r0, #0
 	beq _021E6674
-	bl sub_0200DC18
+	bl UnkImageStruct_TickSpriteAnimation1Frame
 _021E6674:
 	pop {r3, pc}
 	.balign 4, 0
@@ -1803,10 +1804,10 @@ _021E66C2:
 	b _021E66EE
 _021E66C6:
 	bl SpeciesToOverworldModelIndexOffset
-	ldr r1, _021E66F8 ; =MMODEL_TSURE_POKE_BULBASAUR
+	ldr r1, _021E66F8 ; =MMODEL_FOLLOWER_MON_BULBASAUR
 	add r4, r0, r1
 	add r0, r5, #0
-	bl OverworldModelLookupHasFemaleForme
+	bl OverworldModelLookupHasFemaleForm
 	cmp r0, #0
 	beq _021E66E0
 	cmp r7, #1
@@ -1815,7 +1816,7 @@ _021E66C6:
 	b _021E66EE
 _021E66E0:
 	add r0, r5, #0
-	bl OverworldModelLookupFormeCount
+	bl OverworldModelLookupFormCount
 	cmp r6, r0
 	ble _021E66EC
 	mov r6, #0
@@ -1826,7 +1827,7 @@ _021E66EE:
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
 _021E66F4: .word NATIONAL_DEX_COUNT
-_021E66F8: .word MMODEL_TSURE_POKE_BULBASAUR
+_021E66F8: .word MMODEL_FOLLOWER_MON_BULBASAUR
 	thumb_func_end ov106_021E66B0
 
 	thumb_func_start ov106_021E66FC
@@ -1838,9 +1839,9 @@ ov106_021E66FC: ; 0x021E66FC
 	ldr r0, [r0]
 	str r1, [sp, #0x18]
 	ldr r0, [r0]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r4, r0, #0
-	bl GetPartyCount
+	bl Party_GetCount
 	cmp r0, #0
 	bne _021E6720
 	mov r5, #0
@@ -1850,7 +1851,7 @@ ov106_021E66FC: ; 0x021E66FC
 _021E6720:
 	add r0, r4, #0
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	add r6, r0, #0
@@ -1965,9 +1966,9 @@ ov106_021E6814: ; 0x021E6814
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
 	mov r0, #0
-	bl GX_EngineASetLayers
+	bl GfGfx_EngineASetPlanes
 	mov r0, #0
-	bl GX_EngineBSetLayers
+	bl GfGfx_EngineBSetPlanes
 	ldr r0, _021E688C ; =0x04000050
 	mov r1, #0
 	strh r1, [r0]
@@ -1993,7 +1994,7 @@ ov106_021E6814: ; 0x021E6814
 	ldr r0, _021E68A0 ; =ov106_021E70E0
 	str r0, [r4, #0x14]
 	mov r0, #0xf7
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [r4, #4]
 	bl ov106_021E6408
 	add r0, r4, #0
@@ -2030,7 +2031,7 @@ ov106_021E68A8: ; 0x021E68A8
 	add r0, r5, #0
 	bl ov106_021E64FC
 	ldr r0, [r5, #4]
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, _021E68D8 ; =0x00000418
 	ldr r0, [r4, r0]
 	bl FreeToHeap
@@ -2633,7 +2634,7 @@ ov106_021E6CF8: ; 0x021E6CF8
 _021E6D0A:
 	ldr r0, [r4, #0x10]
 	ldr r1, [r5, #4]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	nop
@@ -2658,7 +2659,7 @@ _021E6D2E:
 	ldr r0, [r4, #0x10]
 	asr r1, r1, #0x10
 	asr r2, r2, #0x10
-	bl sub_0200DDB8
+	bl UnkImageStruct_SetSpritePositionXY
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -2678,7 +2679,7 @@ ov106_021E6D48: ; 0x021E6D48
 _021E6D5A:
 	ldr r0, [r4, #0x10]
 	ldr r1, [r5, #4]
-	bl sub_0200DD54
+	bl UnkImageStruct_SetSpritePriority
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	nop

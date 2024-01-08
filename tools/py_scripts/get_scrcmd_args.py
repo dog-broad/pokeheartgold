@@ -88,7 +88,7 @@ def parse_args_asm(scrcmds, filename, syms):
 
 
 def parse_args_c(scrcmds, filename, syms):
-    pat = re.compile(rf'^BOOL (?P<symbol>{"|".join(syms)})\(SCRIPTCONTEXT\s*\*\s*ctx\) {{')
+    pat = re.compile(rf'^BOOL (?P<symbol>{"|".join(syms)})\(ScriptContext\s*\*\s*ctx\) {{')
     with open(filename) as fp:
         for line in fp:
             if (m := pat.match(line)) is not None:
@@ -112,7 +112,7 @@ def main():
             scrcmds.append([line.split()[1], []])
 
     pat = re.compile(r'\s+[0-9A-F]{8}\s+[0-9A-F]{8}\s+\.text\s+(?P<symbol>\w+)\s+\((?P<object>\S+)\)')
-    with open(os.path.join(project_root, 'build/heartgold.us/main.nef.xMAP')) as fp:
+    with open(os.path.join(project_root, 'build/heartgold.us/main.elf.xMAP')) as fp:
         for line in fp:
             if (m := pat.match(line)) is not None and any(x[0] == m['symbol'] for x in scrcmds):
                 objects[m['object']].append(m['symbol'])

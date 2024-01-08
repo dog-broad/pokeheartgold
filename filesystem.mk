@@ -417,9 +417,11 @@ $(eval $(call arc_strip_name,files/application/zukanlist/zukan_data/zukan_data.n
 $(eval $(call arc_strip_name,files/a/0/7/5.$(buildname),files/a/0/7/5))
 $(eval $(call arc_strip_name,files/data/mmodel/mmodel.narc,files/a/0/8/1))
 $(eval $(call arc_strip_name,files/application/choose_starter/choose_starter_main_res.narc,files/a/0/8/2))
+$(eval $(call arc_strip_name,files/application/record/record.narc,files/a/0/8/4))
 $(eval $(call arc_strip_name,files/application/choose_starter/choose_starter_sub_res.narc,files/a/0/9/3))
 $(eval $(call arc_strip_name,files/poketool/pokegra/otherpoke.narc,files/a/1/1/4))
 $(eval $(call arc_strip_name,files/poketool/pokegra/height_o.narc,files/a/1/1/7))
+$(eval $(call arc_strip_name,files/arc/ppark.narc,files/a/1/2/5))
 $(eval $(call arc_strip_name,files/poketool/trmsg/trtblofs.narc,files/a/1/3/1))
 $(eval $(call arc_strip_name,files/application/zukanlist/zukan_data/zukan_enc_$(shortname).narc,files/a/1/3/3))
 $(eval $(call arc_strip_name,files/fielddata/encountdata/s_enc_data.narc,files/a/1/3/6))
@@ -428,6 +430,7 @@ $(eval $(call arc_strip_name,files/fielddata/tsurepoke/tp_param.narc,files/a/1/4
 $(eval $(call arc_strip_name,files/data/gs_areawindow.narc,files/a/1/6/3))
 $(eval $(call arc_strip_name,files/poketool/personal/performance.narc,files/a/1/6/9))
 $(eval $(call arc_strip_name,files/application/annon/puzzle_gra.narc,files/a/1/7/2))
+$(eval $(call arc_strip_name,files/data/resdat.narc,files/a/1/7/5))
 $(eval $(call arc_strip_name,files/application/custom_ball/edit/gs_cb_data.narc,files/a/1/8/5))
 $(eval $(call arc_strip_name,files/pbr/dp_height.narc,files/a/1/9/4))
 $(eval $(call arc_strip_name,files/pbr/dp_height_o.narc,files/a/1/9/5))
@@ -435,6 +438,7 @@ $(eval $(call arc_strip_name,files/resource/eng/pms_aikotoba/pms_aikotoba.narc,f
 $(eval $(call arc_strip_name,files/application/zukanlist/zukan_data/zukan_data_gira.narc,files/a/2/1/4))
 $(eval $(call arc_strip_name,files/fielddata/sodateya/kowaza_list.narc,files/a/2/2/9))
 $(eval $(call arc_strip_name,files/a/2/5/2.$(buildname),files/a/2/5/2))
+$(eval $(call arc_strip_name,files/application/voltorb_flip.narc,files/a/2/6/4))
 
 $(DIFF_ARCS):
 	cp $< $@
@@ -455,13 +459,14 @@ include files/fielddata/script/scr_seq.mk
 
 # This rule must come after the above includes
 # and serves to enforce build order.
-$(SCRIPT_BINS): $(MSGFILE_H)
+$(SCRIPT_BINS): $(FIRST_MSG_H_GEN)
 
 include files/fielddata/eventdata/zone_event.mk
 include files/data/sound/sound_data.mk
 include files/data/gs_areawindow.mk
 include files/fielddata/encountdata/gs_enc_data.mk
 include files/itemtool/itemdata/item_data.mk
+include files/poketool/personal/evo.mk
 include files/poketool/personal/growtbl.mk
 include files/poketool/pokegra/otherpoke.mk
 include files/poketool/pokegra/pokegra.mk
@@ -473,6 +478,11 @@ include files/fielddata/wazaoshie/waza_oshie.mk
 include files/data/mushi/mushi.mk
 include files/fielddata/tsurepoke/tp_param.mk
 include files/application/choose_starter/choose_starter.mk
+include files/arc/ppark.mk
+include files/application/record/record.mk
+include files/application/voltorb_flip.mk
+include files/application/annon/puzzle_gra.mk
+include files/data/resdat.mk
 
 $(filter-out $(DIFF_ARCS) $(FS_RULE_OVERRIDES),$(NITROFS_FILES)): ;
 

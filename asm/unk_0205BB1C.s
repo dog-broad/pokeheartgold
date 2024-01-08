@@ -1,5 +1,6 @@
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_0205BB1C.inc"
 	.include "global.inc"
 
 	.rodata
@@ -11,8 +12,8 @@ sRegiSpecies:
 
 	.text
 
-	thumb_func_start sub_0205BB1C
-sub_0205BB1C: ; 0x0205BB1C
+	thumb_func_start CountDigits
+CountDigits: ; 0x0205BB1C
 	push {r4, lr}
 	mov r1, #0xa
 	add r4, r0, #0
@@ -87,7 +88,7 @@ _0205BBA8: .word 0x000186A0
 _0205BBAC: .word 0x000F4240
 _0205BBB0: .word 0x00989680
 _0205BBB4: .word 0x05F5E100
-	thumb_func_end sub_0205BB1C
+	thumb_func_end CountDigits
 
 	thumb_func_start ItemIsTMOrHM
 ItemIsTMOrHM: ; 0x0205BBB8
@@ -316,8 +317,8 @@ _0205BD1C: .word 0x000004AA
 Save_GetPartyLead: ; 0x0205BD20
 	push {r3, r4, r5, r6, r7, lr}
 	add r6, r0, #0
-	bl SavArray_PlayerParty_get
-	bl GetPartyCount
+	bl SaveArray_Party_Get
+	bl Party_GetCount
 	lsl r0, r0, #0x10
 	lsr r5, r0, #0x10
 	ldr r4, _0205BD60 ; =0x00000000
@@ -325,9 +326,9 @@ Save_GetPartyLead: ; 0x0205BD20
 	mov r7, #0x4c
 _0205BD36:
 	add r0, r6, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r7, #0
 	mov r2, #0
 	bl GetMonData
@@ -352,17 +353,17 @@ _0205BD60: .word 0x00000000
 Save_GetPartyLeadAlive: ; 0x0205BD64
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
-	bl SavArray_PlayerParty_get
-	bl GetPartyCount
+	bl SaveArray_Party_Get
+	bl Party_GetCount
 	lsl r0, r0, #0x10
 	lsr r6, r0, #0x10
 	ldr r5, _0205BDB4 ; =0x00000000
 	beq _0205BDAE
 _0205BD78:
 	add r0, r7, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r5, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0x4c
 	mov r2, #0
 	add r4, r0, #0
@@ -390,14 +391,14 @@ _0205BDAE:
 _0205BDB4: .word 0x00000000
 	thumb_func_end Save_GetPartyLeadAlive
 
-	thumb_func_start Save_PlayerHasRegiInParty
-Save_PlayerHasRegiInParty: ; 0x0205BDB8
+	thumb_func_start Save_PlayerHasAllRegisInParty
+Save_PlayerHasAllRegisInParty: ; 0x0205BDB8
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	mov r7, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp]
-	bl GetPartyCount
+	bl Party_GetCount
 	add r4, r0, #0
 	add r6, r7, #0
 	cmp r4, #0
@@ -406,7 +407,7 @@ Save_PlayerHasRegiInParty: ; 0x0205BDB8
 _0205BDD2:
 	ldr r0, [sp]
 	add r1, r6, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	bl GetMonData
@@ -451,16 +452,16 @@ _0205BE1E:
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _0205BE24: .word sRegiSpecies
-	thumb_func_end Save_PlayerHasRegiInParty
+	thumb_func_end Save_PlayerHasAllRegisInParty
 
 	thumb_func_start sub_0205BE28
 sub_0205BE28: ; 0x0205BE28
 	push {r4, r5, lr}
 	sub sp, #0xc
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	mov r0, #2
 	lsl r0, r0, #0xe
@@ -544,7 +545,7 @@ sub_0205BED8: ; 0x0205BED8
 	add r5, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp]
 	mov r0, #0xb
 	mov r1, #0x14
@@ -610,13 +611,13 @@ _0205BF68: .word sub_0205BE28
 sub_0205BF6C: ; 0x0205BF6C
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #9]
 	ldr r0, [r4]
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	ldrb r1, [r4, #8]
 	add r0, r1, #1
 	strb r0, [r4, #8]
@@ -649,7 +650,7 @@ sub_0205BFB4: ; 0x0205BFB4
 	add r5, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp]
 	mov r0, #0xb
 	mov r1, #0xc

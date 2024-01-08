@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_114.inc"
 	.include "global.inc"
 
 	.text
@@ -90,7 +91,7 @@ _0225F04E:
 	bl sub_02024B78
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r4]
 	add r0, r0, #1
 	str r0, [r4]
@@ -263,7 +264,7 @@ _0225F238:
 	mov r0, #0x67
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r1, #0x5a
 	add r0, r5, #0
 	lsl r1, r1, #2
@@ -377,7 +378,7 @@ _0225F2F6:
 	blt _0225F2F6
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r6]
 	add r0, r0, #1
 	str r0, [r6]
@@ -468,7 +469,7 @@ _0225F3B2:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r2, #6
 	lsl r2, r2, #6
 	ldr r3, [r4, r2]
@@ -483,7 +484,7 @@ _0225F3B2:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r1, #0x66
 	lsl r1, r1, #2
 	ldr r2, [r4, r1]
@@ -499,7 +500,7 @@ _0225F3B2:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r1, #0x66
 	lsl r1, r1, #2
 	ldr r2, [r4, r1]
@@ -515,7 +516,7 @@ _0225F3B2:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0x1c
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [sp, #0x18]
 	cmp r0, #1
 	bne _0225F4E2
@@ -571,7 +572,7 @@ _0225F4B6:
 	mov r0, #0x17
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r7, r7, #1
 	add r5, r5, #4
 	cmp r7, #4

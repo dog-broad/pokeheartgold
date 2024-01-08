@@ -1,21 +1,21 @@
 #ifndef POKEHEARTGOLD_MOVE_H
 #define POKEHEARTGOLD_MOVE_H
 
-typedef struct WazaTbl {
+typedef struct MoveTbl {
     u16 effect;
-    u8 class;
+    u8 category;
     u8 power;
     u8 type;
     u8 accuracy;
     u8 pp;
     u8 effectChance;
-    u16 unk8;
+    u16 range;
     s8 priority;
     u8 unkB;
     u8 unkC;
     u8 contestType;
     u8 padding[2];
-} WAZA;
+} MOVE;
 
 typedef enum MoveAttr {
     MOVEATTR_EFFECT = 0,
@@ -25,17 +25,17 @@ typedef enum MoveAttr {
     MOVEATTR_ACCURACY,
     MOVEATTR_PP,
     MOVEATTR_EFFECT_CHANCE,
-    MOVEATTR_UNK7,
+    MOVEATTR_RANGE,
     MOVEATTR_PRIORTY,
     MOVEATTR_UNK9,
     MOVEATTR_UNK10,
     MOVEATTR_CONTEST_TYPE,
 } MoveAttr;
 
-u32 GetWazaAttr(u16 moveId, MoveAttr attrno);
-u8 WazaGetMaxPp(u16 moveId, u8 ppUps);
-void LoadAllWazaTbl(WAZA *dest);
-u32 GetAttrFromWazaTbl(WAZA * wazaTbl, MoveAttr attr);
-void LoadWazaEntry(u16 moveId, WAZA * wazaTbl);
+u32 GetMoveAttr(u16 moveId, MoveAttr attrno);
+u8 GetMoveMaxPP(u16 moveId, u8 ppUps);
+void LoadMoveTbl(MOVE *dest);
+u32 GetMoveTblAttr(MOVE * moveTbl, MoveAttr attr);
+void LoadMoveEntry(u16 moveId, MOVE * moveTbl);
 
 #endif //POKEHEARTGOLD_MOVE_H

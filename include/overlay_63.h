@@ -6,8 +6,8 @@
 #include "player_data.h"
 
 typedef struct {
-    PLAYERPROFILE *profile;
-    PARTY *party;
+    PlayerProfile *profile;
+    Party *party;
     IGT *igt;
 } HOFCongratsAppArgs;
 

@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021E90C0.inc"
 	.include "global.inc"
 
 	.text
@@ -208,7 +209,7 @@ _021E9218:
 	cmp r0, #0
 	bne _021E9238
 	ldr r0, [r6, #0x24]
-	bl sub_02023234
+	bl Camera_ClearFixedTarget
 	mov r0, #1
 	str r0, [r4, #0x10]
 _021E9238:
@@ -299,7 +300,7 @@ _021E92F6:
 	ldr r0, [r6, #0x40]
 	bl PlayerAvatar_GetMapObject
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add sp, #0x58
 	mov r0, #1
 	pop {r3, r4, r5, r6, r7, pc}
@@ -308,7 +309,7 @@ _021E9308:
 	ldr r1, _021E936C ; =0x00456000
 	ldr r2, [r6, #0x24]
 	lsl r0, r0, #0xc
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	ldr r1, [r6, #0x24]
 	mov r0, #4
 	bl CreateCameraTranslationWrapper
@@ -491,7 +492,7 @@ _021E9476:
 	pop {r3, r4, r5, r6, r7, pc}
 _021E9486:
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	strh r0, [r6, #0xe]
 	ldr r1, [sp, #0x20]
 	add r0, r4, #0
@@ -500,7 +501,7 @@ _021E9486:
 	bne _021E94A2
 	ldr r0, _021E95C8 ; =0x0000FFA0
 	ldr r1, [r4, #0x24]
-	bl sub_020234D0
+	bl Camera_AdjustPerspectiveAngle
 _021E94A2:
 	ldr r0, [r6]
 	add r0, r0, #1
@@ -552,7 +553,7 @@ _021E94FA:
 	ldr r0, [r4, #0x40]
 	bl PlayerAvatar_GetMapObject
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	ldr r0, [r6]
 	add r0, r0, #1
 	str r0, [r6]
@@ -604,7 +605,7 @@ _021E9572:
 	cmp r0, #0
 	beq _021E95B0
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	ldrh r1, [r6, #0xe]
 	cmp r1, r0
 	bne _021E95B0
@@ -658,7 +659,7 @@ ov01_021E95CC: ; 0x021E95CC
 	lsr r4, r0, #0x18
 _021E95EC:
 	add r0, r6, #0
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	sub r0, r0, r4
 	lsl r0, r0, #0x10
 	lsr r0, r0, #0x10
@@ -667,7 +668,7 @@ _021E95EC:
 	lsl r0, r0, #0x10
 	lsr r0, r0, #0x10
 	add r1, r6, #0
-	bl sub_020234D0
+	bl Camera_AdjustPerspectiveAngle
 _021E9606:
 	ldrb r0, [r5]
 	add r0, r0, #1
@@ -698,14 +699,14 @@ _021E962E:
 	mov r4, #0x10
 _021E9630:
 	add r0, r6, #0
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	add r0, r0, r4
 	lsl r0, r0, #0x10
 	lsr r0, r0, #0x10
 	beq _021E9646
 	add r0, r4, #0
 	add r1, r6, #0
-	bl sub_020234D0
+	bl Camera_AdjustPerspectiveAngle
 _021E9646:
 	ldrb r0, [r5]
 	add r0, r0, #1
@@ -1278,10 +1279,10 @@ _021E9AB8: .word SEQ_SE_DP_ESUKA
 ov01_021E9ABC: ; 0x021E9ABC
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4]
 	ldr r0, [r5, #0x58]
@@ -1482,10 +1483,10 @@ ov01_021E9C40: ; 0x021E9C40
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x5c
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r6, r0, #0
 	ldr r0, [r6]
 	cmp r0, #8
@@ -1516,11 +1517,11 @@ _021E9C7A:
 	str r0, [r6, #0x10]
 	strb r0, [r6, #0xd]
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	strh r0, [r6, #0xe]
 	ldr r0, _021E9EE4 ; =0x0000FFA0
 	ldr r1, [r4, #0x24]
-	bl sub_020234D0
+	bl Camera_AdjustPerspectiveAngle
 	mov r0, #6
 	str r0, [sp]
 	mov r1, #1
@@ -1639,14 +1640,14 @@ _021E9D88:
 	bne _021E9DA0
 	ldr r0, [sp, #0x28]
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #1
 	str r0, [r6]
 	b _021E9ECC
 _021E9DA0:
 	ldr r0, [sp, #0x28]
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #3
 	str r0, [r6]
 	b _021E9ECC
@@ -1655,7 +1656,7 @@ _021E9DAE:
 	bl PlayerAvatar_GetMapObject
 	add r5, r0, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r5, #0
 	mov r1, #0xd
 	bl MapObject_SetHeldMovement
@@ -1681,7 +1682,7 @@ _021E9DEA:
 	cmp r0, #0
 	beq _021E9ECC
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	ldrh r1, [r6, #0xe]
 	cmp r1, r0
 	bne _021E9ECC
@@ -1713,7 +1714,7 @@ _021E9E28:
 	ldr r0, [r4, #0x40]
 	bl PlayerAvatar_GetMapObject
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #6
 	str r0, [r6]
 	b _021E9ECC
@@ -1763,7 +1764,7 @@ _021E9E9C:
 	cmp r0, #0
 	beq _021E9ECC
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	ldrh r1, [r6, #0xe]
 	cmp r1, r0
 	bne _021E9ECC
@@ -1796,10 +1797,10 @@ ov01_021E9EEC: ; 0x021E9EEC
 	push {r4, r5, lr}
 	sub sp, #0xc
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 	ldrb r0, [r5]
 	cmp r0, #0
@@ -1811,7 +1812,7 @@ _021E9F0C:
 	ldr r0, [r4, #0x40]
 	bl PlayerAvatar_GetMapObject
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #0
 	str r0, [r5, #4]
 	strb r0, [r5, #1]
@@ -1864,10 +1865,10 @@ ov01_021E9F78: ; 0x021E9F78
 	push {r4, r5, r6, lr}
 	sub sp, #0x10
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r0, [r4]
 	cmp r0, #0
@@ -1928,10 +1929,10 @@ ov01_021E9FF8: ; 0x021E9FF8
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x18
 	str r0, [sp, #0x10]
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	ldr r0, [sp, #0x10]
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r0, [r4]
 	cmp r0, #3
@@ -1959,13 +1960,13 @@ _021EA026:
 	bne _021EA048
 	ldr r0, [sp, #0x14]
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #1
 	b _021EA052
 _021EA048:
 	ldr r0, [sp, #0x14]
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #3
 _021EA052:
 	strb r0, [r4]
@@ -1973,11 +1974,11 @@ _021EA052:
 	str r0, [r4, #4]
 	strb r0, [r4, #1]
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	strh r0, [r4, #2]
 	ldr r0, _021EA124 ; =0x0000FFA0
 	ldr r1, [r5, #0x24]
-	bl sub_020234D0
+	bl Camera_AdjustPerspectiveAngle
 	cmp r7, #3
 	bhi _021EA092
 	add r0, r7, r7
@@ -2025,7 +2026,7 @@ _021EA0B4:
 	bl PlayerAvatar_GetMapObject
 	add r6, r0, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r6, #0
 	mov r1, #0xd
 	bl MapObject_SetHeldMovement
@@ -2051,7 +2052,7 @@ _021EA0F0:
 	cmp r0, #0
 	beq _021EA110
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	ldrh r1, [r4, #2]
 	cmp r1, r0
 	bne _021EA110
@@ -2080,10 +2081,10 @@ ov01_021EA128: ; 0x021EA128
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	add r7, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r7, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r0, [r4]
 	cmp r0, #3
@@ -2111,13 +2112,13 @@ _021EA156:
 	bne _021EA178
 	add r0, r6, #0
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #1
 	b _021EA182
 _021EA178:
 	add r0, r6, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #3
 _021EA182:
 	strb r0, [r4]
@@ -2138,7 +2139,7 @@ _021EA19E:
 	bl PlayerAvatar_GetMapObject
 	add r5, r0, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r5, #0
 	mov r1, #0xd
 	bl MapObject_SetHeldMovement

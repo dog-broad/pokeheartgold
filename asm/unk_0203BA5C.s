@@ -1,10 +1,11 @@
 #include "constants/maps.h"
 	.include "asm/macros.inc"
+	.include "unk_0203BA5C.inc"
 	.include "global.inc"
 
 	.rodata
-	.macro spawn flagIdx, isDeathSpawn, isFlyPoint, deathSpawnMapNo, deathSpawnX, deathSpawnY, flyPointMapNo, flyPointX, flyPointY, specialWarpMapNo, specialWarpX, specialWarpY
-	.short (\flagIdx & 0xFF) | ((\isDeathSpawn & 1) << 8) | ((\isFlyPoint & 1) << 9), \deathSpawnMapNo
+	.macro spawn flagIdx, isBlackoutSpawn, isFlyPoint, deathSpawnMapNo, deathSpawnX, deathSpawnY, flyPointMapNo, flyPointX, flyPointY, specialWarpMapNo, specialWarpX, specialWarpY
+	.short (\flagIdx & 0xFF) | ((\isBlackoutSpawn & 1) << 8) | ((\isFlyPoint & 1) << 9), \deathSpawnMapNo
 	.short \deathSpawnX | (\deathSpawnY << 8)
 	.short \flyPointMapNo, \flyPointX, \flyPointY, \specialWarpMapNo, \specialWarpX, \specialWarpY
 	.endm
@@ -217,7 +218,7 @@ _0203BB78:
 	lsr r5, r5, #0x1f
 	beq _0203BBA2
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r2, #0x12
 	add r3, r4, #0
 	mul r3, r2
@@ -226,7 +227,7 @@ _0203BB78:
 	ldrh r2, [r2, r3]
 	lsl r2, r2, #0x18
 	lsr r2, r2, #0x18
-	bl ScriptState_FlypointFlagAction
+	bl Save_VarsFlags_FlypointFlagAction
 	pop {r3, r4, r5, pc}
 _0203BBA2:
 	add r4, r4, #1

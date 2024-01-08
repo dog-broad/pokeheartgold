@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02091CDC.inc"
 	.include "global.inc"
 
 	.text
@@ -81,8 +82,8 @@ _02091D40:
 	add r0, r6, #0
 	add r1, r0, #0
 	bl Main_SetHBlankIntrCB
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -103,7 +104,7 @@ _02091D40:
 	ldr r0, _02091E30 ; =sub_02091E54
 	add r1, r4, #0
 	bl Main_SetVBlankIntrCB
-	bl GX_BothDispOn
+	bl GfGfx_BothDispOn
 	mov r0, #6
 	mov r1, #1
 	str r0, [sp]
@@ -182,11 +183,11 @@ App_DeleteSave_Exit: ; 0x02091E34
 
 	thumb_func_start sub_02091E54
 sub_02091E54: ; 0x02091E54
-	ldr r3, _02091E5C ; =BgConfig_HandleScheduledScrollAndTransferOps
+	ldr r3, _02091E5C ; =DoScheduledBgGpuUpdates
 	ldr r0, [r0, #0x14]
 	bx r3
 	nop
-_02091E5C: .word BgConfig_HandleScheduledScrollAndTransferOps
+_02091E5C: .word DoScheduledBgGpuUpdates
 	thumb_func_end sub_02091E54
 
 	thumb_func_start sub_02091E60
@@ -203,7 +204,7 @@ _02091E6C:
 	sub r2, r2, #1
 	bne _02091E6C
 	add r0, sp, #0x34
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r0, [r4]
 	bl BgConfig_Alloc
 	add r3, sp, #0x24
@@ -468,7 +469,7 @@ _02092090:
 	add r0, r4, #0
 	ldr r1, _020920DC ; =0x000001E2
 	add r0, #0x1c
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	str r0, [r4, #0x34]
 	mov r0, #5
 	str r0, [r4, #4]
@@ -532,7 +533,7 @@ _020920FC:
 	mov r0, #1
 	ldr r1, [r5]
 	lsl r0, r0, #0xa
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x10]
 	ldr r0, [r5, #0x18]
 	ldr r2, [r5, #0x10]
@@ -551,7 +552,7 @@ _020920FC:
 	cmp r4, #0
 	bne _0209215C
 	ldr r0, [r5, #0x10]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r5, #8]
 	add r0, r0, #1
 	str r0, [r5, #8]
@@ -568,7 +569,7 @@ _02092164:
 	cmp r0, #0
 	bne _02092194
 	ldr r0, [r5, #0x10]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r5, #8]
 	add r0, r0, #1
 	str r0, [r5, #8]

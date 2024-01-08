@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_71.inc"
 	.include "global.inc"
 
 	.text
@@ -47,7 +48,7 @@ _022469A6:
 	mov r0, #0x19
 	lsl r0, r0, #4
 	mov r1, #0x38
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x14]
 	mov r0, #0
 	mov r1, #0x1b
@@ -56,7 +57,7 @@ _022469A6:
 	bl NewMsgDataFromNarc
 	str r0, [r4, #0x10]
 	mov r0, #0x38
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0xc]
 	ldr r2, [r4]
 	ldr r0, [r2, #0x10]
@@ -169,8 +170,8 @@ _02246A44:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -222,7 +223,7 @@ ov71_02246B28: ; 0x02246B28
 	add r1, r0, #0
 	add r0, r4, #0
 	mov r2, #0x1c
-	bl GetMonBaseStat_HandleAlternateForme
+	bl GetMonBaseStat_HandleAlternateForm
 	cmp r0, #0
 	bne _02246B52
 	mov r0, #1
@@ -248,15 +249,15 @@ ov71_02246B58: ; 0x02246B58
 	bl DestroySysTask
 	bl sub_0203A914
 	ldr r0, [r4, #0xc]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x10]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x14]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #8]
 	bl FreeToHeap
 	ldr r0, [r4, #0x18]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	add r0, r5, #0
 	bl OverlayManager_FreeData
@@ -1538,7 +1539,7 @@ ov71_022474CC: ; 0x022474CC
 	mov r0, #0x11
 	add r2, r1, #0
 	bl NNS_G3dGeBufferOP_N
-	bl sub_02023154
+	bl Camera_PushLookAtToNNSGlb
 	ldr r0, [r5, #0x1c]
 	mov r6, #0
 	cmp r0, #0
@@ -1936,7 +1937,7 @@ ov71_02247738: ; 0x02247738
 	mov r0, #0x11
 	add r2, r1, #0
 	bl NNS_G3dGeBufferOP_N
-	bl sub_02023154
+	bl Camera_PushLookAtToNNSGlb
 	add r1, r4, #0
 	ldr r0, [r4, #0x5c]
 	add r4, #0x74
@@ -1965,7 +1966,7 @@ ov71_022477EC: ; 0x022477EC
 	add r4, r1, #0
 	ldr r1, [r2]
 	add r0, sp, #0
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r2, sp, #0
 	ldmia r2!, {r0, r1}
 	stmia r4!, {r0, r1}
@@ -1978,46 +1979,46 @@ ov71_022477EC: ; 0x022477EC
 
 	thumb_func_start ov71_0224780C
 ov71_0224780C: ; 0x0224780C
-	ldr r3, _02247818 ; =GF_Camera_SetAngle
+	ldr r3, _02247818 ; =Camera_SetAnglePos
 	add r2, r0, #0
 	add r0, r1, #0
 	ldr r1, [r2]
 	bx r3
 	nop
-_02247818: .word GF_Camera_SetAngle
+_02247818: .word Camera_SetAnglePos
 	thumb_func_end ov71_0224780C
 
 	thumb_func_start ov71_0224781C
 ov71_0224781C: ; 0x0224781C
-	ldr r3, _02247828 ; =sub_0202357C
+	ldr r3, _02247828 ; =Camera_AdjustAngleTarget
 	add r2, r0, #0
 	add r0, r1, #0
 	ldr r1, [r2]
 	bx r3
 	nop
-_02247828: .word sub_0202357C
+_02247828: .word Camera_AdjustAngleTarget
 	thumb_func_end ov71_0224781C
 
 	thumb_func_start ov71_0224782C
 ov71_0224782C: ; 0x0224782C
-	ldr r3, _02247838 ; =sub_020233D8
+	ldr r3, _02247838 ; =Camera_ApplyPerspectiveType
 	add r2, r0, #0
 	add r0, r1, #0
 	ldr r1, [r2]
 	bx r3
 	nop
-_02247838: .word sub_020233D8
+_02247838: .word Camera_ApplyPerspectiveType
 	thumb_func_end ov71_0224782C
 
 	thumb_func_start ov71_0224783C
 ov71_0224783C: ; 0x0224783C
-	ldr r3, _02247848 ; =GF_Camera_SetPerspectiveAngle
+	ldr r3, _02247848 ; =Camera_SetPerspectiveAngle
 	add r2, r0, #0
 	add r0, r1, #0
 	ldr r1, [r2]
 	bx r3
 	nop
-_02247848: .word GF_Camera_SetPerspectiveAngle
+_02247848: .word Camera_SetPerspectiveAngle
 	thumb_func_end ov71_0224783C
 
 	thumb_func_start ov71_0224784C
@@ -2029,7 +2030,7 @@ ov71_0224784C: ; 0x0224784C
 	add r4, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl GF_Camera_Create
+	bl Camera_New
 	str r0, [r5]
 	str r4, [r5, #4]
 	str r6, [r5, #8]
@@ -2049,7 +2050,7 @@ ov71_0224784C: ; 0x0224784C
 	add r0, r5, #4
 	lsl r1, r1, #0xe
 	add r2, #0x10
-	bl GF_Camera_InitFromTargetDistanceAndAngle
+	bl Camera_Init_FromTargetDistanceAndAngle
 	mov r1, #0
 	mov r0, #1
 	lsl r0, r0, #0xc
@@ -2058,14 +2059,14 @@ ov71_0224784C: ; 0x0224784C
 	str r1, [sp, #0x14]
 	ldr r1, [r5]
 	add r0, sp, #0xc
-	bl GF_Camera_SetBindTarget
+	bl Camera_SetLookAtCamUp
 	ldr r0, [r5]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	mov r1, #0xfa
 	ldr r2, [r5]
 	mov r0, #0
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -2076,9 +2077,9 @@ _022478B4: .word 0x00000FA4
 ov71_022478B8: ; 0x022478B8
 	push {r4, lr}
 	add r4, r0, #0
-	bl sub_02023148
+	bl Camera_UnsetStaticPtr
 	ldr r0, [r4]
-	bl sub_02023120
+	bl Camera_Delete
 	pop {r4, pc}
 	thumb_func_end ov71_022478B8
 
@@ -2105,19 +2106,19 @@ ov71_022478C8: ; 0x022478C8
 	mov r0, #0x4b
 	lsl r0, r0, #2
 	mov r1, #0x39
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x68]
 	mov r0, #0x4b
 	lsl r0, r0, #2
 	mov r1, #0x39
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x6c]
 	mov r0, #0
 	str r0, [r4, #0x78]
 	str r0, [r4, #0x7c]
 	mov r0, #0xb4
 	mov r1, #0x39
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r4, #0
 	add r1, #0x80
 	str r0, [r1]
@@ -2138,9 +2139,9 @@ ov71_02247924: ; 0x02247924
 	add r0, r4, #0
 	bl ov71_0224809C
 	ldr r0, [r4, #0x68]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x6c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x70]
 	bl ov71_02247498
 	ldr r0, [r4, #0x54]
@@ -2158,7 +2159,7 @@ ov71_02247924: ; 0x02247924
 	add r0, r4, #0
 	add r0, #0x80
 	ldr r0, [r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r4, #0x10]
 	cmp r0, #0
 	beq _02247980
@@ -2242,7 +2243,7 @@ ov71_02247A10: ; 0x02247A10
 	sub sp, #0x1c
 	add r4, r0, #0
 	ldr r0, _02247C0C ; =ov71_0224BCBC
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _02247C10 ; =0x04000304
 	ldr r0, _02247C14 ; =0xFFFF7FFF
 	ldrh r1, [r2]
@@ -2267,7 +2268,7 @@ ov71_02247A10: ; 0x02247A10
 	bl InitBgFromTemplate
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r2, _02247C24 ; =0x04000008
 	mov r0, #3
 	ldrh r3, [r2]
@@ -2435,10 +2436,10 @@ ov71_02247A10: ; 0x02247A10
 	bl ov71_022476EC
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r4, #0
 	bl ov71_02247FF8
 	ldr r0, _02247C30 ; =0x04000050
@@ -2739,7 +2740,7 @@ _02247E2A:
 	b _02247EC6
 _02247E50:
 	ldr r0, [r5, #0x40]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _02247EC6
 	ldr r0, [r5, #0x74]
@@ -2998,7 +2999,7 @@ ov71_02247FF8: ; 0x02247FF8
 	bl ov71_02247340
 	str r0, [r4, #0x40]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r0, [r4, #0x3c]
 	mov r1, #0
 	bl Set2dSpriteVisibleFlag
@@ -3019,7 +3020,7 @@ _022480A4:
 	ldr r0, [r5, #0x3c]
 	cmp r0, #0
 	beq _022480AE
-	bl sub_02024758
+	bl Sprite_Delete
 _022480AE:
 	add r4, r4, #1
 	add r5, r5, #4
@@ -3750,7 +3751,7 @@ ov71_02248604: ; 0x02248604
 	sub sp, #0x10
 	add r4, r0, #0
 	ldr r0, _02248880 ; =ov71_0224BD54
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _02248884 ; =0x04000304
 	ldr r0, _02248888 ; =0xFFFF7FFF
 	ldrh r1, [r2]
@@ -3988,10 +3989,10 @@ _0224880A:
 	bl ToggleBgLayer
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add r0, r4, #0
 	add r0, #0xc0
 	mov r1, #3
@@ -4129,7 +4130,7 @@ ov71_022488E4: ; 0x022488E4
 	bl GF_3DVramMan_InitFramePlttVramManager
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r1, _022489E4 ; =0x04000008
 	mov r0, #3
 	ldrh r2, [r1]
@@ -4341,12 +4342,12 @@ _02248B2C:
 	ldr r0, [r5, #0x1c]
 	cmp r0, #0
 	beq _02248B36
-	bl sub_02024758
+	bl Sprite_Delete
 _02248B36:
 	ldr r0, [r5, #0x20]
 	cmp r0, #0
 	beq _02248B40
-	bl sub_02024758
+	bl Sprite_Delete
 _02248B40:
 	add r4, r4, #1
 	add r5, #8
@@ -4434,7 +4435,7 @@ _02248BD8:
 	mov r0, #0
 	str r0, [r4, #8]
 	ldr r0, [r5, #0x1c]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r2, r6, #0
 	add r3, r0, #0
 	ldmia r3!, {r0, r1}
@@ -4540,7 +4541,7 @@ _02248CA6:
 	add r1, r7, #0
 	add r0, r0, r4
 	ldr r0, [r0, #0x1c]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r2, r6, #0
 	add r2, #0x58
 	add r3, sp, #8
@@ -4558,7 +4559,7 @@ _02248CA6:
 	mov r1, ip
 	add r0, r0, r4
 	ldr r0, [r0, #0x20]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [sp]
 	add r6, #0xc
 	add r0, r0, #4
@@ -5776,7 +5777,7 @@ _022495FA:
 	b _0224965C
 _02249624:
 	ldr r0, [r5, #0x20]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _0224965C
 	mov r0, #0x10
@@ -5817,7 +5818,7 @@ ov71_02249670: ; 0x02249670
 	sub sp, #0x14
 	add r4, r0, #0
 	ldr r0, _022497B4 ; =ov71_0224BDC0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _022497B8 ; =0x04000304
 	ldr r0, _022497BC ; =0xFFFF7FFF
 	ldrh r1, [r2]
@@ -5960,10 +5961,10 @@ _022496F0:
 	bl BgSetPosTextAndCommit
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -6044,7 +6045,7 @@ ov71_022497E0: ; 0x022497E0
 	bl GF_3DVramMan_InitFramePlttVramManager
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r1, _022498D4 ; =0x04000008
 	mov r0, #3
 	ldrh r2, [r1]
@@ -6176,7 +6177,7 @@ ov71_02249970: ; 0x02249970
 	ldr r0, [r4, #0x20]
 	cmp r0, #0
 	beq _0224997E
-	bl sub_02024758
+	bl Sprite_Delete
 _0224997E:
 	add r4, #0x10
 	add r0, r4, #0
@@ -6838,7 +6839,7 @@ ov71_02249E6C: ; 0x02249E6C
 	sub sp, #0x10
 	add r4, r0, #0
 	ldr r0, _0224A064 ; =ov71_0224BE54
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _0224A068 ; =0x04000304
 	ldrh r1, [r2]
 	lsr r0, r2, #0xb
@@ -7049,10 +7050,10 @@ ov71_02249E6C: ; 0x02249E6C
 	bl ov71_0224A0B8
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x10
 	pop {r4, pc}
 	.balign 4, 0
@@ -7266,7 +7267,7 @@ _0224A1E6:
 	b _0224A26A
 _0224A206:
 	ldr r0, [r5, #0x20]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _0224A26A
 	ldr r0, _0224A270 ; =0x000006AA
@@ -7325,7 +7326,7 @@ ov71_0224A278: ; 0x0224A278
 	sub sp, #0x14
 	add r4, r0, #0
 	ldr r0, _0224A3C8 ; =ov71_0224BEC0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _0224A3CC ; =0x04000304
 	ldrh r1, [r2]
 	lsr r0, r2, #0xb
@@ -7468,10 +7469,10 @@ _0224A2F8:
 	bl BgSetPosTextAndCommit
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	bl sub_0203A880
 	mov r0, #1
 	mov r1, #0x38
@@ -7555,7 +7556,7 @@ ov71_0224A3F0: ; 0x0224A3F0
 	bl GF_3DVramMan_InitFramePlttVramManager
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r1, _0224A4F0 ; =0x04000008
 	mov r0, #3
 	ldrh r2, [r1]
@@ -7694,7 +7695,7 @@ ov71_0224A590: ; 0x0224A590
 	ldr r0, [r4, #0x20]
 	cmp r0, #0
 	beq _0224A59E
-	bl sub_02024758
+	bl Sprite_Delete
 _0224A59E:
 	add r4, #0x10
 	add r0, r4, #0
@@ -8486,7 +8487,7 @@ ov71_0224AB7C: ; 0x0224AB7C
 	sub sp, #0x10
 	add r4, r0, #0
 	ldr r0, _0224AD94 ; =ov71_0224BF54
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _0224AD98 ; =0x04000304
 	ldrh r1, [r2]
 	lsr r0, r2, #0xb
@@ -8708,10 +8709,10 @@ _0224AD52:
 	bl ToggleBgLayer
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -8806,7 +8807,7 @@ ov71_0224ADE4: ; 0x0224ADE4
 	bl GF_3DVramMan_InitFramePlttVramManager
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r1, _0224AEE8 ; =0x04000008
 	mov r0, #3
 	ldrh r2, [r1]
@@ -9193,12 +9194,12 @@ ov71_0224B138: ; 0x0224B138
 	mov r0, #0x4b
 	lsl r0, r0, #2
 	mov r1, #0x39
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x6c]
 	mov r0, #0x4b
 	lsl r0, r0, #2
 	mov r1, #0x39
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x70]
 	mov r1, #0
 	add r0, r4, #0
@@ -9208,7 +9209,7 @@ ov71_0224B138: ; 0x0224B138
 	str r1, [r4, #0x74]
 	mov r0, #0xb4
 	mov r1, #0x39
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r4, #0
 	add r1, #0x84
 	str r0, [r1]
@@ -9230,9 +9231,9 @@ ov71_0224B198: ; 0x0224B198
 	ldr r0, [r0]
 	bl ov71_0224BA48
 	ldr r0, [r4, #0x6c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x70]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x74]
 	cmp r0, #0
 	beq _0224B1C8
@@ -9252,7 +9253,7 @@ _0224B1E2:
 	add r0, r4, #0
 	add r0, #0x84
 	ldr r0, [r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r4, #0x10]
 	bl sub_02008524
 	add r0, r4, #0
@@ -9334,7 +9335,7 @@ ov71_0224B280: ; 0x0224B280
 	sub sp, #0x1c
 	add r4, r0, #0
 	ldr r0, _0224B430 ; =ov71_0224BFDC
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	ldr r2, _0224B434 ; =0x04000304
 	ldrh r1, [r2]
 	lsr r0, r2, #0xb
@@ -9354,7 +9355,7 @@ ov71_0224B280: ; 0x0224B280
 	bl InitBgFromTemplate
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r2, _0224B444 ; =0x04000008
 	mov r0, #3
 	ldrh r3, [r2]
@@ -9495,10 +9496,10 @@ ov71_0224B280: ; 0x0224B280
 	bl ov71_0224B848
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _0224B44C ; =0x04000050
@@ -10089,7 +10090,7 @@ ov71_0224B848: ; 0x0224B848
 	bl ov71_02247340
 	str r0, [r4, #0x44]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r0, [r4, #0x40]
 	mov r1, #0
 	bl Set2dSpriteVisibleFlag
@@ -10110,7 +10111,7 @@ _0224B8F4:
 	ldr r0, [r5, #0x40]
 	cmp r0, #0
 	beq _0224B8FE
-	bl sub_02024758
+	bl Sprite_Delete
 _0224B8FE:
 	add r4, r4, #1
 	add r5, r5, #4

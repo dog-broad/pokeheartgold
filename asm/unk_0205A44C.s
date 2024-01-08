@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_0205A44C.inc"
 	.include "global.inc"
 
 	.rodata
@@ -868,7 +869,7 @@ _0205A9DA:
 	bl PlayerProfile_GetTrainerGender
 	add r1, r4, #0
 	mov r2, #2
-	bl sub_0205B46C
+	bl GetUnionRoomAvatarAttrBySprite
 	add r2, r0, #0
 	add r0, r6, #0
 	mov r1, #0
@@ -935,7 +936,7 @@ sub_0205AA6C: ; 0x0205AA6C
 	mov r0, #0x5e
 	lsl r0, r0, #2
 	add r0, r4, r0
-	bl MailMsg_copy
+	bl MailMsg_Copy
 	mov r0, #6
 	mov r1, #1
 	lsl r0, r0, #6
@@ -1019,7 +1020,7 @@ _0205AADE:
 	cmp r1, #0
 	blt _0205AB1C
 	ldr r0, [sp, #0x20]
-	bl SaveEasyChat_SetGreetingFlag
+	bl Save_EasyChat_SetGreetingFlag
 _0205AB1C:
 	cmp r4, #7
 	bhi _0205AB54
@@ -1157,7 +1158,7 @@ sub_0205ABD8: ; 0x0205ABD8
 	add r1, r0, #0
 	add r0, r5, #0
 	mov r2, #0
-	bl sub_0205B46C
+	bl GetUnionRoomAvatarAttrBySprite
 	add r3, r0, #0
 	ldr r0, [r4]
 	lsl r3, r3, #0x18

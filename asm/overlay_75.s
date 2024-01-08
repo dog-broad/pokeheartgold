@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_75.inc"
 	.include "global.inc"
 	.public ov60_021EAFE0
 
@@ -32,17 +33,17 @@ ov75_02246960: ; 0x02246960
 	bl OverlayManager_GetArgs
 	ldr r0, [r0, #8]
 	str r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #8]
 	mov r0, #0x64
 	mov r1, #0x73
-	bl String_ctor
+	bl String_New
 	mov r1, #0x11
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	mov r0, #0x64
 	mov r1, #0x73
-	bl String_ctor
+	bl String_New
 	mov r1, #0x45
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -128,7 +129,7 @@ _02246A44:
 	ldr r0, _02246AF4 ; =ov75_02249904 + 8
 	ldr r0, [r0, r2]
 	mov r2, #0x73
-	bl OverlayManager_new
+	bl OverlayManager_New
 	str r0, [r4]
 	add r0, r4, #0
 	add r0, #0x88
@@ -144,7 +145,7 @@ _02246A44:
 	b _02246ADE
 _02246A82:
 	ldr r0, [r4]
-	bl OverlayManager_run
+	bl OverlayManager_Run
 	cmp r0, #1
 	bne _02246ADE
 	add r1, r4, #0
@@ -156,7 +157,7 @@ _02246A82:
 	ldr r1, [r1, r2]
 	blx r1
 	ldr r0, [r4]
-	bl OverlayManager_delete
+	bl OverlayManager_Delete
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
@@ -213,11 +214,11 @@ ov75_02246B00: ; 0x02246B00
 	mov r0, #0x45
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x11
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	bl OverlayManager_FreeData
 	mov r0, #0x73
@@ -525,7 +526,7 @@ ov75_02246D08: ; 0x02246D08
 	str r0, [sp, #0x10]
 	str r0, [sp, #0x14]
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r3, r0, #0
 	mov r0, #4
 	str r0, [sp]
@@ -568,7 +569,7 @@ _02246D5E:
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	ldr r1, [r4, #0x1c]
-	bl StringCompare
+	bl String_Compare
 	cmp r0, #0
 	beq _02246D82
 	add r0, r5, #0
@@ -585,7 +586,7 @@ _02246D8C:
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	ldr r1, [r4, #0x1c]
-	bl StringCopy
+	bl String_Copy
 	add r0, r5, #0
 	mov r1, #2
 	bl ov75_02246CF0
@@ -613,7 +614,7 @@ ov75_02246DB4: ; 0x02246DB4
 	str r0, [sp, #0x18]
 	str r0, [sp, #0x1c]
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r3, r0, #0
 	mov r0, #5
 	str r0, [sp]
@@ -681,7 +682,7 @@ ov75_02246E3C: ; 0x02246E3C
 	str r0, [sp, #0x10]
 	str r0, [sp, #0x14]
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r3, r0, #0
 	mov r0, #6
 	str r0, [sp]
@@ -763,7 +764,7 @@ ov75_02246EDC: ; 0x02246EDC
 	cmp r0, #0
 	beq _02246EF4
 	ldr r0, [r4, #4]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl SetFlag970
 _02246EF4:
 	add r0, r4, #0
@@ -787,8 +788,8 @@ ov75_02246F0C: ; 0x02246F0C
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -844,7 +845,7 @@ ov75_02246F0C: ; 0x02246F0C
 	mov r0, #0xb
 	mov r1, #0x40
 	mov r2, #0x74
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r5, #0x20]
 	ldr r2, _02247104 ; =0x00000307
 	mov r0, #0
@@ -879,12 +880,12 @@ ov75_02246F0C: ; 0x02246F0C
 	str r0, [r5, #0x34]
 	ldr r0, _0224710C ; =0x0000010E
 	mov r1, #0x74
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x38]
 	mov r0, #1
 	lsl r0, r0, #8
 	mov r1, #0x74
-	bl String_ctor
+	bl String_New
 	str r0, [r5, #0x40]
 	ldr r0, [r5, #0x24]
 	mov r1, #0x1f
@@ -951,26 +952,26 @@ _0224707C:
 	bl BeginNormalPaletteFade
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _02247110 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	bl TextFlags_SetCanABSpeedUpPrint
 	mov r0, #0
@@ -1083,13 +1084,13 @@ _022471A4:
 	ldr r0, [r4, #0x24]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x20]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x3c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x40]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x38]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl ov75_02247838
 	ldr r0, [r4, #4]
@@ -1116,7 +1117,7 @@ _022471A4:
 	ldr r0, _02247230 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -1130,7 +1131,7 @@ ov75_02247234: ; 0x02247234
 	bl GF_RunVramTransferTasks
 	bl OamManager_ApplyAndResetBuffers
 	ldr r0, [r4, #4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _02247254 ; =0x027E0000
 	ldr r1, _02247258 ; =0x00003FF8
 	mov r0, #1
@@ -1148,8 +1149,8 @@ ov75_0224725C: ; 0x0224725C
 	push {r3, r4, r5, lr}
 	sub sp, #0xe0
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	ldr r5, _0224740C ; =ov75_022499FC
 	add r3, sp, #0x48
 	mov r2, #5
@@ -1159,7 +1160,7 @@ _02247270:
 	sub r2, r2, #1
 	bne _02247270
 	add r0, sp, #0x48
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -1369,7 +1370,7 @@ ov75_02247450: ; 0x02247450
 	mov r1, #0x74
 	str r0, [sp, #0x30]
 	mov r0, #0x58
-	bl NARC_ctor
+	bl NARC_New
 	mov r2, #0
 	str r2, [sp]
 	mov r1, #0x74
@@ -1621,14 +1622,14 @@ _02247636:
 	str r0, [r1]
 	ldr r0, [sp, #0x2c]
 	str r1, [sp, #0x10]
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #0xc7
 	mov r1, #0x74
-	bl NARC_ctor
+	bl NARC_New
 	add r4, r0, #0
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -1661,7 +1662,7 @@ _02247636:
 	add r3, #0xac
 	bl GfGfxLoader_GXLoadPalFromOpenNarc
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x40
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -1873,7 +1874,7 @@ ov75_0224785C: ; 0x0224785C
 	add r0, r4, #0
 	add r0, #0x48
 	mov r1, #1
-	bl sub_0200F0AC
+	bl WaitingIcon_New
 	add r4, #0x8c
 	str r0, [r4]
 _02247876:
@@ -1904,7 +1905,7 @@ ov75_02247890: ; 0x02247890
 	mov r0, #0x74
 	add r4, r1, #0
 	add r6, r2, #0
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	mov r3, #0
 	mov r1, #0xe
 	str r1, [sp, #0xc]
@@ -1932,7 +1933,7 @@ ov75_02247890: ; 0x02247890
 	strb r2, [r1, #0x12]
 	strb r3, [r1, #0x13]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r7, #0
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
@@ -1994,7 +1995,7 @@ _02247912:
 	bl AddWindowParameterized
 	add r0, r7, #0
 	mov r1, #0x74
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	add r1, r5, #0
 	add r1, #0xa0
 	mov r6, #0
@@ -2098,7 +2099,7 @@ _02247A1C:
 	add r0, r5, #0
 	add r0, #0xa0
 	ldr r0, [r0]
-	bl ListMenuItems_dtor
+	bl ListMenuItems_Delete
 	add r0, r5, #0
 	add r0, #0xa4
 	mov r1, #0
@@ -2215,13 +2216,13 @@ _02247B0A:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02247B4C
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02247B94 ; =0x00000F0F
 	mov r2, #0x1a
 	str r0, [sp]
@@ -2247,7 +2248,7 @@ _02247B4C:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02247B94 ; =0x00000F0F
 	mov r2, #0x1b
 	str r0, [sp]
@@ -2344,13 +2345,13 @@ _02247C0A:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02247C48
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02247C6C ; =0x00000F0F
 	mov r2, #0x1d
 	str r0, [sp]
@@ -2374,7 +2375,7 @@ _02247C48:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0
 	str r0, [r4, #8]
 	b _02247C66
@@ -2417,7 +2418,7 @@ ov75_02247C70: ; 0x02247C70
 	add r3, #0xc
 	bl AddTextPrinterParameterized
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x34]
 	mov r1, #0x2b
 	bl NewString_ReadMsgData
@@ -2436,7 +2437,7 @@ ov75_02247C70: ; 0x02247C70
 	add r3, #0xc
 	bl AddTextPrinterParameterized
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0xb0
 	ldr r0, [r0]
@@ -2873,9 +2874,9 @@ ov75_02248034: ; 0x02248034
 	mov r1, #0x2c
 	bl NewString_ReadMsgData
 	str r0, [sp, #0xc]
-	bl StringGetLength
+	bl String_GetLength
 	mov r1, #0x74
-	bl String_ctor
+	bl String_New
 	add r6, r0, #0
 	add r0, r7, #0
 	add r0, #0xac
@@ -2892,7 +2893,7 @@ _0224806E:
 	ldr r1, [sp, #0xc]
 	add r0, r6, #0
 	add r2, r4, #0
-	bl StringGetLineN
+	bl String_GetLineN
 	str r5, [sp]
 	mov r0, #0xff
 	str r0, [sp, #4]
@@ -2913,9 +2914,9 @@ _0224806E:
 	blt _0224806E
 _0224809E:
 	ldr r0, [sp, #0xc]
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r7, #0xc4
 	add r0, r7, #0
 	bl CopyWindowToVram
@@ -2948,7 +2949,7 @@ _022480D6:
 	mov r1, #0x2c
 	bl NewString_ReadMsgData
 	str r0, [sp, #0x14]
-	bl StringCountLines
+	bl String_CountLines
 	add r1, r5, #0
 	mov r2, #0
 	add r1, #0xac
@@ -3000,9 +3001,9 @@ _022480D6:
 	mov r1, #0xf
 	bl FillWindowPixelBuffer
 	ldr r0, [sp, #0x14]
-	bl StringGetLength
+	bl String_GetLength
 	mov r1, #0x74
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	add r0, r5, #0
 	mov r6, #0
@@ -3014,7 +3015,7 @@ _02248168:
 	ldr r1, [sp, #0x14]
 	add r0, r7, #0
 	add r2, r6, #0
-	bl StringGetLineN
+	bl String_GetLineN
 	str r4, [sp]
 	mov r0, #0xff
 	str r0, [sp, #4]
@@ -3030,9 +3031,9 @@ _02248168:
 	cmp r6, #6
 	blt _02248168
 	ldr r0, [sp, #0x14]
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0xc4
 	mov r1, #1
@@ -3073,7 +3074,7 @@ _02248168:
 	bl ClearWindowTilemapAndCopyToVram
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r5, #0
 	mov r1, #0
 	add r0, #0xbc
@@ -3290,7 +3291,7 @@ _0224837C:
 	bl BgClearTilemapBufferAndCommit
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r5, #0
 	mov r1, #0
 	add r0, #0xa8
@@ -3357,13 +3358,13 @@ _02248438:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02248468
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02248528 ; =0x00000F0F
 	mov r2, #9
 	str r0, [sp]
@@ -3381,7 +3382,7 @@ _02248468:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	add r0, #0x94
 	ldr r0, [r0]
@@ -3436,13 +3437,13 @@ _022484DC:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _022484FA
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #5
 	str r0, [r4, #8]
 	b _02248522
@@ -3452,7 +3453,7 @@ _022484FA:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02248528 ; =0x00000F0F
 	mov r2, #0xa
 	str r0, [sp]
@@ -3598,13 +3599,13 @@ _02248606:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _0224862C
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	add r0, #0x94
 	ldr r0, [r0]
@@ -3618,7 +3619,7 @@ _0224862C:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	mov r1, #0x22
 	mov r2, #0
@@ -3662,13 +3663,13 @@ ov75_02248684: ; 0x02248684
 	add r4, r0, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _022486C2
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _022486E8 ; =0x00000F0F
 	mov r2, #1
 	str r0, [sp]
@@ -3689,7 +3690,7 @@ _022486C2:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	bl sub_0203957C
 	ldr r0, [r4]
 	mov r1, #6
@@ -4059,23 +4060,23 @@ ov75_02248994: ; 0x02248994
 	add r6, r0, #0
 	ldr r0, [r5]
 	ldr r0, [r0, #4]
-	bl Sav2_SysInfo_get
+	bl Save_SysInfo_Get
 	add r4, r0, #0
 	add r0, r6, #0
 	bl sub_0202C08C
 	add r7, r0, #0
 	add r0, r4, #0
-	bl Sav2_SysInfo_GetField4C
+	bl Save_SysInfo_GetField4C
 	cmp r0, #0
 	bne _022489CC
 	add r0, r6, #0
 	bl sub_0203A040
 	add r1, r0, #0
 	add r0, r4, #0
-	bl Sav2_SysInfo_SetField4C
+	bl Save_SysInfo_SetField4C
 _022489CC:
 	add r0, r4, #0
-	bl Sav2_SysInfo_GetField4C
+	bl Save_SysInfo_GetField4C
 	add r4, r0, #0
 	add r0, r7, #0
 	bl DWC_CreateFriendKey
@@ -4368,13 +4369,13 @@ _02248C04:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02248C2A
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	add r0, #0x94
 	ldr r0, [r0]
@@ -4388,7 +4389,7 @@ _02248C2A:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0x15
 	str r0, [r4, #8]
 	b _02248C58
@@ -4488,13 +4489,13 @@ _02248CEC:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	bne _02248D10
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	add r0, r4, #0
 	mov r1, #0x1a
 	mov r2, #0
@@ -4506,7 +4507,7 @@ _02248D10:
 	add r0, r4, #0
 	add r0, #0x88
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0x13
 	str r0, [r4, #8]
 _02248D22:
@@ -4926,7 +4927,7 @@ _0224902E:
 	bne _0224906C
 	ldr r0, [r4]
 	ldr r0, [r0, #4]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	ldr r0, [r4, #0x20]
 	mov r1, #0
@@ -5571,7 +5572,7 @@ ov75_022494CC: ; 0x022494CC
 	add r2, r6, #0
 	bl StringExpandPlaceholders
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0x48
 	mov r1, #0xf
@@ -5819,7 +5820,7 @@ ov75_02249684: ; 0x02249684
 	add r0, r5, #0
 	mov r1, #1
 	add r2, r6, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	thumb_func_end ov75_02249684
@@ -5833,7 +5834,7 @@ ov75_022496B8: ; 0x022496B8
 	add r6, r1, #0
 	lsl r0, r0, #8
 	mov r1, #0x74
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0x30]
 	add r1, r6, #0
@@ -5865,7 +5866,7 @@ ov75_022496B8: ; 0x022496B8
 	mov r0, #0xff
 	str r0, [r5, #0x44]
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0

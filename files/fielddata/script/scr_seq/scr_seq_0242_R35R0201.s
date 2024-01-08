@@ -32,14 +32,14 @@ scr_seq_R35R0201_010:
 	callstd std_bug_contest_guard_ask_end
 	compare VAR_UNK_4118, 1
 	goto_if_ne _00D2
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0448
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_KAIDAN2
 	fade_screen 6, 1, 0, RGB_BLACK
 	wait_fade
@@ -62,19 +62,22 @@ _00C4:
 _00D2:
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _00D8:
 	step 2, 1
 	step_end
 
+	.balign 4, 0
 _00E0:
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _00E8:
 	step 0, 1
 	step_end
+
 scr_seq_R35R0201_012:
 	get_weekday VAR_TEMP_x4000
 	compare VAR_UNK_4118, 1
@@ -152,15 +155,15 @@ _0208:
 	apply_movement obj_R35R0201_workman, _02D4
 _0210:
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	apply_movement obj_R35R0201_workman, _02E4
 	apply_movement obj_player, _02EC
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0389_R35R0201_00010
 	closemsg
 	compare VAR_TEMP_x4001, 7
@@ -187,64 +190,75 @@ _0296:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _029C:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _02A4:
 	step 18, 1
 	step 16, 2
 	step 39, 1
 	step_end
 
+	.balign 4, 0
 _02B4:
 	step 18, 1
 	step 16, 1
 	step 39, 1
 	step_end
 
+	.balign 4, 0
 _02C4:
 	step 18, 1
 	step 17, 1
 	step 39, 1
 	step_end
 
+	.balign 4, 0
 _02D4:
 	step 18, 1
 	step 17, 2
 	step 39, 1
 	step_end
 
+	.balign 4, 0
 _02E4:
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _02EC:
 	step 71, 1
 	step 15, 1
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _02FC:
 	step 13, 2
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0308:
 	step 13, 1
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0314:
 	step 12, 1
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0320:
 	step 12, 2
 	step 35, 1
 	step_end
+
 scr_seq_R35R0201_000:
 	simple_npc_msg msg_0389_R35R0201_00009
 	end
@@ -258,9 +272,9 @@ scr_seq_R35R0201_001:
 	goto_if_ne _0438
 	goto_if_set FLAG_UNK_1C4, _03C1
 	get_player_facing VAR_SPECIAL_RESULT
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _038C
 	apply_movement obj_player, _043C
@@ -276,21 +290,21 @@ _03A7:
 	apply_movement obj_player, _0450
 _03AF:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	goto _03E3
 
 _03C1:
 	get_player_facing VAR_SPECIAL_RESULT
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0460
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 _03E3:
 	play_se SEQ_SE_DP_KAIDAN2
 	fade_screen 6, 1, 0, RGB_BLACK
@@ -315,26 +329,30 @@ _0438:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _043C:
 	step 15, 1
 	step 12, 2
 	step_end
 
+	.balign 4, 0
 _0448:
 	step 12, 1
 	step_end
 
+	.balign 4, 0
 _0450:
 	step 13, 1
 	step 15, 2
 	step 12, 2
 	step_end
 
+	.balign 4, 0
 _0460:
 	step 15, 2
 	step 12, 2
 	step_end
+
 scr_seq_R35R0201_002:
 	simple_npc_msg msg_0389_R35R0201_00003
 	end
@@ -356,9 +374,9 @@ scr_seq_R35R0201_011:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _04F8
@@ -384,9 +402,9 @@ _0536:
 	apply_movement obj_R35R0201_gsmiddleman1, _061C
 _0546:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _056D
@@ -423,8 +441,8 @@ _05BB:
 	closemsg
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _05D0:
 	step 15, 1
 	step 12, 2
@@ -433,11 +451,13 @@ _05D0:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _05E8:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _05F4:
 	step 12, 1
 	step 14, 1
@@ -445,6 +465,7 @@ _05F4:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _0608:
 	step 12, 1
 	step 15, 1
@@ -452,16 +473,19 @@ _0608:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _061C:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _0628:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_R35R0201_003:
 	simple_npc_msg msg_0389_R35R0201_00005
 	end

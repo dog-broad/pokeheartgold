@@ -1,3 +1,4 @@
+#include "global.h"
 #include "player_data.h"
 #include "save.h"
 #include "unk_0202CA24.h"
@@ -15,30 +16,30 @@ void sub_02031710(Unk0203170C *a0) {
     SaveSubstruct_UpdateCRC(SAVE_UNK_31);
 }
 
-void sub_02031734(SAVEDATA *saveData) {
-    sub_02031710(SavArray_get(saveData, SAVE_UNK_31));
+void sub_02031734(SaveData *saveData) {
+    sub_02031710(SaveArray_Get(saveData, SAVE_UNK_31));
 }
 
-BOOL sub_02031744(SAVEDATA *saveData) {
-    Unk0203170C *ptr = (Unk0203170C *)(SavArray_get(saveData, SAVE_UNK_31));
+BOOL sub_02031744(SaveData *saveData) {
+    Unk0203170C *ptr = (Unk0203170C *)(SaveArray_Get(saveData, SAVE_UNK_31));
     if ((s8)(ptr->unk0[0]) != 0) {
         return TRUE;
     }
     return FALSE;
 }
 
-void sub_0203175C(SAVEDATA *saveData, char *a1) {
-    Unk0203170C *ptr = (Unk0203170C *)(SavArray_get(saveData, SAVE_UNK_31));
+void sub_0203175C(SaveData *saveData, char *a1) {
+    Unk0203170C *ptr = (Unk0203170C *)(SaveArray_Get(saveData, SAVE_UNK_31));
     strcpy(ptr->unk0, a1);
     SaveSubstruct_UpdateCRC(SAVE_UNK_31);
 }
 
-Unk0203170C *sub_02031774(SAVEDATA *saveData) {
-    return SavArray_get(saveData, SAVE_UNK_31);
+Unk0203170C *sub_02031774(SaveData *saveData) {
+    return SaveArray_Get(saveData, SAVE_UNK_31);
 }
 
-void sub_02031780(SAVEDATA *saveData, u32 a1, u32 a2) {
-    Unk0203170C *ptr = (Unk0203170C *)(SavArray_get(saveData, SAVE_UNK_31));
+void sub_02031780(SaveData *saveData, u32 a1, u32 a2) {
+    Unk0203170C *ptr = (Unk0203170C *)(SaveArray_Get(saveData, SAVE_UNK_31));
     switch (a1) {
     case 0:
         ptr->unk34 = a2;
@@ -56,8 +57,8 @@ void sub_02031780(SAVEDATA *saveData, u32 a1, u32 a2) {
     SaveSubstruct_UpdateCRC(SAVE_UNK_31);
 }
 
-u32 sub_020317BC(SAVEDATA *saveData, u32 a1) {
-    Unk0203170C *ptr = (Unk0203170C *)(SavArray_get(saveData, SAVE_UNK_31));
+u32 sub_020317BC(SaveData *saveData, u32 a1) {
+    Unk0203170C *ptr = (Unk0203170C *)(SaveArray_Get(saveData, SAVE_UNK_31));
     switch (a1) {
     case 0:
         return ptr->unk34;
@@ -71,13 +72,13 @@ u32 sub_020317BC(SAVEDATA *saveData, u32 a1) {
     return 0;
 }
 
-static void sub_020317F4(SAVEDATA *saveData, Unk020317F4 *a1) {
+static void sub_020317F4(SaveData *saveData, Unk020317F4 *a1) {
     void *ptr;
     Unk0203170C *ptr2;
-    PLAYERPROFILE* profile;
+    PlayerProfile* profile;
 
     ptr = sub_0202CA44(saveData);
-    profile = Sav2_PlayerData_GetProfileAddr(saveData);
+    profile = Save_PlayerData_GetProfileAddr(saveData);
     ptr2 = sub_02031774(saveData);
 
     MI_CpuClear8(a1, sizeof(Unk020317F4));
@@ -94,7 +95,7 @@ static void sub_020317F4(SAVEDATA *saveData, Unk020317F4 *a1) {
     SaveSubstruct_UpdateCRC(SAVE_UNK_31);
 }
 
-s32 sub_0203186C(SAVEDATA *saveData, Unk020317F4 *a1) {
+s32 sub_0203186C(SaveData *saveData, Unk020317F4 *a1) {
     s32 rand;
 
     sub_020317F4(saveData, a1);
@@ -107,8 +108,8 @@ s32 sub_0203186C(SAVEDATA *saveData, Unk020317F4 *a1) {
     return rand;
 }
 
-void sub_0203189C(SAVEDATA *saveData, Unk020317F4 *a1) {
-    Unk0203170C *ptr = (Unk0203170C *)(SavArray_get(saveData, SAVE_UNK_31));
+void sub_0203189C(SaveData *saveData, Unk020317F4 *a1) {
+    Unk0203170C *ptr = (Unk0203170C *)(SaveArray_Get(saveData, SAVE_UNK_31));
 
     sub_020317F4(saveData, a1);
 

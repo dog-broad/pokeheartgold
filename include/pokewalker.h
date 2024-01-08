@@ -8,7 +8,7 @@
 typedef struct POKEWALKER {
     u16 unk_000;
     u16 unk_002;
-    BOXMON pokemon;
+    BoxPokemon pokemon;
     u8 filler_08C[0x6C];
     u16 unk_0F8;
     u16 unk_0FA;
@@ -21,9 +21,9 @@ typedef struct POKEWALKER {
 } POKEWALKER; // size=0x134
 
 void Pokewalker_UnlockCourse(POKEWALKER *pokeWalker, int courseNo);
-POKEWALKER *Sav2_Pokewalker_get(SAVEDATA *saveData);
+POKEWALKER *Save_Pokewalker_Get(SaveData *saveData);
 u32 Pokewalker_sizeof(void);
-void Pokewalker_init(POKEWALKER *pokeWalker);
+void Pokewalker_Init(POKEWALKER *pokeWalker);
 void sub_02032624(POKEWALKER *pokeWalker);
 u16 sub_0203263C(const POKEWALKER *pokeWalker);
 void sub_02032644(POKEWALKER *pokeWalker);
@@ -31,9 +31,9 @@ void sub_02032650(POKEWALKER *pokeWalker, u32 a1, u32 a2);
 void sub_02032674(POKEWALKER *pokeWalker, u32 *a1, u32 *a2);
 void sub_02032688(POKEWALKER *pokeWalker, u16 *a1, u16 *a2);
 void sub_020326A4(POKEWALKER *pokeWalker, u16 a1, u16 a2);
-void Pokewalker_SetBoxMon(POKEWALKER *pokeWalker, BOXMON *boxmon);
+void Pokewalker_SetBoxMon(POKEWALKER *pokeWalker, BoxPokemon *boxMon);
 void Pokewalker_ClearBoxMon(POKEWALKER *pokeWalker);
-BOOL Pokewalker_TryGetBoxMon(POKEWALKER *pokeWalker, BOXMON *boxmon);
+BOOL Pokewalker_TryGetBoxMon(POKEWALKER *pokeWalker, BoxPokemon *boxMon);
 u16 sub_02032718(POKEWALKER *pokeWalker);
 void sub_02032720(POKEWALKER *pokeWalker, u16 a1);
 void *sub_02032728(POKEWALKER *pokeWalker);

@@ -2,6 +2,7 @@
 #include "constants/species.h"
 #include "constants/trainer_class.h"
 	.include "asm/macros.inc"
+	.include "unk_020517A4.inc"
 	.include "global.inc"
 
 	.rodata
@@ -230,10 +231,10 @@ sub_020517FC: ; 0x020517FC
 	mov r0, #7
 	lsl r0, r0, #6
 	ldr r0, [r5, r0]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	mov r1, #2
 	mov r2, #5
-	bl ScriptState_FlypointFlagAction
+	bl Save_VarsFlags_FlypointFlagAction
 	cmp r0, #1
 	bne _0205185C
 	mov r0, #0x56

@@ -1,5 +1,6 @@
 #include "constants/items.h"
 	.include "asm/macros.inc"
+	.include "unk_02031B0C.inc"
 	.include "global.inc"
 
 	.rodata
@@ -43,14 +44,14 @@ sub_02031B10: ; 0x02031B10
 	bx lr
 	thumb_func_end sub_02031B10
 
-	thumb_func_start Save_ApricornBox_get
-Save_ApricornBox_get: ; 0x02031B14
-	ldr r3, _02031B1C ; =SavArray_get
+	thumb_func_start Save_ApricornBox_Get
+Save_ApricornBox_Get: ; 0x02031B14
+	ldr r3, _02031B1C ; =SaveArray_Get
 	mov r1, #0x26
 	bx r3
 	nop
-_02031B1C: .word SavArray_get
-	thumb_func_end Save_ApricornBox_get
+_02031B1C: .word SaveArray_Get
+	thumb_func_end Save_ApricornBox_Get
 
 	thumb_func_start InitApricornBox
 InitApricornBox: ; 0x02031B20
@@ -83,13 +84,13 @@ _02031B44:
 	pop {r3, r4, r5, pc}
 	thumb_func_end sub_02031B3C
 
-	thumb_func_start Save_ApricornBox_init
-Save_ApricornBox_init: ; 0x02031B54
+	thumb_func_start Save_ApricornBox_Init
+Save_ApricornBox_Init: ; 0x02031B54
 	ldr r3, _02031B58 ; =InitApricornBox
 	bx r3
 	.balign 4, 0
 _02031B58: .word InitApricornBox
-	thumb_func_end Save_ApricornBox_init
+	thumb_func_end Save_ApricornBox_Init
 
 	thumb_func_start sub_02031B5C
 sub_02031B5C: ; 0x02031B5C
@@ -1164,7 +1165,7 @@ sub_020322AC: ; 0x020322AC
 	add r5, r1, #0
 	mov r0, #9
 	add r1, r7, #0
-	bl String_ctor
+	bl String_New
 	add r6, r0, #0
 	cmp r5, #5
 	bge _020322E2

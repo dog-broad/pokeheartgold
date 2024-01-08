@@ -17,10 +17,16 @@ scr_seq_D52R0101_001:
 	compare VAR_TEMP_x4000, 7
 	goto_if_ne _0038
 	goto _0040
-	.byte 0x16, 0x00, 0x06, 0x00, 0x00, 0x00
+
+_0032:
+	goto _003E
+
 _0038:
 	goto _004A
-	.byte 0x02, 0x00
+
+_003E:
+	end
+
 _0040:
 	setflag FLAG_HIDE_EMBEDDED_TOWER_GROUDON
 	setflag FLAG_HIDE_EMBEDDED_TOWER_GROUDON_HIKER
@@ -32,7 +38,8 @@ _004A:
 	compare VAR_TEMP_x4000, 1
 	goto_if_ge _0072
 	goto _0040
-	.byte 0x02, 0x00
+	end
+
 _0072:
 	setflag FLAG_HIDE_EMBEDDED_TOWER_GROUDON_HIKER
 	clearflag FLAG_HIDE_EMBEDDED_TOWER_GROUDON
@@ -65,7 +72,7 @@ scr_seq_D52R0101_000:
 	check_battle_won VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_eq _019D
-	scrcmd_683 VAR_TEMP_x4002
+	get_static_encounter_outcome VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 3
 	goto_if_eq _00EC
 	compare VAR_TEMP_x4002, 4
@@ -83,9 +90,9 @@ _00FB:
 	setflag FLAG_CAUGHT_GROUDON
 	clearflag FLAG_HIDE_EMBEDDED_TOWER_GROUDON_HIKER
 	show_person obj_D52R0101_mount_2
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_TEMP_x4001
 	compare VAR_TEMP_x4001, 0
 	goto_if_ne _0142
@@ -101,9 +108,9 @@ _0142:
 	apply_movement obj_player, _01C8
 	wait_movement
 _0156:
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0148_D52R0101_00002
 	closemsg
 	apply_movement obj_D52R0101_mount_2, _01D0
@@ -126,38 +133,44 @@ _019D:
 	white_out
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _01A4:
 	step 12, 8
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01B0:
 	step 33, 1
 	step 13, 1
 	step_end
 
+	.balign 4, 0
 _01BC:
 	step 12, 10
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01C8:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01D0:
 	step 33, 1
 	step 9, 2
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01E0:
 	step 12, 2
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01EC:
 	step 13, 8
 	step_end

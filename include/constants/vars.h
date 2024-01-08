@@ -96,7 +96,7 @@
 #define VAR_BATTLE_ARCADE_PRINT_PROGRESS                 0x4051
 #define VAR_UNK_4052                 0x4052
 #define VAR_UNK_4053                 0x4053
-#define VAR_UNK_4054                 0x4054
+#define VAR_BATTLE_HALL_WIN_STREAK_LEVEL                  0x4054
 #define VAR_UNK_4055                 0x4055
 #define VAR_UNK_4056                 0x4056
 #define VAR_UNK_4057                 0x4057
@@ -165,12 +165,12 @@
 #define VAR_UNK_4096                 0x4096
 #define VAR_UNK_4097                 0x4097
 #define VAR_UNK_4098                 0x4098
-#define VAR_UNK_4099                 0x4099
-#define VAR_UNK_409A                 0x409A
-#define VAR_UNK_409B                 0x409B
-#define VAR_UNK_409C                 0x409C
-#define VAR_UNK_409D                 0x409D
-#define VAR_UNK_409E                 0x409E
+#define VAR_FARFETCHD1_STICKS1       0x4099
+#define VAR_FARFETCHD2_STICKS1       0x409A
+#define VAR_FARFETCHD1_STICKS2       0x409B
+#define VAR_FARFETCHD2_STICKS2       0x409C
+#define VAR_FARFETCHD2_STICKS3       0x409D
+#define VAR_FARFETCHD2_STICKS4       0x409E
 #define VAR_UNK_409F                 0x409F
 #define VAR_UNK_40A0                 0x40A0
 #define VAR_UNK_40A1                 0x40A1

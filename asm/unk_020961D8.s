@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_020961D8.inc"
 	.include "global.inc"
 
 	.text
@@ -13,7 +14,7 @@ sub_020961D8: ; 0x020961D8
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
 	add r6, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	mov r0, #0x20
 	mov r1, #0x24
@@ -21,7 +22,7 @@ sub_020961D8: ; 0x020961D8
 	add r4, r0, #0
 	str r5, [r4]
 	mov r0, #0x20
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #4]
 	mov r3, #0x20
 	str r3, [sp]
@@ -34,13 +35,13 @@ sub_020961D8: ; 0x020961D8
 	bl sub_02090C94
 	str r0, [r4, #0x10]
 	ldr r0, [r5, #0xc]
-	bl Sav2_Misc_get
+	bl Save_Misc_Get
 	str r0, [r4, #0x14]
 	add r0, r4, #0
 	str r6, [r4, #0x20]
 	add r0, #8
 	mov r1, #4
-	bl MailMsg_init_withBank
+	bl MailMsg_Init_WithBank
 	add r1, r4, #0
 	ldr r0, [r4, #0x14]
 	add r1, #8
@@ -65,7 +66,7 @@ sub_02096248: ; 0x02096248
 	ldr r0, [r4, #0x10]
 	bl sub_02090D0C
 	ldr r0, [r4, #4]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -74,7 +75,7 @@ sub_02096248: ; 0x02096248
 	thumb_func_start sub_02096260
 sub_02096260: ; 0x02096260
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #0x18]
 	cmp r1, #4
@@ -106,7 +107,7 @@ _02096284:
 	b _02096314
 _020962A2:
 	ldr r0, [r4]
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02096314
 	ldr r0, [r4]

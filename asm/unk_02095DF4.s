@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02095DF4.inc"
 	.include "global.inc"
 
 	.text
@@ -44,10 +45,10 @@ _02095E2C: .word sub_02095E30
 sub_02095E30: ; 0x02095E30
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4]
 	cmp r0, #3
@@ -79,7 +80,7 @@ _02095E72:
 	ldr r0, [r4, #4]
 	str r1, [r0, #4]
 	add r0, r5, #0
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	ldr r1, [r4, #4]
 	str r0, [r1]
 	ldrh r1, [r4, #0xc]
@@ -90,14 +91,14 @@ _02095E72:
 	strb r1, [r0, #0xf]
 	ldr r1, [r4, #4]
 	add r0, r5, #0
-	bl Fsys_LaunchPokeathlonCourseApplication
+	bl FieldSystem_LaunchPokeathlonCourseApplication
 	bl sub_0203E30C
 	mov r0, #1
 	str r0, [r4]
 	b _02095EF4
 _02095E9E:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02095EF4
 	mov r0, #2

@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_0202CA24.inc"
 	.include "global.inc"
 
 	.text
@@ -33,7 +34,7 @@ sub_0202CA44: ; 0x0202CA44
 	bl SaveSubstruct_AssertCRC
 	add r0, r4, #0
 	mov r1, #0x1a
-	bl SavArray_get
+	bl SaveArray_Get
 	pop {r4, pc}
 	thumb_func_end sub_0202CA44
 

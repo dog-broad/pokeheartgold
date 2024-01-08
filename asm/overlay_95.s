@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_95.inc"
 	.include "global.inc"
 
 	.text
@@ -6,8 +7,8 @@
 	thumb_func_start ov95_021E5900
 ov95_021E5900: ; 0x021E5900
 	push {r3, lr}
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -70,7 +71,7 @@ ov95_021E5974: ; 0x021E5974
 	push {r3, lr}
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _021E59E0 ; =0x04000008
 	mov r1, #3
 	ldrh r2, [r0]
@@ -165,7 +166,7 @@ ov95_021E5A38: ; 0x021E5A38
 	push {r4, r5, lr}
 	sub sp, #0x8c
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
+	bl GfGfx_DisableEngineAPlanes
 	ldr r5, _021E5B14 ; =ov95_021E75B4
 	add r3, sp, #0x10
 	mov r2, #5
@@ -175,7 +176,7 @@ _021E5A48:
 	sub r2, r2, #1
 	bne _021E5A48
 	add r0, sp, #0x10
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -251,11 +252,11 @@ _021E5AA8:
 	orr r2, r0
 	strh r2, [r1]
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
-	bl GX_BothDispOn
+	bl GfGfx_EngineATogglePlanes
+	bl GfGfx_BothDispOn
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add sp, #0x8c
 	pop {r4, r5, pc}
 	.balign 4, 0
@@ -272,11 +273,11 @@ ov95_021E5B24: ; 0x021E5B24
 	ldr r0, [r4, #0x3c]
 	bl sub_02009418
 	bl GF_RunVramTransferTasks
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 	ldr r0, [r4, #8]
 	bl sub_0200398C
 	ldr r0, [r4, #4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E5B50 ; =0x027E0000
 	ldr r1, _021E5B54 ; =0x00003FF8
 	mov r0, #1
@@ -477,7 +478,7 @@ ov95_021E5CAC: ; 0x021E5CAC
 	bl NewMsgDataFromNarc
 	add r7, r0, #0
 	mov r0, #0x46
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r5, r0, #0
 	add r0, r7, #0
 	add r1, r4, #0
@@ -485,7 +486,7 @@ ov95_021E5CAC: ; 0x021E5CAC
 	str r0, [sp, #0x14]
 	mov r0, #0xff
 	mov r1, #0x46
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [sp, #0x10]
 	bl Mon_GetBoxMon
@@ -509,11 +510,11 @@ ov95_021E5CAC: ; 0x021E5CAC
 	add r0, r7, #0
 	bl DestroyMsgData
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x14]
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r6, #0
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
@@ -629,7 +630,7 @@ ov95_021E5DD0: ; 0x021E5DD0
 	mov r1, #0xe1
 	lsl r0, r0, #0xc
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 _021E5E08:
 	add r0, r4, #0
 	add sp, #8
@@ -795,7 +796,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	ldr r3, [sp, #0x18]
 	add r0, r4, #0
 	mov r2, #0x73
-	bl sub_0200D4A4
+	bl SpriteRenderer_LoadCharResObjFromNarcId
 	mov r0, #0x73
 	str r0, [sp]
 	ldr r0, [sp, #0x1c]
@@ -820,7 +821,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	ldr r3, [sp, #0x20]
 	add r0, r4, #0
 	mov r2, #0x73
-	bl sub_0200D6D4
+	bl SpriteRenderer_LoadCellResObjFromNarcId
 	mov r0, #1
 	str r0, [sp]
 	ldr r0, _021E5FEC ; =0x00004E23
@@ -829,7 +830,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	ldr r3, [sp, #0x24]
 	add r0, r4, #0
 	mov r2, #0x73
-	bl sub_0200D704
+	bl SpriteRenderer_LoadAnimResObjFromNarcId
 	mov r0, #1
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -839,7 +840,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	add r0, r4, #0
 	mov r2, #0x73
 	mov r3, #7
-	bl sub_0200D4A4
+	bl SpriteRenderer_LoadCharResObjFromNarcId
 	mov r0, #0x73
 	str r0, [sp]
 	mov r0, #0xa
@@ -864,7 +865,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	add r0, r4, #0
 	mov r2, #0x73
 	mov r3, #6
-	bl sub_0200D6D4
+	bl SpriteRenderer_LoadCellResObjFromNarcId
 	mov r0, #1
 	str r0, [sp]
 	ldr r0, _021E5FFC ; =0x000061AB
@@ -873,7 +874,7 @@ ov95_021E5EF8: ; 0x021E5EF8
 	add r0, r4, #0
 	mov r2, #0x73
 	mov r3, #5
-	bl sub_0200D704
+	bl SpriteRenderer_LoadAnimResObjFromNarcId
 	add sp, #0x38
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -922,9 +923,9 @@ ov95_021E6000: ; 0x021E6000
 	ldr r0, [r4, #0x54]
 	ldr r1, [r4, #0x50]
 	add r2, sp, #0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	str r0, [r4, #0x74]
-	bl sub_0200DC18
+	bl UnkImageStruct_TickSpriteAnimation1Frame
 	ldr r0, [r4, #0x74]
 	mov r1, #2
 	bl sub_0200DF98
@@ -946,18 +947,18 @@ ov95_021E6000: ; 0x021E6000
 	ldr r0, [r4, #0x54]
 	ldr r1, [r4, #0x50]
 	add r2, sp, #0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	str r0, [r4, #0x78]
-	bl sub_0200DC18
+	bl UnkImageStruct_TickSpriteAnimation1Frame
 	mov r1, #0x90
 	add r0, sp, #0
 	strh r1, [r0, #2]
 	ldr r0, [r4, #0x54]
 	ldr r1, [r4, #0x50]
 	add r2, sp, #0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	str r0, [r4, #0x7c]
-	bl sub_0200DC18
+	bl UnkImageStruct_TickSpriteAnimation1Frame
 	add sp, #0x34
 	pop {r3, r4, pc}
 	nop
@@ -1017,7 +1018,7 @@ _021E60F6:
 _021E60FE:
 	ldr r0, [sp]
 	ldr r0, [r0, #0x74]
-	bl sub_0200DED0
+	bl UnkImageStruct_AddSpritePositionXY
 	mov r0, #0
 	add r1, r7, #0
 	bl _fneq
@@ -1107,7 +1108,7 @@ ov95_021E619C: ; 0x021E619C
 	sub sp, #0x4c
 	add r4, r0, #0
 	mov r0, #0x46
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	add r2, sp, #0x2c
 	ldr r5, _021E621C ; =ov95_021E7574
 	str r0, [r4, #0x50]
@@ -1142,7 +1143,7 @@ ov95_021E619C: ; 0x021E619C
 	ldmia r3!, {r0, r1}
 	stmia r2!, {r0, r1}
 	ldr r0, [r4, #0x50]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	str r0, [r4, #0x4c]
 	ldr r0, [r4, #0x50]
 	ldr r1, [r4, #0x4c]
@@ -1155,7 +1156,7 @@ _021E6206:
 	ldr r0, [r4, #0x50]
 	ldr r1, [r4, #0x4c]
 	add r2, sp, #0
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	cmp r0, #0
 	bne _021E6218
 	bl GF_AssertFail
@@ -1174,9 +1175,9 @@ ov95_021E6228: ; 0x021E6228
 	add r4, r0, #0
 	ldr r0, [r4, #0x50]
 	ldr r1, [r4, #0x4c]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	ldr r0, [r4, #0x50]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	pop {r4, pc}
 	thumb_func_end ov95_021E6228
 
@@ -1395,7 +1396,7 @@ _021E63DC:
 	bl IsPaletteFadeFinished
 	cmp r0, #1
 	bne _021E6412
-	bl sub_02005FA0
+	bl Sound_Stop
 	ldr r1, _021E6598 ; =0x000003F3
 	mov r0, #0xd
 	mov r2, #1
@@ -1673,7 +1674,7 @@ _021E65E0:
 	bl ov95_021E6000
 	ldr r0, [r4, #0x74]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r3, _021E67E4 ; =0x0000520A
 	str r3, [sp]
 	add r0, r3, #1
@@ -1901,7 +1902,7 @@ ov95_021E67F0: ; 0x021E67F0
 _021E6800:
 	ldr r0, [r4, #0x74]
 	mov r1, #0
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -1947,7 +1948,7 @@ _021E6848:
 	beq _021E68A0
 	ldr r0, [r4, #0x74]
 	mov r1, #1
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -1961,7 +1962,7 @@ _021E6862:
 	bl PlaySE
 	ldr r0, [r4, #0x74]
 	mov r1, #2
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -1975,7 +1976,7 @@ _021E6886:
 	bne _021E68A0
 	ldr r0, [r4, #0x74]
 	mov r1, #2
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	mov r0, #0
 	str r0, [r4, #0x68]
 	str r0, [r4, #0x64]
@@ -2011,7 +2012,7 @@ _021E68BE:
 	bl PlaySE
 	ldr r0, [r4, #0x74]
 	mov r1, #3
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, [r4, #0x44]
 	mov r1, #0
 	bl ov95_021E5EC0
@@ -2065,7 +2066,7 @@ _021E6922:
 	bl PlaySE
 	ldr r0, [r4, #0x74]
 	mov r1, #4
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, [r4, #0x44]
 	mov r1, #1
 	bl ov95_021E5EC0
@@ -2120,10 +2121,10 @@ _021E698A:
 	beq _021E69F8
 	ldr r0, [r4, #0x74]
 	mov r1, #4
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -2136,7 +2137,7 @@ _021E69AC:
 	bne _021E69D6
 	ldr r0, [r4, #0x74]
 	mov r1, #5
-	bl sub_0200DCC0
+	bl UnkImageStruct_SetSpriteAnimCtrlCurrentFrame
 	ldr r0, _021E6B6C ; =0x00000707
 	bl PlaySE
 	ldr r0, [r4, #0x44]
@@ -2150,7 +2151,7 @@ _021E69D6:
 	bne _021E69F8
 	ldr r0, [r4, #0x74]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	mov r0, #0
 	str r0, [r4, #0x64]
 	ldr r0, [r4, #0x68]
@@ -2213,7 +2214,7 @@ _021E6A56:
 	mov r5, #0
 	add r1, #2
 	add r2, sp, #0xc
-	bl sub_0200DE44
+	bl UnkImageStruct_GetSpritePositionXY
 	add r0, sp, #0xc
 	add r1, r5, #0
 	ldrsh r2, [r0, r1]
@@ -2223,7 +2224,7 @@ _021E6A56:
 	ble _021E6A7C
 	ldr r0, [r4, #0x78]
 	sub r2, r1, #4
-	bl sub_0200DED0
+	bl UnkImageStruct_AddSpritePositionXY
 	b _021E6A7E
 _021E6A7C:
 	add r5, r5, #1
@@ -2232,7 +2233,7 @@ _021E6A7E:
 	ldr r0, [r4, #0x7c]
 	add r1, #2
 	add r2, sp, #0xc
-	bl sub_0200DE44
+	bl UnkImageStruct_GetSpritePositionXY
 	add r0, sp, #0xc
 	mov r1, #0
 	ldrsh r0, [r0, r1]
@@ -2240,7 +2241,7 @@ _021E6A7E:
 	bge _021E6A9E
 	ldr r0, [r4, #0x7c]
 	mov r2, #4
-	bl sub_0200DED0
+	bl UnkImageStruct_AddSpritePositionXY
 	b _021E6AA0
 _021E6A9E:
 	add r5, r5, #1
@@ -2257,19 +2258,19 @@ _021E6AA0:
 	bne _021E6B64
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	mov r1, #0
 	bl ov95_021E62F0
 	ldr r0, [r4, #0x74]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x78]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x7c]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -2379,7 +2380,7 @@ _021E6B98:
 	bl ov95_021E5EC0
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -2459,7 +2460,7 @@ _021E6C56:
 	mov r5, #0
 	add r1, #2
 	add r2, sp, #0xc
-	bl sub_0200DE44
+	bl UnkImageStruct_GetSpritePositionXY
 	add r0, sp, #0xc
 	add r1, r5, #0
 	ldrsh r2, [r0, r1]
@@ -2469,7 +2470,7 @@ _021E6C56:
 	ble _021E6C7C
 	ldr r0, [r4, #0x78]
 	sub r2, r1, #4
-	bl sub_0200DED0
+	bl UnkImageStruct_AddSpritePositionXY
 	b _021E6C7E
 _021E6C7C:
 	add r5, r5, #1
@@ -2478,7 +2479,7 @@ _021E6C7E:
 	ldr r0, [r4, #0x7c]
 	add r1, #2
 	add r2, sp, #0xc
-	bl sub_0200DE44
+	bl UnkImageStruct_GetSpritePositionXY
 	add r0, sp, #0xc
 	mov r1, #0
 	ldrsh r0, [r0, r1]
@@ -2486,7 +2487,7 @@ _021E6C7E:
 	bge _021E6C9E
 	ldr r0, [r4, #0x7c]
 	mov r2, #4
-	bl sub_0200DED0
+	bl UnkImageStruct_AddSpritePositionXY
 	b _021E6CA0
 _021E6C9E:
 	add r5, r5, #1
@@ -2506,16 +2507,16 @@ _021E6CA0:
 	bl ov95_021E62F0
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r4, #0x74]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x78]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x7c]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [r4, #0x68]
 	add r0, r0, #1
 	str r0, [r4, #0x68]
@@ -2625,7 +2626,7 @@ ov95_021E6D70: ; 0x021E6D70
 	str r0, [r4, #0x3c]
 	mov r0, #0xb4
 	mov r1, #0x46
-	bl NARC_ctor
+	bl NARC_New
 	str r0, [r4, #0x40]
 	mov r0, #0x46
 	bl BgConfig_Alloc
@@ -2639,7 +2640,7 @@ ov95_021E6D70: ; 0x021E6D70
 	bl sub_02016EDC
 	str r0, [r4, #0x58]
 	mov r0, #0x46
-	bl sub_020030E8
+	bl PaletteData_Init
 	mov r1, #1
 	str r0, [r4, #8]
 	bl sub_02003B50
@@ -2689,7 +2690,7 @@ ov95_021E6D70: ; 0x021E6D70
 	add r1, r4, #0
 	add r1, #0x88
 	str r0, [r1]
-	bl sub_02005FA0
+	bl Sound_Stop
 	ldr r0, _021E6E84 ; =ov95_021E5B24
 	add r1, r4, #0
 	bl Main_SetVBlankIntrCB
@@ -2782,16 +2783,16 @@ ov95_021E6F0C: ; 0x021E6F0C
 	bl GF_3DVramMan_Delete
 	mov r0, #1
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #3
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, [r4, #8]
 	mov r1, #0
 	bl PaletteData_FreeBuffers
@@ -2802,7 +2803,7 @@ ov95_021E6F0C: ; 0x021E6F0C
 	mov r1, #1
 	bl PaletteData_FreeBuffers
 	ldr r0, [r4, #8]
-	bl sub_02003104
+	bl PaletteData_Free
 	mov r0, #0
 	bl sub_02002B8C
 	ldr r0, [r4, #4]
@@ -2822,7 +2823,7 @@ ov95_021E6F0C: ; 0x021E6F0C
 	ldr r0, [r4, #0x58]
 	bl sub_02016F2C
 	ldr r0, [r4, #0x40]
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #4
 	bl ov95_021E6228
 	add r0, r5, #0
@@ -2915,7 +2916,7 @@ _021E7042:
 	str r5, [r4, #0xc]
 	str r6, [r4, #4]
 	str r7, [r4, #8]
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x14]
 	ldr r1, [r4]
 	mov r0, #4
@@ -2941,7 +2942,7 @@ _021E7082:
 	mov r0, #4
 	bl FontID_Release
 	ldr r0, [r4, #0x14]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0xc]
 	mov r1, #4
 	bl FreeBgTilemapBuffer
@@ -2980,7 +2981,7 @@ _021E70DA:
 _021E70E2:
 	ldr r1, [r5]
 	mov r0, #0xef
-	bl NARC_ctor
+	bl NARC_New
 	add r4, r0, #0
 	mov r0, #0
 	str r0, [sp]
@@ -2994,7 +2995,7 @@ _021E70E2:
 	add r0, r7, #0
 	add r2, r4, #0
 	mov r3, #0xb
-	bl sub_0200D5D4
+	bl SpriteRenderer_LoadPlttResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	mov r0, #2
@@ -3005,7 +3006,7 @@ _021E70E2:
 	add r0, r7, #0
 	add r2, r4, #0
 	mov r3, #0xc
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, [sp, #0x30]
@@ -3014,7 +3015,7 @@ _021E70E2:
 	add r0, r7, #0
 	add r2, r4, #0
 	mov r3, #0xd
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, [sp, #0x34]
@@ -3023,7 +3024,7 @@ _021E70E2:
 	add r0, r7, #0
 	add r2, r4, #0
 	mov r3, #0xe
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	ldr r0, [sp, #0x34]
 	ldr r1, [sp, #0x14]
 	str r0, [sp]
@@ -3104,9 +3105,9 @@ _021E70E2:
 	bl ToggleBgLayer
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x1c
 	pop {r4, r5, r6, r7, pc}
 	thumb_func_end ov95_021E70BC
@@ -3140,10 +3141,10 @@ ov95_021E7208: ; 0x021E7208
 	bl ToggleBgLayer
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, [r4, #0x10]
 	mov r1, #1
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 	thumb_func_end ov95_021E7208
@@ -3183,10 +3184,10 @@ _021E728A:
 	bl ToggleBgLayer
 	ldr r0, [r4, #0x10]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldrb r0, [r4, #0x19]
 	pop {r4, pc}
 _021E72AE:
@@ -3290,13 +3291,13 @@ ov95_021E7328: ; 0x021E7328
 	mov r1, #4
 	add r2, r5, #0
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	bl CopyWindowToVram
 	add r0, r7, #0
 	bl DestroyMsgData
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -3352,13 +3353,13 @@ _021E73C2:
 	str r7, [sp, #0x1c]
 	str r0, [sp, #0x28]
 	add r0, r6, #0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	add r4, r0, #0
 	mov r1, #1
-	bl sub_0200DC78
+	bl UnkImageStruct_SetSpriteAnimActiveFlag
 	add r0, r4, #0
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	str r4, [r5, #0x10]
 	add sp, #0x3c
 	pop {r4, r5, r6, r7, pc}
@@ -3405,7 +3406,7 @@ _021E7436:
 	ldrsh r1, [r1, r3]
 	ldrsh r2, [r2, r3]
 	ldr r0, [r5, #0x10]
-	bl sub_0200DDB8
+	bl UnkImageStruct_SetSpritePositionXY
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 _021E7448: .word ov95_021E7818
@@ -3418,7 +3419,7 @@ ov95_021E7450: ; 0x021E7450
 	add r5, r0, #0
 	ldr r0, _021E7508 ; =ov95_021E7820
 	mov r4, #0
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r6, r0, #0
 	sub r0, r4, #1
 	cmp r6, r0
@@ -3499,7 +3500,7 @@ _021E74EC:
 	bl ov95_021E7410
 	ldr r0, [r5, #0x10]
 	mov r1, #3
-	bl sub_0200DC4C
+	bl UnkImageStruct_SetSpriteAnimSeqNo
 	ldr r0, _021E750C ; =0x000005DC
 	bl PlaySE
 _021E7504:
@@ -3516,7 +3517,7 @@ ov95_021E7514: ; 0x021E7514
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x10]
-	bl sub_0200DC64
+	bl UnkImageStruct_GetSpriteCurrentAnimSeqNo
 	cmp r0, #3
 	beq _021E7526
 	bl GF_AssertFail

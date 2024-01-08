@@ -1,8 +1,9 @@
 #include <nitro/gx/g2.h>
 #include <nitro/gx/gx_bgcnt.h>
 #include <nitro/pad/common/pad.h>
+#include "global.h"
 #include "error_message_reset.h"
-#include "gx_layers.h"
+#include "gf_gfx_planes.h"
 #include "main.h"
 #include "msgdata.h"
 #include "msgdata/msg.naix"
@@ -12,13 +13,13 @@
 #include "unk_0200FA24.h"
 #include "unk_02035900.h"
 #include "unk_02037C94.h"
-#include "unk_0200E398.h"
-#include "unk_0200B380.h"
+#include "render_window.h"
+#include "brightness.h"
 #include "text.h"
 #include "font.h"
-#include "window.h"
+#include "bg_window.h"
 
-static const GF_GXBanksConfig sErrorMessageBanksConfig = {
+static const GraphicsBanks sErrorMessageBanksConfig = {
     .bg = GX_VRAM_BG_256_AB,
     .bgextpltt = GX_VRAM_BGEXTPLTT_NONE,
     .subbg = GX_VRAM_SUB_BG_NONE,
@@ -31,14 +32,14 @@ static const GF_GXBanksConfig sErrorMessageBanksConfig = {
     .texpltt = GX_VRAM_TEXPLTT_NONE,
 };
 
-static const struct GFBgModeSet sErrorMessageBgModeSet = {
+static const struct GraphicsModes sErrorMessageBgModeSet = {
     .dispMode = GX_DISPMODE_GRAPHICS,
-    .bgModeMain = GX_BGMODE_0,
-    .bgModeSub = GX_BGMODE_0,
-    ._2d3dSwitch = GX_BG0_AS_2D,
+    .bgMode = GX_BGMODE_0,
+    .subMode = GX_BGMODE_0,
+    ._2d3dMode = GX_BG0_AS_2D,
 };
 
-static const BGTEMPLATE sErrorMessageBgTemplate = {
+static const BgTemplate sErrorMessageBgTemplate = {
     .x = 0,
     .y = 0,
     .bufferSize = 0x800,
@@ -54,14 +55,14 @@ static const BGTEMPLATE sErrorMessageBgTemplate = {
     .mosaic = FALSE,
 };
 
-static const WINDOWTEMPLATE sErrorMessageWindowTemplate = {
-    .bgId = 0,
+static const WindowTemplate sErrorMessageWindowTemplate = {
+    .bgId = GF_BG_LYR_MAIN_0,
     .left = 3,
     .top = 3,
     .width = 26,
     .height = 18,
     .palette = 1,
-    .baseBlock = 0x23,
+    .baseTile = 0x23,
 };
 
 static const HEAP_PARAM sErrorMessageHeapParams = {
@@ -77,7 +78,7 @@ static void VBlankIntr() {
 }
 
 void PrintErrorMessageAndReset(void) {
-    WINDOW window;
+    Window window;
 
     if (sErrorMessagePrinterLock == TRUE) {
         return;
@@ -89,8 +90,8 @@ void PrintErrorMessageAndReset(void) {
     OS_SetArenaLo(OS_ARENA_MAIN, OS_GetInitArenaLo(OS_ARENA_MAIN));
     InitHeapSystem(&sErrorMessageHeapParams, 1, 1, 0);
 
-    sub_0200FBF4(0, 0);
-    sub_0200FBF4(1, 0);
+    sub_0200FBF4(PM_LCD_TOP, 0);
+    sub_0200FBF4(PM_LCD_BOTTOM, 0);
 
     OS_DisableIrqMask(OS_IE_VBLANK);
     OS_SetIrqFunction(OS_IE_VBLANK, VBlankIntr);
@@ -99,8 +100,8 @@ void PrintErrorMessageAndReset(void) {
     Main_SetVBlankIntrCB(NULL, NULL);
     Main_SetHBlankIntrCB(NULL, NULL);
 
-    GX_DisableEngineALayers();
-    GX_DisableEngineBLayers();
+    GfGfx_DisableEngineAPlanes();
+    GfGfx_DisableEngineBPlanes();
     GX_SetVisiblePlane(0);
     GXS_SetVisiblePlane(0);
 
@@ -108,25 +109,25 @@ void PrintErrorMessageAndReset(void) {
 
     gSystem.screensFlipped = FALSE;
 
-    GX_SwapDisplay();
+    GfGfx_SwapDisplay();
     G2_BlendNone();
     G2S_BlendNone();
     GX_SetVisibleWnd(0);
     GXS_SetVisibleWnd(0);
-    GX_SetBanks(&sErrorMessageBanksConfig);
+    GfGfx_SetBanks(&sErrorMessageBanksConfig);
 
-    BGCONFIG* bg_config = BgConfig_Alloc(0);
+    BgConfig* bg_config = BgConfig_Alloc(HEAP_ID_DEFAULT);
     SetBothScreensModesAndDisable(&sErrorMessageBgModeSet);
     InitBgFromTemplate(bg_config, 0, &sErrorMessageBgTemplate, GX_BGMODE_0);
     BgClearTilemapBufferAndCommit(bg_config, GF_BG_LYR_MAIN_0);
-    LoadUserFrameGfx1(bg_config, GF_BG_LYR_MAIN_0, 0x1F7, 2, 0, 0);
-    LoadFontPal0(GF_BG_LYR_MAIN_0, 0x20, 0);
-    BG_ClearCharDataRange(GF_BG_LYR_MAIN_0, 0x20, 0, 0);
+    LoadUserFrameGfx1(bg_config, GF_BG_LYR_MAIN_0, 0x1F7, 2, 0, HEAP_ID_DEFAULT);
+    LoadFontPal0(GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_1_OFFSET, HEAP_ID_DEFAULT);
+    BG_ClearCharDataRange(GF_BG_LYR_MAIN_0, 0x20, 0, HEAP_ID_DEFAULT);
     BG_SetMaskColor(GF_BG_LYR_MAIN_0, RGB(1, 1, 27));
     BG_SetMaskColor(GF_BG_LYR_SUB_0, RGB(1, 1, 27));
 
-    MSGDATA* error_msgdata = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0041_bin, 0);
-    STRING* error_str = String_ctor(384, 0);
+    MsgData* error_msgdata = NewMsgDataFromNarc(MSGDATA_LOAD_LAZY, NARC_msgdata_msg, NARC_msg_msg_0041_bin, HEAP_ID_DEFAULT);
+    String* error_str = String_New(384, HEAP_ID_DEFAULT);
 
     ResetAllTextPrinters();
 
@@ -136,12 +137,12 @@ void PrintErrorMessageAndReset(void) {
 
     ReadMsgDataIntoString(error_msgdata, msg_0041_00003, error_str);
     AddTextPrinterParameterized(&window, 0, error_str, 0, 0, 0, NULL);
-    String_dtor(error_str);
+    String_Delete(error_str);
 
-    GX_BothDispOn();
-    SetMasterBrightnessNeutral(0);
-    SetMasterBrightnessNeutral(1);
-    SetBlendBrightness(0, 0x3F, 3);
+    GfGfx_BothDispOn();
+    SetMasterBrightnessNeutral(PM_LCD_TOP);
+    SetMasterBrightnessNeutral(PM_LCD_BOTTOM);
+    SetBlendBrightness(0, (GXBlendPlaneMask)(GX_BLEND_PLANEMASK_BD | GX_BLEND_PLANEMASK_OBJ | GX_BLEND_PLANEMASK_BG3 | GX_BLEND_PLANEMASK_BG2 | GX_BLEND_PLANEMASK_BG1 | GX_BLEND_PLANEMASK_BG0), SCREEN_MASK_MAIN | SCREEN_MASK_SUB);
 
     sub_02038D90();
 
@@ -166,8 +167,8 @@ void PrintErrorMessageAndReset(void) {
         OS_WaitIrq(TRUE, OS_IE_VBLANK);
     }
 
-    sub_0200FBF4(0, 0x7FFF);
-    sub_0200FBF4(1, 0x7FFF);
+    sub_0200FBF4(PM_LCD_TOP, 0x7FFF);
+    sub_0200FBF4(PM_LCD_BOTTOM, 0x7FFF);
 
     RemoveWindow(&window);
     DestroyMsgData(error_msgdata);

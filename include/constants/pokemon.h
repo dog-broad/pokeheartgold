@@ -3,7 +3,7 @@
 
 // Value and data limits
 #define MAX_LEVEL     100
-#define MON_MOVES       4
+#define MAX_MON_MOVES   4
 #define MAX_EV        100
 #define MAX_EV_SUM    510
 
@@ -33,10 +33,15 @@
 #define TYPE_DARK             17
 #define NUMBER_OF_MON_TYPES   18
 
-// Status flags
-#define STATUS_POISON                  (1<<3)
-#define STATUS_TOX_POISON              (1<<7)
-#define STATUS_POISON_ANY              (STATUS_POISON|STATUS_TOX_POISON)
+// Type effectiveness
+#define TYPE_MUL_NO_EFFECT          0
+#define TYPE_MUL_NOT_EFFECTIVE      5
+#define TYPE_MUL_NORMAL             10
+#define TYPE_MUL_SUPER_EFFECTIVE    20
+
+// Special type table IDs
+#define TYPE_FORESIGHT  0xFE
+#define TYPE_ENDTABLE   0xFF
 
 // Contest types
 #define COOL           0
@@ -112,6 +117,8 @@
 #define FLAVOR_SWEET     2
 #define FLAVOR_BITTER    3
 #define FLAVOR_SOUR      4
+
+#define FLAVOR_START     FLAVOR_SPICY
 #define FLAVOR_MAX       5
 
 #define PERFORMANCE_MIN       0u
@@ -149,7 +156,6 @@
 
 // Shiny odds
 #define SHINY_ODDS 8 // Actual probability is SHINY_ODDS/65536
-
 
 #define MON_DATA_PERSONALITY                      0
 #define MON_DATA_PARTY_LOCK                       1
@@ -263,7 +269,7 @@
 #define MON_DATA_HOENN_WORLD_RIBBON             109
 #define MON_DATA_FATEFUL_ENCOUNTER              110
 #define MON_DATA_GENDER                         111
-#define MON_DATA_FORME                          112
+#define MON_DATA_FORM                           112
 #define MON_DATA_RESERVED_113                   113 // HGSS
 #define MON_DATA_RESERVED_114                   114 // Plat
 #define MON_DATA_HGSS_EGG_MET_LOCATION          115
@@ -272,7 +278,7 @@
 #define MON_DATA_NICKNAME_2                     118 // ???
 #define MON_DATA_NICKNAME_3                     119 // ???
 #define MON_DATA_NICKNAME_4                     120
-#define MON_DATA_UNK_120                        121
+#define MON_DATA_UNK_121                        121
 #define MON_DATA_GAME_VERSION                   122
 #define MON_DATA_COOL_RIBBON                    123
 #define MON_DATA_COOL_RIBBON_GREAT              124
@@ -294,7 +300,7 @@
 #define MON_DATA_TOUGH_RIBBON_GREAT             140
 #define MON_DATA_TOUGH_RIBBON_ULTRA             141
 #define MON_DATA_TOUGH_RIBBON_MASTER            142
-#define MON_DATA_SINNOH_RIBBON_142              143
+#define MON_DATA_SINNOH_RIBBON_143              143
 #define MON_DATA_OT_NAME                        144 // ???
 #define MON_DATA_OT_NAME_2                      145
 #define MON_DATA_EGG_MET_YEAR                   146
@@ -310,7 +316,7 @@
 #define MON_DATA_MET_LEVEL                      156
 #define MON_DATA_MET_GENDER                     157
 #define MON_DATA_ENCOUNTER_TYPE                 158 // HGSS
-#define MON_DATA_RESERVED_158                   159
+#define MON_DATA_RESERVED_159                   159
 #define MON_DATA_STATUS                         160
 #define MON_DATA_LEVEL                          161
 #define MON_DATA_CAPSULE                        162
@@ -325,9 +331,9 @@
 #define MON_DATA_SEAL_COORDS                    171
 #define MON_DATA_SPECIES_EXISTS                 172
 #define MON_DATA_SANITY_IS_EGG                  173
-#define MON_DATA_SPECIES2                       174
+#define MON_DATA_SPECIES_OR_EGG                 174 // If the Pokémon is in an Egg, return SPECIES_EGG.
 #define MON_DATA_IVS_WORD                       175
-#define MON_DATA_UNK_175                        176
+#define MON_DATA_UNK_176                        176
 #define MON_DATA_TYPE_1                         177
 #define MON_DATA_TYPE_2                         178
 #define MON_DATA_SPECIES_NAME                   179
@@ -352,16 +358,11 @@
 #define MON_RATIO_FEMALE       254
 #define MON_RATIO_UNKNOWN      255
 
-#ifndef PM_ASM
 #define GENDER_RATIO(frac) ( (frac) <= 1 ? (u8)((frac) * 254.75) : 255 )
 
-enum MonGender
-{
-    MON_MALE = 0,
-    MON_FEMALE = 1,
-    MON_GENDERLESS = 2
-};
-#endif //PM_ASM
+#define    MON_MALE             0
+#define    MON_FEMALE           1
+#define    MON_GENDERLESS       2
 
 // Constants for AdjustFriendship
 #define FRIENDSHIP_EVENT_GROW_LEVEL       0
@@ -393,12 +394,12 @@ typedef enum BaseStat {
     BASE_DEF,
     BASE_SPEED,
     BASE_SPATK,
-    BASE_SPDEF,
+    BASE_SPDEF, //5
     BASE_TYPE1,
     BASE_TYPE2,
     BASE_CATCH_RATE,
     BASE_EXP_YIELD,
-    BASE_HP_YIELD,
+    BASE_HP_YIELD, //10
     BASE_ATK_YIELD,
     BASE_DEF_YIELD,
     BASE_SPEED_YIELD,
@@ -463,27 +464,27 @@ typedef enum {
     ARCEUS_ICICLE = 15,
     ARCEUS_DRACO = 16,
     ARCEUS_DREAD = 17,
-    ARCEUS_FORME_MAX = 18,
+    ARCEUS_FORM_MAX = 18,
 
     BURMY_PLANT = 0,
     BURMY_SANDY = 1,
     BURMY_TRASH = 2,
-    BURMY_FORME_MAX = 3,
+    BURMY_FORM_MAX = 3,
 
     WORMADAM_PLANT = 0,
     WORMADAM_SANDY = 1,
     WORMADAM_TRASH = 2,
-    WORMADAM_FORME_MAX = 3,
+    WORMADAM_FORM_MAX = 3,
 
     DEOXYS_NORMAL = 0,
     DEOXYS_ATTACK = 1,
     DEOXYS_DEFENSE = 2,
     DEOXYS_SPEED = 3,
-    DEOXYS_FORME_MAX = 4,
+    DEOXYS_FORM_MAX = 4,
 
     GIRATINA_ALTERED = 0,
     GIRATINA_ORIGIN = 1,
-    GIRATINA_FORME_MAX = 2,
+    GIRATINA_FORM_MAX = 2,
 
     ROTOM_NORMAL = 0,
     ROTOM_HEAT = 1,
@@ -491,29 +492,29 @@ typedef enum {
     ROTOM_FROST = 3,
     ROTOM_FAN = 4,
     ROTOM_MOW = 5,
-    ROTOM_FORME_MAX = 6,
+    ROTOM_FORM_MAX = 6,
 
     SHAYMIN_LAND = 0,
     SHAYMIN_SKY = 1,
-    SHAYMIN_FORME_MAX = 2,
+    SHAYMIN_FORM_MAX = 2,
 
     SHELLOS_WEST = 0,
     SHELLOS_EAST = 1,
-    SHELLOS_FORME_MAX = 2,
+    SHELLOS_FORM_MAX = 2,
 
     GASTRODON_WEST = 0,
     GASTRODON_EAST = 1,
-    GASTRODON_FORME_MAX = 2,
+    GASTRODON_FORM_MAX = 2,
 
     CASTFORM_NORMAL = 0,
     CASTFORM_SUNNY = 1,
     CASTFORM_RAINY = 2,
     CASTFORM_SNOWY = 3,
-    CASTFORM_FORME_MAX = 4,
+    CASTFORM_FORM_MAX = 4,
 
     CHERRIM_CLOUDY = 0,
     CHERRIM_SUNNY = 1,
-    CHERRIM_FORME_MAX = 2,
+    CHERRIM_FORM_MAX = 2,
 
     UNOWN_A = 0,
     UNOWN_B = 1,
@@ -543,15 +544,15 @@ typedef enum {
     UNOWN_Z = 25,
     UNOWN_EXCLAMATION_MARK = 26,
     UNOWN_QUESTION_MARK = 27,
-    UNOWN_FORME_MAX = 28,
+    UNOWN_FORM_MAX = 28,
 
     PICHU_NORMAL = 0,
     PICHU_SPIKY_EAR = 1,
-    PICHU_FORME_MAX = 2,
+    PICHU_FORM_MAX = 2,
 
     EGG_STANDARD = 0,
     EGG_MANAPHY = 1,
-    EGG_FORME_MAX = 2,
+    EGG_FORM_MAX = 2,
 } AlternateForms;
 
 typedef enum EvoMethod

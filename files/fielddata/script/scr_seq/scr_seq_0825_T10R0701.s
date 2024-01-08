@@ -16,26 +16,26 @@ scr_seq_T10R0701_001:
 scr_seq_T10R0701_000:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0188
 	apply_movement obj_T10R0701_wataru, _0194
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	gender_msgbox msg_0528_T10R0701_00000, msg_0528_T10R0701_00001
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _01A8
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	party_count_not_egg VAR_SPECIAL_RESULT
 	hall_of_fame_anim VAR_SPECIAL_RESULT
 	add_special_game_stat 23
@@ -64,7 +64,10 @@ _0105:
 	compare VAR_TEMP_x4000, 7
 	goto_if_ne _012D
 	goto _023A
-	.byte 0x16, 0x00, 0x06, 0x00, 0x00, 0x00
+
+_0127:
+	goto _0133
+
 _012D:
 	goto _024F
 
@@ -85,12 +88,13 @@ _0133:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0188:
 	step 12, 14
 	step 3, 2
 	step_end
 
+	.balign 4, 0
 _0194:
 	step 12, 12
 	step 3, 2
@@ -98,10 +102,12 @@ _0194:
 	step 2, 2
 	step_end
 
+	.balign 4, 0
 _01A8:
 	step 0, 2
 	step 12, 4
 	step_end
+
 _01B4:
 	goto_if_set FLAG_GAME_CLEAR, _01C3
 	setflag FLAG_UNK_998

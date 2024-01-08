@@ -60,14 +60,14 @@ _00C8:
 	wait_cry
 _00E2:
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _028C
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	setflag FLAG_HIDE_BURNED_TOWER_B1F_RAIKOU
 	setflag FLAG_HIDE_BURNED_TOWER_B1F_ENTEI
 	setflag FLAG_HIDE_BURNED_TOWER_B1F_SUICUNE
@@ -136,93 +136,107 @@ _01D4:
 	clearflag FLAG_HIDE_ECRUTEAK_OLD_MAN
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _0224:
 	step 105, 1
 	step 69, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _0234:
 	step 106, 1
 	step 69, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _0244:
 	step 107, 1
 	step 3, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _0254:
 	step 62, 6
 	step 108, 1
 	step 69, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _0268:
 	step 109, 1
 	step 3, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _0278:
 	step 62, 6
 	step 110, 1
 	step 69, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _028C:
 	step 14, 1
 	step 1, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _029C:
 	step 17, 1
 	step 18, 3
 	step 1, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _02B0:
 	step 18, 5
 	step 17, 1
 	step 1, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _02C4:
 	step 18, 1
 	step 0, 1
 	step_end
 
+	.balign 4, 0
 _02D0:
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _02D8:
 	step 62, 6
 	step 2, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _02E8:
 	step 19, 4
 	step 16, 1
 	step_end
-	.byte 0x02, 0x00, 0x00, 0x00
+	end
 
+	.balign 4, 0
 _02F8:
 	step 16, 1
 	step 19, 5
 	step 0, 1
 	step_end
-	.byte 0x02, 0x00
+	end
+
 scr_seq_D18R0102_001:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -235,7 +249,7 @@ scr_seq_D18R0102_001:
 	check_battle_won VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_eq _035C
-	scrcmd_683 VAR_TEMP_x4002
+	get_static_encounter_outcome VAR_TEMP_x4002
 	compare VAR_TEMP_x4002, 3
 	goto_if_eq _0358
 	compare VAR_TEMP_x4002, 4

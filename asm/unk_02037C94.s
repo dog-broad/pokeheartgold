@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02037C94.inc"
 	.include "global.inc"
 
 	.bss
@@ -66,7 +67,7 @@ _02037CAE:
 	ldr r0, [r0]
 	str r5, [r0, #0x28]
 	add r0, r5, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	ldr r1, _02037D28 ; =_021D4150
 	ldr r2, [r1]
 	str r0, [r2, #0x2c]
@@ -3551,7 +3552,7 @@ sub_020396FC: ; 0x020396FC
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	add r4, r1, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl sub_02037474
 	cmp r0, #0
 	beq _02039712
@@ -3602,7 +3603,7 @@ sub_0203976C: ; 0x0203976C
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	add r4, r1, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl sub_02037474
 	cmp r0, #0
 	bne _020397B8
@@ -4016,7 +4017,7 @@ _02039A36:
 	bl sub_020399B8
 	cmp r0, #0
 	bne _02039A98
-	bl sub_02005FA0
+	bl Sound_Stop
 	ldr r0, _02039A9C ; =_021D4150
 	ldr r0, [r0]
 	ldr r0, [r0, #0x28]
@@ -5132,7 +5133,7 @@ _0203A2B6:
 	add r1, r5, #0
 	bl sub_0202C270
 	ldr r0, [sp, #0xc]
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	bl PlayerProfile_GetTrainerGender
 	add r3, r0, #0
@@ -5175,7 +5176,7 @@ _0203A2FC:
 _0203A334:
 	ldr r1, [sp, #4]
 	mov r0, #0x78
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x10]
 	add r0, r7, #0
 	bl sub_02034884
@@ -5187,7 +5188,7 @@ _0203A334:
 	add r1, r5, #0
 	bl sub_0202C2B4
 	ldr r0, [sp, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	bl PlayerProfile_GetAvatar
 	add r3, r0, #0

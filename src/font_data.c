@@ -1,3 +1,4 @@
+#include "global.h"
 #include "font_data.h"
 #include "text.h"
 #include "string_control_code.h"
@@ -48,7 +49,7 @@ static void DecompressGlyphTiles_LazyFromNarc(struct FontData *fontData, u16 gly
 static u32 GetGlyphWidth_VariableWidth(struct FontData *fontData, int glyphId);
 static u32 GetGlyphWidth_FixedWidth(struct FontData *fontData, int glyphId);
 
-struct FontData *FontData_new(NarcId narcId, int fileId, int mode, BOOL isFixedWidth, HeapID heapId) {
+struct FontData *FontData_New(NarcId narcId, int fileId, int mode, BOOL isFixedWidth, HeapID heapId) {
     struct FontData *ret;
 
     ret = AllocFromHeap(heapId, sizeof(struct FontData));
@@ -59,7 +60,7 @@ struct FontData *FontData_new(NarcId narcId, int fileId, int mode, BOOL isFixedW
     return ret;
 }
 
-void FontData_delete(struct FontData *fontData) {
+void FontData_Delete(struct FontData *fontData) {
     FreeLoadedFontResources(fontData);
     FontData_FreeWidthsAndNarc(fontData);
     FreeToHeap(fontData);
@@ -74,10 +75,10 @@ void FontData_ModeSwitch(struct FontData *fontData, int mode, HeapID heapId) {
 
 static void FontData_Init(struct FontData *fontData, NarcId narcId, int fileId, BOOL isFixedWidth, HeapID heapId) {
     static const u8 _020F6324[][2] = {
-        {0, 1},
-        {2, 3}
+        {GLYPHSHAPE_8x8, GLYPHSHAPE_8x16},
+        {GLYPHSHAPE_16x8, GLYPHSHAPE_16x16}
     };
-    fontData->narc = NARC_ctor(narcId, heapId);
+    fontData->narc = NARC_New(narcId, heapId);
     if (fontData->narc != NULL) {
         NARC_GetMemberImageStartOffset(fontData->narc, fileId, &fontData->gmifOffset);
         NARC_ReadFromAbsolutePos(fontData->narc, fontData->gmifOffset, sizeof(struct FontHeader), &fontData->header);
@@ -92,7 +93,7 @@ static void FontData_Init(struct FontData *fontData, NarcId narcId, int fileId, 
             NARC_ReadFromAbsolutePos(fontData->narc, fontData->gmifOffset + fontData->header.widthDataStart, fontData->header.numGlyphs, fontData->glyphWidths);
         }
         GF_ASSERT(fontData->header.glyphWidth <= 2 && fontData->header.glyphHeight <= 2);
-        fontData->glyphShape = _020F6324[fontData->header.glyphWidth - 1][fontData->header.glyphHeight - 1];
+        fontData->glyphShape = (enum GlyphShape) _020F6324[fontData->header.glyphWidth - 1][fontData->header.glyphHeight - 1];
         fontData->glyphSize = 16 * fontData->header.glyphWidth * fontData->header.glyphHeight;
         fontData->fileId = fileId;
     }
@@ -103,7 +104,7 @@ static void FontData_FreeWidthsAndNarc(struct FontData *fontData) {
         FreeToHeap(fontData->glyphWidths);
     }
     if (fontData->narc != NULL) {
-        NARC_dtor(fontData->narc);
+        NARC_Delete(fontData->narc);
     }
 }
 

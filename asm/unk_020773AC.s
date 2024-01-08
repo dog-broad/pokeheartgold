@@ -1,6 +1,7 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 	.include "asm/macros.inc"
+	.include "unk_020773AC.inc"
 	.include "global.inc"
 
 	.text
@@ -8,8 +9,8 @@
 	thumb_func_start sub_020773AC
 sub_020773AC: ; 0x020773AC
 	push {r3, lr}
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -71,7 +72,7 @@ sub_0207741C: ; 0x0207741C
 	push {r3, lr}
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _02077488 ; =0x04000008
 	mov r1, #3
 	ldrh r2, [r0]
@@ -235,7 +236,7 @@ sub_0207753C: ; 0x0207753C
 	mov r1, #0xe1
 	lsl r0, r0, #0xc
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 _02077574:
 	add r0, r4, #0
 	add sp, #8

@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_02088288.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -21,7 +22,7 @@ sub_02088288: ; 0x02088288
 	thumb_func_start sub_0208828C
 sub_0208828C: ; 0x0208828C
 	push {r3, lr}
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag982
 	pop {r3, pc}
 	thumb_func_end sub_0208828C
@@ -34,8 +35,8 @@ sub_02088298: ; 0x02088298
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -68,11 +69,11 @@ sub_02088298: ; 0x02088298
 	bl CreateHeap
 	mov r0, #0x27
 	mov r1, #0x13
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	mov r0, #0xa2
 	mov r1, #0x13
-	bl NARC_ctor
+	bl NARC_New
 	add r5, r0, #0
 	ldr r1, _02088414 ; =0x000007D8
 	add r0, r6, #0
@@ -104,7 +105,7 @@ sub_02088298: ; 0x02088298
 	str r0, [r4, r1]
 	mov r0, #0xb4
 	mov r1, #0x13
-	bl NARC_ctor
+	bl NARC_New
 	ldr r1, _02088418 ; =0x000007B8
 	str r0, [r4, r1]
 	mov r0, #0
@@ -159,16 +160,16 @@ sub_02088298: ; 0x02088298
 	lsr r0, r2, #0xb
 	orr r0, r1
 	strh r0, [r2]
-	bl GX_BothDispOn
+	bl GfGfx_BothDispOn
 	mov r1, #0
 	mov r0, #0x3d
 	add r2, r1, #0
 	bl sub_02004EC4
 	bl sub_0203A964
 	add r0, r5, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #1
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -373,7 +374,7 @@ sub_0208856C: ; 0x0208856C
 	bl FontID_Release
 	ldr r0, _020885D4 ; =0x000007B8
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #0
 	bl FontID_SetAccessLazy
 	ldr r0, _020885D8 ; =0x04000050
@@ -395,13 +396,13 @@ sub_020885DC: ; 0x020885DC
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	mov r0, #0x2a
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	bl sub_02009418
 	bl GF_RunVramTransferTasks
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 	ldr r3, _02088608 ; =OS_IRQTable
 	ldr r1, _0208860C ; =0x00003FF8
 	mov r0, #1
@@ -427,7 +428,7 @@ _0208861A:
 	sub r2, r2, #1
 	bne _0208861A
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -586,8 +587,8 @@ _02088778: .word _02103974
 sub_0208877C: ; 0x0208877C
 	push {r4, lr}
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	add r0, r4, #0
 	mov r1, #6
 	bl FreeBgTilemapBuffer
@@ -741,34 +742,34 @@ sub_02088894: ; 0x02088894
 	mov r0, #1
 	mov r1, #2
 	mov r3, #0x13
-	bl MessagePrinter_new
+	bl MessagePrinter_New
 	ldr r1, _02088948 ; =0x0000079C
 	str r0, [r4, r1]
 	mov r0, #0x13
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	ldr r1, _0208894C ; =0x000007A8
 	str r0, [r4, r1]
 	mov r0, #0xc
 	mov r1, #0x13
-	bl String_ctor
+	bl String_New
 	mov r1, #0x23
 	lsl r1, r1, #4
 	str r0, [r4, r1]
 	mov r0, #0xc
 	mov r1, #0x13
-	bl String_ctor
+	bl String_New
 	mov r1, #0x8d
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	mov r0, #8
 	mov r1, #0x13
-	bl String_ctor
+	bl String_New
 	mov r1, #0x8e
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	mov r0, #0x80
 	mov r1, #0x13
-	bl String_ctor
+	bl String_New
 	ldr r1, _02088950 ; =0x000007AC
 	ldr r2, _02088954 ; =0x000002EE
 	str r0, [r4, r1]
@@ -780,7 +781,7 @@ sub_02088894: ; 0x02088894
 	str r0, [r4, r1]
 	mov r0, #8
 	mov r1, #0x13
-	bl String_ctor
+	bl String_New
 	mov r2, #0x7b
 	lsl r2, r2, #4
 	str r0, [r4, r2]
@@ -820,29 +821,29 @@ sub_0208895C: ; 0x0208895C
 	bl DestroyMsgData
 	ldr r0, _020889C4 ; =0x0000079C
 	ldr r0, [r4, r0]
-	bl MessagePrinter_delete
+	bl MessagePrinter_Delete
 	ldr r0, _020889C8 ; =0x000007A8
 	ldr r0, [r4, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r0, #0x23
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x8d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x8e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, _020889CC ; =0x000007AC
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x7b
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	pop {r4, pc}
 	.balign 4, 0
 _020889BC: .word 0x000007B4
@@ -1706,7 +1707,7 @@ _0208909E:
 	ldr r0, _02089204 ; =0x0000044C
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	add r0, r5, #0
 	bl sub_0208DBF0
 	mov r0, #8
@@ -1818,7 +1819,7 @@ _02089170:
 	ldr r0, _02089204 ; =0x0000044C
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	add r0, r5, #0
 	bl sub_0208BBDC
 	add r0, r5, #0
@@ -2065,7 +2066,7 @@ _02089392:
 _020893A6:
 	ldr r0, _0208941C ; =0x00000504
 	ldr r0, [r4, r0]
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	cmp r0, #1
 	bne _02089414
 	ldr r0, _02089420 ; =0x000005DC
@@ -2079,7 +2080,7 @@ _020893A6:
 _020893C6:
 	ldr r0, _02089424 ; =0x00000508
 	ldr r0, [r4, r0]
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	cmp r0, #1
 	bne _02089414
 	ldr r0, _02089420 ; =0x000005DC
@@ -2129,7 +2130,7 @@ sub_0208942C: ; 0x0208942C
 	add r4, r0, #0
 	ldr r0, _02089450 ; =0x00000504
 	ldr r0, [r4, r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _0208944A
 	mov r1, #8
@@ -2151,7 +2152,7 @@ sub_02089454: ; 0x02089454
 	add r4, r0, #0
 	ldr r0, _02089474 ; =0x00000508
 	ldr r0, [r4, r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _02089470
 	add r0, r4, #0
@@ -2915,7 +2916,7 @@ _02089A3C:
 	lsr r1, r0, #0x18
 	ldr r0, [sp]
 	ldrh r0, [r0, #0x34]
-	bl WazaGetMaxPp
+	bl GetMoveMaxPP
 	add r1, r4, r6
 	add r1, #0x40
 	strb r0, [r1]
@@ -3773,7 +3774,7 @@ _0208A126:
 	add r1, r1, #2
 	ldrh r1, [r6, r1]
 	mov r2, #0x30
-	bl sub_02088068
+	bl RatioToInt
 	add r4, r0, #0
 	add r0, r7, #0
 	add r0, #8
@@ -3857,7 +3858,7 @@ _0208A1C8:
 	add r0, r1, #0
 _0208A1CC:
 	mov r2, #0x38
-	bl sub_02088068
+	bl RatioToInt
 	add r4, r0, #0
 	mov r5, #0
 	mov r7, #0x13
@@ -4054,7 +4055,7 @@ _0208A35C:
 	cmp r5, r0
 	bge _0208A3C6
 	ldr r0, [r2]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	add r5, r0, #0
@@ -4214,7 +4215,7 @@ _0208A480:
 _0208A486:
 	ldr r0, [r1]
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #5
 	mov r2, #0
 	add r6, r0, #0
@@ -4316,7 +4317,7 @@ _0208A538:
 _0208A546:
 	ldrb r1, [r4, #0x14]
 	ldr r0, [r4]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	pop {r4, pc}
 _0208A550:
 	bl sub_02070D94
@@ -4399,7 +4400,7 @@ _0208A5E2:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	add r0, r4, #0
 	bl sub_0208C068
 	mov r0, #9
@@ -4412,7 +4413,7 @@ _0208A5E2:
 	ldr r0, _0208A638 ; =0x00000434
 	mov r1, #1
 	ldr r0, [r4, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 _0208A616:
 	ldr r0, _0208A634 ; =0x00000428
 	mov r1, #1
@@ -4450,20 +4451,20 @@ _0208A652:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #0
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	ldr r0, _0208A710 ; =0x00000434
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	ldr r0, _0208A714 ; =0x0000044C
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	mov r0, #0x45
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #0
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	ldr r0, _0208A718 ; =0x00000428
 	mov r1, #0
 	ldr r0, [r4, r0]
@@ -4668,7 +4669,7 @@ sub_0208A7F8: ; 0x0208A7F8
 	ldr r0, _0208A830 ; =0x0000044C
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	pop {r3, r4, r5, pc}
 _0208A816:
 	bl sub_0208D9A0
@@ -4678,7 +4679,7 @@ _0208A816:
 	ldr r0, _0208A830 ; =0x0000044C
 	mov r1, #1
 	ldr r0, [r5, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	pop {r3, r4, r5, pc}
 	nop
 _0208A830: .word 0x0000044C
@@ -4799,7 +4800,7 @@ sub_0208A8F4: ; 0x0208A8F4
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	add r0, r4, #0
 	bl sub_0208C068
 	mov r0, #9
@@ -4812,7 +4813,7 @@ sub_0208A8F4: ; 0x0208A8F4
 	ldr r0, _0208A948 ; =0x00000434
 	mov r1, #1
 	ldr r0, [r4, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 _0208A93A:
 	ldr r0, _0208A94C ; =0x00000428
 	mov r1, #1
@@ -4843,7 +4844,7 @@ sub_0208A950: ; 0x0208A950
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 	mov r0, #9
 	lsl r0, r0, #6
 	ldrb r1, [r4, r0]
@@ -4854,7 +4855,7 @@ sub_0208A950: ; 0x0208A950
 	ldr r0, _0208A9C0 ; =0x00000434
 	mov r1, #1
 	ldr r0, [r4, r0]
-	bl sub_0200DCE0
+	bl thunk_Set2dSpriteVisibleFlag
 _0208A996:
 	ldr r0, [r4]
 	mov r1, #2
@@ -4904,11 +4905,11 @@ _0208A9DA:
 	ldr r0, _0208AA90 ; =0x00000428
 	mov r1, #3
 	ldr r0, [r4, r0]
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r0, _0208AA90 ; =0x00000428
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	mov r0, #0x75
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -5049,11 +5050,11 @@ _0208AB0E:
 	ldr r0, _0208AB54 ; =0x00000428
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	ldr r0, _0208AB54 ; =0x00000428
 	mov r1, #2
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, _0208AB50 ; =0x000007BE
 	mov r1, #0
 	strb r1, [r4, r0]
@@ -5420,11 +5421,11 @@ _0208ADCA:
 
 	thumb_func_start sub_0208ADCC
 sub_0208ADCC: ; 0x0208ADCC
-	ldr r3, _0208ADD4 ; =sub_02025224
+	ldr r3, _0208ADD4 ; =TouchscreenHitbox_FindRectAtTouchNew
 	ldr r0, _0208ADD8 ; =_021038D4
 	bx r3
 	nop
-_0208ADD4: .word sub_02025224
+_0208ADD4: .word TouchscreenHitbox_FindRectAtTouchNew
 _0208ADD8: .word _021038D4
 	thumb_func_end sub_0208ADCC
 
@@ -5432,13 +5433,13 @@ _0208ADD8: .word _021038D4
 sub_0208ADDC: ; 0x0208ADDC
 	push {r3, lr}
 	ldr r0, _0208AE00 ; =_021038D4
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
 	bne _0208ADFE
 	ldr r0, _0208AE04 ; =_021038AC
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208ADFA
 	mov r0, #4
@@ -5457,20 +5458,20 @@ _0208AE04: .word _021038AC
 sub_0208AE08: ; 0x0208AE08
 	push {r3, lr}
 	ldr r0, _0208AE3C ; =_021038D4
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
 	bne _0208AE38
 	ldr r0, _0208AE40 ; =_021038B0
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AE26
 	mov r0, #4
 	pop {r3, pc}
 _0208AE26:
 	ldr r0, _0208AE44 ; =_021038AC
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AE34
 	mov r0, #5
@@ -5490,20 +5491,20 @@ _0208AE44: .word _021038AC
 sub_0208AE48: ; 0x0208AE48
 	push {r3, lr}
 	ldr r0, _0208AE7C ; =_021038D4
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
 	bne _0208AE78
 	ldr r0, _0208AE80 ; =_021038B4
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AE66
 	mov r0, #4
 	pop {r3, pc}
 _0208AE66:
 	ldr r0, _0208AE84 ; =_021038AC
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AE74
 	mov r0, #5
@@ -5523,14 +5524,14 @@ _0208AE84: .word _021038AC
 sub_0208AE88: ; 0x0208AE88
 	push {r3, lr}
 	ldr r0, _0208AEAC ; =_021038B4
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AE98
 	mov r0, #0
 	pop {r3, pc}
 _0208AE98:
 	ldr r0, _0208AEB0 ; =_021038AC
-	bl sub_02025320
+	bl TouchscreenHitbox_TouchNewIsIn
 	cmp r0, #1
 	bne _0208AEA6
 	mov r0, #1
@@ -5546,21 +5547,21 @@ _0208AEB0: .word _021038AC
 
 	thumb_func_start sub_0208AEB4
 sub_0208AEB4: ; 0x0208AEB4
-	ldr r3, _0208AEBC ; =sub_02025224
+	ldr r3, _0208AEBC ; =TouchscreenHitbox_FindRectAtTouchNew
 	ldr r0, _0208AEC0 ; =_021038B8
 	bx r3
 	nop
-_0208AEBC: .word sub_02025224
+_0208AEBC: .word TouchscreenHitbox_FindRectAtTouchNew
 _0208AEC0: .word _021038B8
 	thumb_func_end sub_0208AEB4
 
 	thumb_func_start sub_0208AEC4
 sub_0208AEC4: ; 0x0208AEC4
-	ldr r3, _0208AECC ; =sub_02025224
+	ldr r3, _0208AECC ; =TouchscreenHitbox_FindRectAtTouchNew
 	ldr r0, _0208AED0 ; =_021039E8
 	bx r3
 	nop
-_0208AECC: .word sub_02025224
+_0208AECC: .word TouchscreenHitbox_FindRectAtTouchNew
 _0208AED0: .word _021039E8
 	thumb_func_end sub_0208AEC4
 

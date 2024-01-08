@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_0207F42C.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -40,7 +41,7 @@ sub_0207F438: ; 0x0207F438
 	bl sub_0207DAD8
 	mov r0, #3
 	mov r1, #0xc
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	mov r1, #0x82
 	lsl r1, r1, #4
 	str r0, [r5, r1]
@@ -163,7 +164,7 @@ sub_0207F520: ; 0x0207F520
 	bne _0207F590
 	ldr r0, [r5, r0]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r2, #0x1f
 	lsl r2, r2, #6
 	add r6, r0, #0
@@ -201,7 +202,7 @@ _0207F590:
 	ldr r0, [r5, r0]
 	ldrb r1, [r5, r1]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0
 	str r1, [sp]
 	add r6, r0, #0
@@ -209,9 +210,9 @@ _0207F590:
 	add r2, sp, #0
 	bl SetMonData
 	add r0, r6, #0
-	bl Pokemon_UpdateArceusForme
+	bl Pokemon_UpdateArceusForm
 	add r0, r6, #0
-	bl Mon_UpdateGiratinaForme
+	bl Mon_UpdateGiratinaForm
 	ldr r1, _0207F684 ; =0x00000C65
 	ldrb r2, [r5, r1]
 	mov r1, #0x30
@@ -326,7 +327,7 @@ sub_0207F694: ; 0x0207F694
 	ldr r0, _0207F6E0 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	add r0, r4, #0
 	mov r1, #0
 	bl sub_02079224
@@ -376,7 +377,7 @@ _0207F71C: .word 0x00000C64
 sub_0207F720: ; 0x0207F720
 	push {r4, lr}
 	add r4, r0, #0
-	bl PartyMenu_AnimateIconFormeChange
+	bl PartyMenu_AnimateIconFormChange
 	cmp r0, #1
 	bne _0207F736
 	add r0, r4, #0
@@ -402,7 +403,7 @@ sub_0207F73C: ; 0x0207F73C
 	bl sub_0207DAD8
 	mov r0, #3
 	mov r1, #0xc
-	bl ListMenuItems_ctor
+	bl ListMenuItems_New
 	mov r1, #0x82
 	lsl r1, r1, #4
 	str r0, [r5, r1]
@@ -546,7 +547,7 @@ sub_0207F870: ; 0x0207F870
 	ldr r0, [r4, r0]
 	ldrb r1, [r4, r1]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r0, #0
 	ldr r0, _0207F8E4 ; =0x00000654
 	mov r2, #0xc
@@ -647,7 +648,7 @@ sub_0207F924: ; 0x0207F924
 	ldr r0, [r4, r0]
 	ldrb r1, [r4, r1]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0
 	str r1, [sp]
 	add r5, r0, #0
@@ -655,9 +656,9 @@ sub_0207F924: ; 0x0207F924
 	add r2, sp, #0
 	bl SetMonData
 	add r0, r5, #0
-	bl Pokemon_UpdateArceusForme
+	bl Pokemon_UpdateArceusForm
 	add r0, r5, #0
-	bl Mon_UpdateGiratinaForme
+	bl Mon_UpdateGiratinaForm
 	ldr r1, _0207F9BC ; =0x00000C65
 	mov r2, #0x30
 	ldrb r3, [r4, r1]
@@ -717,7 +718,7 @@ sub_0207F9CC: ; 0x0207F9CC
 	ldr r0, _0207FA04 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	mov r0, #1
 	pop {r4, pc}
 	nop
@@ -741,7 +742,7 @@ sub_0207FA08: ; 0x0207FA08
 	ldr r0, _0207FA38 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	add r0, r4, #0
 	mov r1, #0
 	bl sub_02079224
@@ -810,7 +811,7 @@ sub_0207FAA8: ; 0x0207FAA8
 	ldr r0, [r4, r0]
 	ldrb r1, [r4, r1]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	bl Pokemon_RemoveCapsule
 	ldr r0, _0207FACC ; =0x00000654
 	mov r1, #0
@@ -843,7 +844,7 @@ sub_0207FAD4: ; 0x0207FAD4
 	ldr r0, _0207FB08 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	mov r0, #1
 	pop {r4, pc}
 	nop
@@ -873,13 +874,13 @@ sub_0207FB0C: ; 0x0207FB0C
 	ldr r0, _0207FBBC ; =0x00000678
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, _0207FBBC ; =0x00000678
 	add r1, sp, #0
 	ldr r0, [r5, r0]
 	add r1, #2
 	add r2, sp, #0
-	bl sub_0200DE00
+	bl Sprite_GetPositionXY
 	ldr r0, _0207FBC0 ; =0x0000067C
 	add r3, sp, #0
 	mov r1, #2
@@ -887,7 +888,7 @@ sub_0207FB0C: ; 0x0207FB0C
 	ldrsh r1, [r3, r1]
 	ldrsh r2, [r3, r2]
 	ldr r0, [r5, r0]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldr r0, _0207FBC4 ; =0x00000654
 	ldr r1, _0207FBB8 ; =0x00000C63
 	ldr r0, [r5, r0]
@@ -1493,7 +1494,7 @@ sub_02080040: ; 0x02080040
 	ldr r0, [r1, r0]
 	add r1, sp, #0
 	add r1, #2
-	bl sub_0200DE00
+	bl Sprite_GetPositionXY
 	cmp r7, #0
 	ldr r0, _02080188 ; =0x0000083E
 	bne _020800A8
@@ -1568,7 +1569,7 @@ _020800E0:
 	sub r2, #0xc
 	ldrsh r1, [r3, r1]
 	ldrsh r2, [r3, r2]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldrb r2, [r6, r4]
 	mov r0, #0x30
 	ldr r3, _02080190 ; =0x00000842
@@ -1584,7 +1585,7 @@ _020800E0:
 	ldrsh r1, [r2, r3]
 	add r3, r3, #2
 	ldrsh r2, [r2, r3]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldrb r2, [r6, r4]
 	mov r0, #0x30
 	ldr r3, _02080194 ; =0x00000846
@@ -1600,7 +1601,7 @@ _020800E0:
 	ldrsh r1, [r2, r3]
 	add r3, r3, #2
 	ldrsh r2, [r2, r3]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldrb r2, [r6, r4]
 	mov r0, #0x30
 	ldr r3, _02080194 ; =0x00000846
@@ -1619,7 +1620,7 @@ _020800E0:
 	add r1, #8
 	lsl r1, r1, #0x10
 	asr r1, r1, #0x10
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldrb r0, [r6, r4]
 	add r3, sp, #0
 	mov r2, #0
@@ -1631,7 +1632,7 @@ _020800E0:
 	mov r1, #2
 	ldrsh r1, [r3, r1]
 	ldrsh r2, [r3, r2]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _02080184: .word 0x0000094C
@@ -2121,7 +2122,7 @@ _02080542:
 	ldr r0, _02080608 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, _02080600 ; =0x00000654
 	ldr r0, [r5, r0]
 	add r0, #0x36
@@ -2219,7 +2220,7 @@ sub_02080610: ; 0x02080610
 	ldr r0, _02080638 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	mov r0, #1
 	pop {r4, pc}
 	.balign 4, 0
@@ -2332,7 +2333,7 @@ _020806DC:
 	ldr r0, _02080724 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, [sp]
 	mov r1, #1
 	str r1, [r0]
@@ -2425,7 +2426,7 @@ sub_020807AC: ; 0x020807AC
 	ldr r0, [r4, r0]
 	ldrb r1, [r4, r1]
 	ldr r0, [r0]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0xa2
 	mov r2, #0
 	bl GetMonData
@@ -2863,13 +2864,13 @@ _02080AB8:
 	ldr r0, _02080B60 ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, _02080B60 ; =0x00000678
 	add r1, sp, #0
 	ldr r0, [r4, r0]
 	add r1, #2
 	add r2, sp, #0
-	bl sub_0200DE00
+	bl Sprite_GetPositionXY
 	ldr r0, _02080B64 ; =0x0000067C
 	add r3, sp, #0
 	mov r1, #2
@@ -2877,7 +2878,7 @@ _02080AB8:
 	ldrsh r1, [r3, r1]
 	ldrsh r2, [r3, r2]
 	ldr r0, [r4, r0]
-	bl sub_0200DD88
+	bl Sprite_SetPositionXY
 	ldr r0, _02080B68 ; =0x00000654
 	ldr r1, _02080B6C ; =0x00000C63
 	ldr r0, [r4, r0]
@@ -2943,7 +2944,7 @@ sub_02080B74: ; 0x02080B74
 	ldr r0, _02080BAC ; =0x00000678
 	mov r1, #0
 	ldr r0, [r4, r0]
-	bl sub_0200DD08
+	bl thunk_Sprite_SetPalIndex
 	ldr r0, _02080BB0 ; =0x04000050
 	mov r1, #0
 	strh r1, [r0]

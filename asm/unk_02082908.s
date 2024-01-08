@@ -5,6 +5,7 @@
 #include "constants/party_menu.h"
 #include "msgdata/msg/msg_0300.h"
 	.include "asm/macros.inc"
+	.include "unk_02082908.inc"
 	.include "global.inc"
 
 	.public _020FA484
@@ -36,8 +37,8 @@ _0208291E:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -68,10 +69,10 @@ _0208291E:
 	str r0, [r4, r1]
 	mov r0, #0x1f
 	mov r1, #0x12
-	bl NARC_ctor
+	bl NARC_New
 	add r7, r0, #0
 	mov r0, #0x12
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	mov r1, #0x5a
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -173,9 +174,9 @@ _0208291E:
 	ldr r0, _02082ADC ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -494,7 +495,7 @@ sub_02082CF8: ; 0x02082CF8
 	mov r0, #0xd3
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	cmp r0, #0
 	bne _02082D2A
 	mov r0, #0xd3
@@ -669,9 +670,9 @@ _02082E52:
 _02082E6E:
 	ldr r0, [r4, #0x18]
 	add r1, r6, #0
-	bl StringCopy
+	bl String_Copy
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x18]
 	add r4, #0x1c
 	add r1, r4, #0
@@ -693,9 +694,9 @@ _02082E8A:
 	add r5, r0, #0
 	ldr r0, [r4, #0x18]
 	add r1, r5, #0
-	bl StringCopy
+	bl String_Copy
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x18]
 	add r4, #0x1c
 	add r1, r4, #0
@@ -812,14 +813,14 @@ _02082F86:
 	mov r0, #0x61
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r7, #0xe7
 	mov r6, #0
 	add r5, r4, #0
 	lsl r7, r7, #2
 _02082F98:
 	ldr r0, [r5, r7]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	add r6, r6, #1
 	add r5, r5, #4
 	cmp r6, #7
@@ -854,7 +855,7 @@ _02082FD6:
 	mov r0, #0x62
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024504
+	bl SpriteList_Delete
 	bl OamManager_Free
 	ldr r1, _020830C4 ; =0x000004AC
 	mov r0, #0x12
@@ -901,16 +902,16 @@ _02083016:
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _02083060
-	bl String_dtor
+	bl String_Delete
 _02083060:
 	mov r0, #0x5e
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x5f
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x5d
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -926,7 +927,7 @@ _02083060:
 	mov r0, #0x5a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [sp, #0x10]
 	bl OverlayManager_FreeData
 	mov r0, #0
@@ -937,7 +938,7 @@ _02083060:
 	ldr r0, _020830D4 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #1
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
@@ -969,7 +970,7 @@ sub_020830D8: ; 0x020830D8
 	ldr r1, [sp]
 	strh r0, [r4, #0x1c]
 	mov r0, #0x20
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x18]
 	mov r1, #0
 	str r1, [r4, #0x44]
@@ -1000,7 +1001,7 @@ _0208312A:
 	bl GF_AssertFail
 _02083132:
 	ldr r0, [r4, #0x18]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -1058,7 +1059,7 @@ _0208318E:
 	sub r2, r2, #1
 	bne _0208318E
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -1218,32 +1219,32 @@ sub_020832E4: ; 0x020832E4
 	lsl r1, r4, #0x18
 	mov r0, #1
 	lsr r1, r1, #0x18
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	lsl r1, r4, #0x18
 	mov r0, #2
 	lsr r1, r1, #0x18
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	lsl r1, r4, #0x18
 	mov r0, #4
 	lsr r1, r1, #0x18
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	lsl r1, r4, #0x18
 	mov r0, #0x10
 	lsr r1, r1, #0x18
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	lsl r1, r4, #0x18
 	mov r0, #1
 	lsr r1, r1, #0x18
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r4, pc}
 	thumb_func_end sub_020832E4
 
@@ -1475,7 +1476,7 @@ sub_020834FC: ; 0x020834FC
 	beq _0208360C
 	mov r0, #0xc8
 	mov r1, #0x12
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	mov r0, #6
 	mov r1, #0
@@ -1587,7 +1588,7 @@ _020835EA:
 	mov r0, #1
 	str r0, [r5, #0x14]
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 _0208360C:
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
@@ -2036,7 +2037,7 @@ sub_020839B8: ; 0x020839B8
 	sub sp, #0xc
 	add r4, r1, #0
 	ldr r0, [r4]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r1, [r0]
 	ldr r0, [r4, #8]
 	add r0, r1, r0
@@ -2051,7 +2052,7 @@ sub_020839B8: ; 0x020839B8
 	mov r0, #0
 	str r0, [sp, #8]
 	ldr r0, [r4, #4]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {r3, r4, pc}
 	.balign 4, 0
@@ -2177,7 +2178,7 @@ _02083AA8:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	ldr r1, [r4, #0xc]
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	add r7, r7, #1
 	add r4, #0x10
 	add r5, r5, #4
@@ -2196,7 +2197,7 @@ _02083AFE:
 	mov r1, #0x10
 	mov r2, #5
 	mov r3, #0x12
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	mov r1, #0xe7
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -2265,10 +2266,10 @@ _02083B7E:
 	bl sub_02083BB4
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x5c
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -2437,7 +2438,7 @@ _02083CDC:
 	str r0, [sp]
 	ldr r0, [r4]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	b _02083D2A
 _02083CF0:
 	mov r0, #3
@@ -2447,7 +2448,7 @@ _02083CF0:
 	str r0, [sp]
 	ldr r0, [r4]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	b _02083D2A
 _02083D04:
 	mov r0, #2
@@ -2457,16 +2458,16 @@ _02083D04:
 	str r0, [sp]
 	ldr r0, [r4]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	b _02083D2A
 _02083D18:
 	ldr r0, [r4, #8]
 	add r1, sp, #0
 	str r0, [sp]
 	ldr r0, [r4]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 _02083D2A:
 	ldr r0, [r4, #4]
 	add r0, r0, #1
@@ -2581,7 +2582,7 @@ _02083DE6:
 	mov r1, #0x10
 	mov r2, #0
 	mov r3, #0x12
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	add r7, r0, #0
 	ldr r0, [sp, #0x48]
@@ -2591,12 +2592,12 @@ _02083DE6:
 	str r0, [r7, #4]
 	ldr r0, [sp, #0x48]
 	ldr r0, [r0, #0x1c]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r0, [r0]
 	str r0, [r7, #8]
 	ldr r0, [sp, #0x48]
 	ldr r0, [r0, #0x1c]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r0, [r0, #4]
 	mov r1, #0xa
 	str r0, [r7, #0xc]
@@ -2770,7 +2771,7 @@ _02083F70:
 	add r2, r7, #0
 	add r3, r4, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
 	bl CopyWindowToVram
 	add sp, #0x10
@@ -3235,7 +3236,7 @@ sub_0208432C: ; 0x0208432C
 	ldr r0, [r5, r0]
 	add r6, r4, #0
 	add r7, r4, #0
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	cmp r0, #0
 	bne _02084346
 	mov r7, #1
@@ -3395,7 +3396,7 @@ _02084464:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, sp, #0xc
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	b _020844C6
 _0208448A:
 	mov r0, #0x1a
@@ -3425,7 +3426,7 @@ _0208448A:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 _020844C6:
 	mov r0, #0xb4
 	strh r0, [r5, #0x38]
@@ -3433,7 +3434,7 @@ _020844C6:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	mov r1, #0
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	ldr r0, [r5, #0x1c]
 	lsl r1, r4, #3
 	str r0, [r5, #0x24]
@@ -3500,7 +3501,7 @@ sub_02084540: ; 0x02084540
 	str r2, [sp, #0x1c]
 	str r3, [sp, #0x20]
 	mov r4, #0
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x28]
 	ldrh r1, [r7]
 	ldr r0, _02084630 ; =0x0000FFFF
@@ -3597,7 +3598,7 @@ _020845CE:
 	ldr r2, [sp, #0x28]
 	mov r1, #0
 	add r3, r5, r3
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 _0208461A:
 	add r4, r4, #1
 _0208461C:
@@ -3608,7 +3609,7 @@ _0208461C:
 	bne _02084578
 _02084626:
 	ldr r0, [sp, #0x28]
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x3c
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -3633,7 +3634,7 @@ sub_02084640: ; 0x02084640
 	add r3, r5, #0
 	add r4, r0, #0
 	str r5, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [r4, #0xc]
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
@@ -3689,7 +3690,7 @@ _02084694:
 	blo _02084694
 	mov r0, #0x15
 	mov r1, #0x12
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	mov r5, #0
 _020846D6:
@@ -3728,7 +3729,7 @@ _020846D6:
 	cmp r5, #3
 	blo _020846D6
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x38
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
@@ -3949,7 +3950,7 @@ _020848B0:
 	mov r0, #0xd3
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020248B8
+	bl Get2dSpriteVisibleFlag
 	cmp r0, #0
 	bne _020848D8
 	ldr r0, _02084BC4 ; =gSystem + 0x40
@@ -4876,7 +4877,7 @@ sub_02084FCC: ; 0x02084FCC
 	mov r0, #0xd3
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _02085038
 	mov r0, #0x56

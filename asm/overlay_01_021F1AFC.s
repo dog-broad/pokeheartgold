@@ -9,20 +9,21 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F1AFC.inc"
 	.include "global.inc"
 
 	.text
 
-	thumb_func_start ov01_PlayerAvatar_OrrTransitionFlags
-ov01_PlayerAvatar_OrrTransitionFlags: ; 0x021F1AFC
+	thumb_func_start Field_PlayerAvatar_OrrTransitionFlags
+Field_PlayerAvatar_OrrTransitionFlags: ; 0x021F1AFC
 	ldr r3, _021F1B00 ; =PlayerAvatar_OrrTransitionFlags
 	bx r3
 	.balign 4, 0
 _021F1B00: .word PlayerAvatar_OrrTransitionFlags
-	thumb_func_end ov01_PlayerAvatar_OrrTransitionFlags
+	thumb_func_end Field_PlayerAvatar_OrrTransitionFlags
 
-	thumb_func_start ov01_PlayerAvatar_ApplyTransitionFlags
-ov01_PlayerAvatar_ApplyTransitionFlags: ; 0x021F1B04
+	thumb_func_start Field_PlayerAvatar_ApplyTransitionFlags
+Field_PlayerAvatar_ApplyTransitionFlags: ; 0x021F1B04
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
 	mov r6, #0
@@ -48,7 +49,7 @@ _021F1B1E:
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
 _021F1B34: .word sPlayerAvatarBitUpdateFuncs
-	thumb_func_end ov01_PlayerAvatar_ApplyTransitionFlags
+	thumb_func_end Field_PlayerAvatar_ApplyTransitionFlags
 
 	thumb_func_start ov01_021F1B38
 ov01_021F1B38: ; 0x021F1B38
@@ -511,7 +512,7 @@ ov01_021F1EA4: ; 0x021F1EA4
 	ldr r1, _021F1EC8 ; =ov01_021F1ECC
 	add r0, r4, #0
 	str r6, [r2, #0xc]
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _021F1EC8: .word ov01_021F1ECC
@@ -521,7 +522,7 @@ _021F1EC8: .word ov01_021F1ECC
 ov01_021F1ECC: ; 0x021F1ECC
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #0xc]
 	bl PlayerAvatar_GetMapObject
@@ -640,7 +641,7 @@ _021F1F96:
 	lsl r1, r1, #0x10
 	add r0, r7, #0
 	lsr r1, r1, #0x10
-	bl FlagSet
+	bl FieldSystem_FlagSet
 	add r0, r5, #0
 	bl DeleteMapObject
 	mov r1, #0xa
@@ -650,7 +651,7 @@ _021F1F96:
 	add r0, r7, #0
 	add r1, r1, r2
 	ldrh r1, [r1, #8]
-	bl FlagClear
+	bl FieldSystem_FlagClear
 	mov r0, #1
 	pop {r3, r4, r5, r6, r7, pc}
 _021F1FF4:
@@ -716,13 +717,13 @@ ov01_021F202C: ; 0x021F202C
 _021F2064: .word ov01_021F2118
 	thumb_func_end ov01_021F202C
 
-	thumb_func_start ScriptCallTask_Surf
-ScriptCallTask_Surf: ; 0x021F2068
+	thumb_func_start CallFieldTask_Surf
+CallFieldTask_Surf: ; 0x021F2068
 	push {r4, r5, r6, lr}
 	sub sp, #0x10
 	add r6, r2, #0
 	add r5, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r1, r6, #0
 	bl ov01_021F3100
@@ -757,7 +758,7 @@ _021F20B0:
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
-	thumb_func_end ScriptCallTask_Surf
+	thumb_func_end CallFieldTask_Surf
 
 	thumb_func_start Field_PlayerCanStartSurfingByStandingAndFacingTileBehaviors
 Field_PlayerCanStartSurfingByStandingAndFacingTileBehaviors: ; 0x021F20C0
@@ -768,7 +769,7 @@ Field_PlayerCanStartSurfingByStandingAndFacingTileBehaviors: ; 0x021F20C0
 	add r6, r0, #0
 	lsl r0, r4, #0x18
 	lsr r0, r0, #0x18
-	bl sub_0205B778
+	bl MetatileBehavior_IsSurfableWater
 	cmp r0, #1
 	bne _021F2112
 	lsl r0, r5, #0x18
@@ -809,7 +810,7 @@ _021F2112:
 ov01_021F2118: ; 0x021F2118
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4]
 	cmp r0, #9
@@ -834,7 +835,7 @@ _021F2134: ; jump table
 _021F2148:
 	ldr r0, [r4, #0x1c]
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag99A
 	cmp r0, #0
 	bne _021F2172
@@ -843,11 +844,11 @@ _021F2148:
 	bne _021F2172
 	ldr r0, [r4, #0x1c]
 	mov r1, #0
-	bl Fsys_SetSavedMusicId
+	bl FieldSystem_SetSavedMusicId
 	ldr r0, [r4, #0x1c]
 	ldr r1, _021F2328 ; =0x000003F6
 	mov r2, #1
-	bl Fsys_PlayOrFadeToNewMusicId
+	bl FieldSystem_PlayOrFadeToNewMusicId
 _021F2172:
 	ldr r0, [r4]
 	add r0, r0, #1
@@ -887,7 +888,7 @@ _021F21A8:
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	mov r1, #1
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	mov r1, #2
 	b _021F21C6
 _021F21C4:
@@ -1119,7 +1120,7 @@ _021F23A6:
 	ldr r1, _021F23B4 ; =ov01_021F23B8
 	add r0, r5, #0
 	add r2, r4, #0
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
 _021F23B4: .word ov01_021F23B8
@@ -1128,7 +1129,7 @@ _021F23B4: .word ov01_021F23B8
 	thumb_func_start ov01_021F23B8
 ov01_021F23B8: ; 0x021F23B8
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrh r0, [r4]
 	cmp r0, #0
@@ -1207,7 +1208,7 @@ _021F2412:
 _021F2476:
 	ldr r0, [r4, #8]
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl CheckFlag99A
 	cmp r0, #0
 	bne _021F249A
@@ -1218,7 +1219,7 @@ _021F2476:
 	add r1, r0, #0
 	ldr r0, [r4, #8]
 	mov r2, #4
-	bl Fsys_PlayOrFadeToNewMusicId
+	bl FieldSystem_PlayOrFadeToNewMusicId
 _021F249A:
 	bl SndRadio_GetSeqNo
 	cmp r0, #0
@@ -1350,13 +1351,13 @@ _021F257E:
 _021F258C: .word ov01_021F2628
 	thumb_func_end ov01_021F2548
 
-	thumb_func_start ScriptCallTask_RockClimb
-ScriptCallTask_RockClimb: ; 0x021F2590
+	thumb_func_start CallFieldTask_RockClimb
+CallFieldTask_RockClimb: ; 0x021F2590
 	push {r4, r5, r6, lr}
 	sub sp, #0x10
 	add r6, r2, #0
 	add r5, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r1, r6, #0
 	bl ov01_021F3100
@@ -1391,7 +1392,7 @@ _021F25D8:
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
-	thumb_func_end ScriptCallTask_RockClimb
+	thumb_func_end CallFieldTask_RockClimb
 
 	thumb_func_start MetatileBehavior_IsRockClimbInDirection
 MetatileBehavior_IsRockClimbInDirection: ; 0x021F25E8
@@ -1435,7 +1436,7 @@ _021F2622:
 ov01_021F2628: ; 0x021F2628
 	push {r3, r4, r5, r6, r7, lr}
 	add r6, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r7, _021F268C ; =ov01_022069D0
 	add r4, r0, #0
 _021F2634:
@@ -1533,7 +1534,7 @@ ov01_021F26CC: ; 0x021F26CC
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	mov r1, #1
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	mov r1, #2
 	b _021F26F0
 _021F26EE:
@@ -1811,20 +1812,20 @@ ov01_021F28EC: ; 0x021F28EC
 	add r2, r0, #0
 	ldr r1, _021F2904 ; =ov01_021F2944
 	add r0, r4, #0
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 	pop {r4, pc}
 	nop
 _021F2904: .word ov01_021F2944
 	thumb_func_end ov01_021F28EC
 
-	thumb_func_start ScriptCallTask_Waterfall
-ScriptCallTask_Waterfall: ; 0x021F2908
+	thumb_func_start CallFieldTask_Waterfall
+CallFieldTask_Waterfall: ; 0x021F2908
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	add r5, r2, #0
 	add r6, r0, #0
 	add r7, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r1, r5, #0
 	bl ov01_021F3100
@@ -1844,12 +1845,12 @@ ScriptCallTask_Waterfall: ; 0x021F2908
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _021F2940: .word ov01_021F2944
-	thumb_func_end ScriptCallTask_Waterfall
+	thumb_func_end CallFieldTask_Waterfall
 
 	thumb_func_start ov01_021F2944
 ov01_021F2944: ; 0x021F2944
 	push {r4, r5, r6, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r6, _021F2990 ; =ov01_022069BC
 	ldr r4, _021F2994 ; =ov01_022069A8
 	add r5, r0, #0
@@ -2423,13 +2424,13 @@ ov01_021F2D68: ; 0x021F2D68
 _021F2DA0: .word ov01_021F2DD0
 	thumb_func_end ov01_021F2D68
 
-	thumb_func_start ScriptCallTask_Whirlpool
-ScriptCallTask_Whirlpool: ; 0x021F2DA4
+	thumb_func_start CallFieldTask_Whirlpool
+CallFieldTask_Whirlpool: ; 0x021F2DA4
 	push {r4, r5, r6, lr}
 	sub sp, #0x10
 	add r5, r2, #0
 	add r6, r1, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r1, r5, #0
 	bl ov01_021F3100
@@ -2443,12 +2444,12 @@ ScriptCallTask_Whirlpool: ; 0x021F2DA4
 	bl ov01_021F2D68
 	add sp, #0x10
 	pop {r4, r5, r6, pc}
-	thumb_func_end ScriptCallTask_Whirlpool
+	thumb_func_end CallFieldTask_Whirlpool
 
 	thumb_func_start ov01_021F2DD0
 ov01_021F2DD0: ; 0x021F2DD0
 	push {r4, r5, r6, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r6, _021F2E04 ; =ov01_02206994
 	add r5, r0, #0
 _021F2DDA:
@@ -2614,12 +2615,12 @@ ov01_021F2EDC: ; 0x021F2EDC
 	add r5, r0, #0
 	add r0, r4, #0
 	mov r1, #0x40
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	add r0, r4, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	add r0, r4, #0
 	add r1, r5, #0
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 _021F2F22:
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov01_021F2EDC
@@ -2649,12 +2650,12 @@ _021F2F4E:
 	add r5, r0, #0
 	add r0, r4, #0
 	mov r1, #1
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	add r0, r4, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	add r0, r4, #0
 	add r1, r5, #0
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 _021F2F6C:
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -2704,9 +2705,9 @@ _021F2FBC:
 	bl MapObject_UnpauseMovement
 	add r0, r6, #0
 	add r1, r4, #0
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	add r0, r6, #0
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	ldr r0, _021F2FE8 ; =ov01_021F3030
 	ldr r2, _021F2FEC ; =0x0000FFFF
 	add r1, r5, #0
@@ -2880,9 +2881,9 @@ ov01_021F3100: ; 0x021F3100
 	push {r4, lr}
 	ldr r0, [r0, #0xc]
 	add r4, r1, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov01_021F3100

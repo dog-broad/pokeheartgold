@@ -4,21 +4,22 @@
 #include "daycare.h"
 #include "script.h"
 
-void Sav2_DayCare_PutMonIn(PARTY *party, u8 partyIdx, DAYCARE *dayCare, SAVEDATA *saveData);
-u16 Sav2_DayCare_RetrieveMon(PARTY *party, MSGFMT *msgFmt, DAYCARE *daycare, u8 whomst);
-int DayCareMon_CalcLevelGrowth(DAYCAREMON *daycareMon);
-u16 Sav2_DayCare_BufferMonNickAndRetrievalPrice(DAYCARE *dayCare, u8 slot, MSGFMT *msgFmt);
-u8 Sav2_DayCare_BufferGrowthAndNick(DAYCARE *dayCare, u32 slot, MSGFMT *msgFmt);
-void Sav2_DayCare_ResetEggStats(DAYCARE *dayCare);
-void SetEggStats(POKEMON *pokemon, int species, u8 metLocation, PLAYERPROFILE *profile, int a4, int a5);
-void GiveEggToPlayer(DAYCARE *dayCare, PARTY *party, PLAYERPROFILE* profile);
-BOOL HandleDayCareStep(DAYCARE *dayCare, PARTY *party, FieldSystem *fsys);
-POKEMON *sub_0206CE44(PARTY *party);
-void Sav2_DayCare_BufferStoredMonNicks(DAYCARE *dayCare, MSGFMT *msgFmt);
-void Sav2_DayCare_BufferMonStats(DAYCARE *dayCare, u32 nickname_idx, u32 level_idx, u32 gender_idx, u8 slot, MSGFMT *msgFmt);
-u16 Sav2_DayCare_BufferTailMonNick(DAYCARE *dayCare, MSGFMT *msgFmt);
-u8 Sav2_DayCare_GetState(DAYCARE *dayCare);
-u8 Sav2_DayCare_CalcCompatibility(DAYCARE *dayCare);
-void sub_0206D328(POKEMON *pokemon, HeapID heapId);
+BoxPokemon *Daycare_GetBoxMonI(Daycare *daycare, s32 idx);
+void Save_Daycare_PutMonIn(Party *party, u8 partyIdx, Daycare *dayCare, SaveData *saveData);
+u16 Save_Daycare_RetrieveMon(Party *party, MessageFormat *msgFmt, Daycare *daycare, u8 whomst);
+int DaycareMon_CalcLevelGrowth(DaycareMon *daycareMon);
+u16 Save_Daycare_BufferMonNickAndRetrievalPrice(Daycare *dayCare, u8 slot, MessageFormat *msgFmt);
+u8 Save_Daycare_BufferGrowthAndNick(Daycare *dayCare, u32 slot, MessageFormat *msgFmt);
+void Save_Daycare_ResetEggStats(Daycare *dayCare);
+void SetEggStats(Pokemon *mon, int species, u8 metLocation, PlayerProfile *profile, int trainerMemoStrat, int eggLocation);
+void GiveEggToPlayer(Daycare *dayCare, Party *party, PlayerProfile* profile);
+BOOL HandleDaycareStep(Daycare *dayCare, Party *party, FieldSystem *fieldSystem);
+Pokemon *sub_0206CE44(Party *party);
+void Save_Daycare_BufferStoredMonNicks(Daycare *dayCare, MessageFormat *msgFmt);
+void Save_Daycare_BufferMonStats(Daycare *dayCare, u32 nickname_idx, u32 level_idx, u32 gender_idx, u8 slot, MessageFormat *msgFmt);
+u16 Save_Daycare_BufferTailMonNick(Daycare *dayCare, MessageFormat *msgFmt);
+u8 Save_Daycare_GetState(Daycare *dayCare);
+u8 Save_Daycare_CalcCompatibility(Daycare *dayCare);
+void sub_0206D328(Pokemon *mon, HeapID heapId);
 
 #endif

@@ -47,9 +47,9 @@ scr_seq_R01_000:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 3
 	goto_if_ne _00CF
@@ -68,9 +68,9 @@ _00EA:
 	apply_movement obj_R01_gsmiddleman1, _01D0
 _00FA:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0121
@@ -107,14 +107,23 @@ _016F:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x0f, 0x00, 0x01, 0x00, 0x0c, 0x00, 0x02, 0x00, 0x0e, 0x00, 0x01, 0x00
-	.byte 0x0c, 0x00, 0x03, 0x00, 0x21, 0x00, 0x01, 0x00, 0xfe, 0x00, 0x00, 0x00
 
+	.balign 4, 0
+_0184:
+	step 15, 1
+	step 12, 2
+	step 14, 1
+	step 12, 3
+	step 33, 1
+	step_end
+
+	.balign 4, 0
 _019C:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01A8:
 	step 12, 1
 	step 14, 1
@@ -122,6 +131,7 @@ _01A8:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01BC:
 	step 12, 1
 	step 15, 1
@@ -129,16 +139,19 @@ _01BC:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01D0:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01DC:
 	step 15, 1
 	step 12, 1
 	step 1, 1
 	step_end
+
 scr_seq_R01_002:
 	direction_signpost msg_0319_R01_00000, 1, 4, VAR_SPECIAL_RESULT
 	scrcmd_057 3

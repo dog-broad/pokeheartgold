@@ -14,7 +14,7 @@
 	scrdef_end
 
 scr_seq_D10R0101_000:
-	scrcmd_508 2
+	palpark_action 2
 	end
 
 scr_seq_D10R0101_001:
@@ -34,13 +34,20 @@ scr_seq_D10R0101_001:
 	non_npc_msg msg_0052_D10R0101_00010
 	play_se SEQ_SE_DP_CON_016
 	wait 30, VAR_SPECIAL_RESULT
-	scrcmd_508 0
+	palpark_action 0
 	setvar VAR_UNK_4124, 1
 	closemsg
 	releaseall
 	end
-	.byte 0xfc, 0x01, 0x00, 0x00, 0x29, 0x00, 0x24, 0x41, 0x01, 0x00, 0x32, 0x00, 0x35
-	.byte 0x00, 0x61, 0x00, 0x02, 0x00
+
+	; unreferenced
+	palpark_action 0
+	setvar VAR_UNK_4124, 1
+	wait_button_or_walk_away
+	closemsg
+	releaseall
+	end
+
 scr_seq_D10R0101_002:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -88,21 +95,22 @@ scr_seq_D10R0101_004:
 	end
 
 _0110:
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0134
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _0134:
 	step 12, 1
 	step_end
+
 scr_seq_D10R0101_005:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -121,11 +129,12 @@ _0169:
 	wait_movement
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0178:
 	step 34, 1
 	step_end
+
 _0180:
 	npc_msg msg_0052_D10R0101_00000
 	touchscreen_menu_hide
@@ -155,7 +164,7 @@ _01C9:
 	return
 
 _01D4:
-	scrcmd_508 1
+	palpark_action 1
 	fade_screen 6, 1, 0, RGB_BLACK
 	wait_fade
 	warp MAP_T08R0201, 0, 7, 7, DIR_SOUTH

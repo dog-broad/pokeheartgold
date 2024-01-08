@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_56.inc"
 	.include "global.inc"
 
 	.text
@@ -404,7 +405,7 @@ ov56_021E5EFC: ; 0x021E5EFC
 	sub sp, #8
 	add r5, r0, #0
 	ldr r0, _021E5FA4 ; =ov56_021E6E20
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	add r4, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -537,7 +538,7 @@ _021E5FF2:
 	bl FillWindowPixelBuffer
 	ldr r1, [r5]
 	mov r0, #0x4c
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0x20]
 	mov r1, #2
@@ -553,9 +554,9 @@ _021E5FF2:
 	mov r1, #1
 	add r2, r4, #0
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	b _021E6088
 _021E603E:
 	ldr r1, _021E6098 ; =gSystem
@@ -645,7 +646,7 @@ ov56_021E609C: ; 0x021E609C
 	ldr r0, [r0]
 	ldr r2, [r4, #0x30]
 	add r1, sp, #0
-	bl sub_02016704
+	bl YesNoPrompt_InitFromTemplateWithPalette
 	add sp, #0x14
 	pop {r3, r4, pc}
 	.balign 4, 0
@@ -658,7 +659,7 @@ ov56_021E60F4: ; 0x021E60F4
 	add r5, r0, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021E610A
 	cmp r0, #2
@@ -730,7 +731,7 @@ _021E6162:
 	bl FillWindowPixelBuffer
 	ldr r1, [r5]
 	mov r0, #0x4c
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [r5, #0x20]
 	mov r1, #3
@@ -747,10 +748,10 @@ _021E6162:
 	add r0, r5, #0
 	str r3, [sp, #0xc]
 	add r0, #0x9c
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	strb r0, [r5, #0xf]
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	bl ov56_021E5D08
 	ldrb r0, [r5, #0x16]
@@ -839,8 +840,8 @@ _021E624E:
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -875,7 +876,7 @@ _021E62A2:
 	bl Main_SetVBlankIntrCB
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0
 	bl SetMasterBrightnessNeutral
 	mov r1, #4
@@ -963,8 +964,8 @@ _021E6350:
 	mov r0, #0
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -1017,11 +1018,11 @@ _021E63CE:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _021E63DC
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 _021E63DC:
 	bl NNS_GfdDoVramTransfer
 	ldr r0, [r4, #0x18]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E63F4 ; =0x027E0000
 	ldr r1, _021E63F8 ; =0x00003FF8
 	mov r0, #1
@@ -1181,7 +1182,7 @@ _021E64FE:
 	sub r2, r2, #1
 	bne _021E64FE
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -1339,7 +1340,7 @@ ov56_021E6650: ; 0x021E6650
 	add r0, #0x18
 	str r0, [sp, #0x20]
 	mov r0, #0x4f
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0
 	str r1, [sp]
 	add r4, r0, #0
@@ -1417,7 +1418,7 @@ ov56_021E6650: ; 0x021E6650
 	lsr r2, r2, #0x10
 	bl BG_LoadPlttData
 	ldr r0, [r5]
-	bl sub_020030E8
+	bl PaletteData_Init
 	str r0, [r5, #0x30]
 	ldr r3, [r5]
 	mov r1, #0
@@ -1558,7 +1559,7 @@ _021E6768:
 	add r1, #0x48
 	bl NNS_G2dGetUnpackedScreenData
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r3, #0
 	str r3, [sp]
 	mov r0, #0x20
@@ -1664,7 +1665,7 @@ ov56_021E692C: ; 0x021E692C
 	mov r1, #0
 	bl PaletteData_FreeBuffers
 	ldr r0, [r4, #0x30]
-	bl sub_02003104
+	bl PaletteData_Free
 	mov r1, #0
 	str r1, [r4, #0x30]
 	ldr r0, _021E6968 ; =0x04000050
@@ -1791,7 +1792,7 @@ _021E6A4C:
 	cmp r4, #6
 	blt _021E6A3A
 	ldr r0, [r6]
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	add r6, #0xac
 	str r0, [r6]
 	add sp, #0x14
@@ -1811,7 +1812,7 @@ ov56_021E6A7C: ; 0x021E6A7C
 	add r4, r0, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r5, #0
 	add r4, #0x4c
 _021E6A8C:
@@ -1860,9 +1861,9 @@ _021E6AB2:
 	add r0, r6, #0
 	mov r1, #1
 	mov r3, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	bl CopyWindowToVram
 _021E6AF4:
@@ -1882,7 +1883,7 @@ _021E6AF4:
 	str r0, [r4, #0x20]
 	ldr r1, [r4]
 	mov r0, #0x10
-	bl String_ctor
+	bl String_New
 	add r5, r0, #0
 	add r0, r4, #0
 	str r0, [sp, #0x18]
@@ -1891,7 +1892,7 @@ _021E6AF4:
 	str r0, [sp, #0x18]
 _021E6B26:
 	add r0, r5, #0
-	bl StringSetEmpty
+	bl String_SetEmpty
 	ldr r0, [r4, #0x20]
 	add r1, r6, #0
 	add r2, r5, #0
@@ -1921,7 +1922,7 @@ _021E6B26:
 	add r0, r0, r1
 	mov r1, #1
 	asr r3, r3, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r1, [sp, #0x14]
 	ldr r0, [sp, #0x18]
 	add r0, r0, r1
@@ -1930,7 +1931,7 @@ _021E6B26:
 	cmp r6, #2
 	blt _021E6B26
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x1c
 	pop {r4, r5, r6, r7, pc}
 _021E6B88:
@@ -1945,7 +1946,7 @@ _021E6B88:
 	add r0, r4, #0
 	ldr r2, [r2, #0x14]
 	add r0, #0x8c
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r4, #0x8c
 	add r0, r4, #0
 	bl CopyWindowToVram
@@ -1970,14 +1971,14 @@ _021E6BC6:
 	mov r0, #0x20
 	bl GF_CreateVramTransferManager
 	ldr r0, [r5]
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	add r1, r5, #0
 	add r1, #0xb0
 	str r0, [r1]
 	add r0, r5, #0
 	add r0, #0xb0
 	ldr r0, [r0]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r1, r5, #0
 	add r1, #0xb4
 	add r2, sp, #0x40
@@ -2030,7 +2031,7 @@ _021E6BC6:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	add r2, sp, #0x14
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	ldr r0, [r5]
 	bl sub_0200B2E0
 	bl sub_02074490
@@ -2049,7 +2050,7 @@ _021E6BC6:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	mov r2, #0x14
-	bl sub_0200D564
+	bl SpriteRenderer_LoadPlttResObjFromNarcId
 	bl sub_02074494
 	add r3, r0, #0
 	mov r0, #0
@@ -2062,7 +2063,7 @@ _021E6BC6:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	mov r2, #0x14
-	bl sub_0200D6D4
+	bl SpriteRenderer_LoadCellResObjFromNarcId
 	bl sub_020744A0
 	add r3, r0, #0
 	mov r0, #0
@@ -2075,7 +2076,7 @@ _021E6BC6:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	mov r2, #0x14
-	bl sub_0200D704
+	bl SpriteRenderer_LoadAnimResObjFromNarcId
 	mov r6, #0
 	add r4, r6, #0
 	str r6, [sp, #0x10]
@@ -2145,7 +2146,7 @@ _021E6CC4:
 	add r1, #0xb4
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	add r1, r7, #0
 	add r1, #0xb8
 	str r0, [r1]
@@ -2160,7 +2161,7 @@ _021E6CC4:
 	add r0, #0xb8
 	ldr r0, [r0]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 _021E6D6C:
 	ldr r0, [sp, #0x10]
 	add r6, r6, #1
@@ -2207,10 +2208,10 @@ _021E6DAC:
 	add r1, #0xb4
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	add r6, #0xb0
 	ldr r0, [r6]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	bl GF_DestroyVramTransferManager
 _021E6DD0:
 	pop {r4, r5, r6, pc}

@@ -21,7 +21,7 @@ struct FieldMoveUseData {
 
 struct FieldMoveCheckData {
     u32 mapId;
-    FieldSystem *fsys;
+    FieldSystem *fieldSystem;
     LocalMapObject *facingObject;
     u16 flag;
 };
@@ -39,7 +39,7 @@ struct FieldUseMoveEnv {
 };
 
 struct TeleportFieldEnv {
-    POKEMON *pokemon;
+    Pokemon *mon;
     struct FlyTaskStruct *flySub; // waste of space
 };
 

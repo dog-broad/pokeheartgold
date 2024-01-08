@@ -6,6 +6,7 @@
 #include "constants/moves.h"
 #include "constants/std_script.h"
 	.include "asm/macros.inc"
+	.include "unk_0206A360.inc"
 	.include "global.inc"
 
 	.public NNS_G3dGlb
@@ -46,7 +47,7 @@ sub_0206A388: ; 0x0206A388
 	add r6, r1, #0
 	add r5, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp, #4]
 	mov r0, #4
 	mov r1, #0x38
@@ -56,7 +57,7 @@ sub_0206A388: ; 0x0206A388
 	str r0, [r4]
 	str r0, [r4, #4]
 	ldr r0, [sp, #4]
-	bl Fsys_GetBgConfigPtr
+	bl FieldSystem_GetBgConfigPtr
 	str r0, [r4, #0xc]
 	mov r0, #0
 	strh r0, [r4, #0x18]
@@ -117,10 +118,10 @@ sub_0206A410: ; 0x0206A410
 	push {r4, r5, lr}
 	sub sp, #0xc
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4]
 	cmp r0, #3
@@ -304,7 +305,7 @@ _0206A536:
 	bl BgClearTilemapBufferAndCommit
 	ldr r0, [r4, #0x10]
 	mov r1, #1
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	add sp, #0xc
@@ -487,9 +488,9 @@ _0206A6D8:
 _0206A714:
 	ldr r0, [r5, #0x40]
 	mov r1, #1
-	bl ov01_PlayerAvatar_OrrTransitionFlags
+	bl Field_PlayerAvatar_OrrTransitionFlags
 	ldr r0, [r5, #0x40]
-	bl ov01_PlayerAvatar_ApplyTransitionFlags
+	bl Field_PlayerAvatar_ApplyTransitionFlags
 	ldrh r0, [r4]
 	add r0, r0, #1
 	strh r0, [r4]

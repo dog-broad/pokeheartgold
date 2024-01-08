@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_32.inc"
 	.include "global.inc"
 
 	.text
@@ -23,7 +24,7 @@ ov32_0225D520: ; 0x0225D520
 	lsl r1, r1, #2
 	mov r2, #0xa
 	mov r3, #8
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	add r7, r0, #0
 	bl sub_0201F988
 	add r5, r0, #0
@@ -49,7 +50,7 @@ ov32_0225D520: ; 0x0225D520
 	bl FontID_Alloc
 	ldr r0, _0225D5C8 ; =0x00000105
 	mov r1, #8
-	bl NARC_ctor
+	bl NARC_New
 	add r4, r0, #0
 	bl ov32_0225D60C
 	add r0, r6, #0
@@ -67,7 +68,7 @@ ov32_0225D520: ; 0x0225D520
 	add r0, r5, #0
 	bl ov32_0225DD74
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r7, #0
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}
@@ -96,7 +97,7 @@ ov32_0225D5CC: ; 0x0225D5CC
 	mov r0, #4
 	bl FontID_Release
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	mov r0, #8
 	bl DestroyHeap
 	pop {r3, r4, r5, pc}
@@ -277,7 +278,7 @@ ov32_0225D748: ; 0x0225D748
 	lsl r1, r1, #2
 	str r0, [r4, r1]
 	mov r0, #8
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	mov r1, #0x52
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -291,7 +292,7 @@ ov32_0225D76C: ; 0x0225D76C
 	mov r0, #0x52
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	mov r0, #0x51
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -358,9 +359,9 @@ _0225D796:
 	str r1, [sp, #0xc]
 	add r0, #0x24
 	mov r1, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0x24
 	bl CopyWindowPixelsToVram_TextMode
@@ -434,12 +435,12 @@ ov32_0225D84C: ; 0x0225D84C
 	add r0, #0x34
 	add r3, r4, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	mov r0, #4
 	mov r1, #8
-	bl String_ctor
+	bl String_New
 	add r6, r0, #0
 	mov r0, #0x51
 	lsl r0, r0, #2
@@ -473,9 +474,9 @@ ov32_0225D84C: ; 0x0225D84C
 	add r0, #0x34
 	add r3, r4, r7
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x10]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x51
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
@@ -516,11 +517,11 @@ ov32_0225D84C: ; 0x0225D84C
 	add r0, r5, #0
 	add r0, #0x34
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0x34
 	bl CopyWindowPixelsToVram_TextMode
@@ -558,10 +559,10 @@ _0225D9A0:
 	str r0, [sp, #0x18]
 	mov r0, #0x40
 	mov r1, #8
-	bl String_ctor
+	bl String_New
 	str r0, [sp, #0x14]
 	mov r0, #8
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	str r0, [sp, #0x1c]
 	add r0, r5, #0
 	bl GetWindowWidth
@@ -581,7 +582,7 @@ _0225D9D4:
 	bl sub_0202C254
 	add r1, r0, #0
 	ldr r0, [sp, #0x1c]
-	bl Sav2_Profile_PlayerName_set
+	bl Save_Profile_PlayerName_Set
 	mov r0, #0x52
 	lsl r0, r0, #2
 	ldr r0, [r7, r0]
@@ -619,7 +620,7 @@ _0225D9D4:
 	add r0, r5, r0
 	mov r1, #4
 	sub r3, r3, r6
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x20]
 	add r0, r5, r0
 	bl CopyWindowPixelsToVram_TextMode
@@ -634,9 +635,9 @@ _0225D9D4:
 	ldr r0, [sp, #0x1c]
 	bl FreeToHeap
 	ldr r0, [sp, #0x14]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x18]
-	bl String_dtor
+	bl String_Delete
 	ldr r1, _0225DA7C ; =0x000002AB
 	mov r0, #1
 	ldrb r2, [r7, r1]
@@ -688,7 +689,7 @@ ov32_0225DAC0: ; 0x0225DAC0
 	mov r0, #0x53
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov32_0225DAC0
@@ -960,7 +961,7 @@ ov32_0225DCD4: ; 0x0225DCD4
 	lsl r6, r6, #2
 _0225DCE0:
 	ldr r0, [r5, r6]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #4
@@ -988,7 +989,7 @@ ov32_0225DD04: ; 0x0225DD04
 _0225DD12:
 	ldr r0, [r5, r6]
 	add r1, r7, #0
-	bl sub_020249B0
+	bl Sprite_TickCellOrMulticellAnimation
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #4
@@ -1017,7 +1018,7 @@ ov32_0225DD24: ; 0x0225DD24
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r4, #8
 	bne _0225DD64
 	mov r0, #0xa6
@@ -1153,7 +1154,7 @@ ov32_0225DE34: ; 0x0225DE34
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, _0225DF6C ; =_0225E15C
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	cmp r0, #0
 	bne _0225DE56
 	mov r0, #0x5e

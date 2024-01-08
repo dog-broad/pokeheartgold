@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_02058AEC.inc"
 	.include "global.inc"
 
 	.bss
@@ -34,18 +35,18 @@ sub_02058AEC: ; 0x02058AEC
 	add r4, r0, #0
 	bl MI_CpuFill8
 	ldr r0, [r6, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_0208AD34
 	add r0, r5, #0
-	bl SavArray_IsNatDexEnabled
+	bl SaveArray_IsNatDexEnabled
 	str r0, [r4, #0x1c]
 	add r0, r5, #0
 	bl sub_02088288
 	str r0, [r4, #0x2c]
 	add r0, r5, #0
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #4]
 	ldr r0, [sp]
 	str r0, [r4]
@@ -54,14 +55,14 @@ sub_02058AEC: ; 0x02058AEC
 	ldr r0, [sp, #4]
 	strb r0, [r4, #0x14]
 	ldr r0, [r4]
-	bl GetPartyCount
+	bl Party_GetCount
 	strb r0, [r4, #0x13]
 	mov r0, #0
 	strh r0, [r4, #0x18]
 	ldr r0, [sp, #0x20]
 	strb r0, [r4, #0x12]
 	add r0, r5, #0
-	bl Save_SpecialRibbons_get
+	bl Save_SpecialRibbons_Get
 	str r0, [r4, #0x20]
 	mov r0, #0
 	str r0, [r4, #0x30]
@@ -74,7 +75,7 @@ sub_02058AEC: ; 0x02058AEC
 	ldr r1, _02058B80 ; =_02103A1C
 	add r0, r6, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	str r4, [r7]
 	add sp, #8
 	pop {r3, r4, r5, r6, r7, pc}
@@ -96,7 +97,7 @@ sub_02058B84: ; 0x02058B84
 	bl MI_CpuFill8
 	ldr r0, [r5, #0x24]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #0xc]
 	ldr r0, [r5, #0x24]
 	add r0, #0xa4
@@ -104,11 +105,11 @@ sub_02058B84: ; 0x02058B84
 	str r0, [r4, #0x14]
 	ldr r0, [r5, #0x24]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [r4]
 	ldr r0, [r5, #0x24]
 	ldr r0, [r0, #0xc]
-	bl Sav2_Bag_get
+	bl Save_Bag_Get
 	str r0, [r4, #4]
 	mov r0, #0x43
 	ldr r1, [r5, #0x24]
@@ -202,7 +203,7 @@ _02058C5C:
 	ldr r0, [r5, #0x24]
 	ldr r1, _02058C7C ; =_0210159C
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	str r4, [r5, #4]
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -214,7 +215,7 @@ sub_02058C80: ; 0x02058C80
 	push {r4, lr}
 	add r4, r0, #0
 	add r0, r1, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _02058C92
 	mov r0, #0
@@ -263,7 +264,7 @@ sub_02058CD8: ; 0x02058CD8
 	push {r4, lr}
 	add r4, r0, #0
 	add r0, r1, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _02058CEA
 	mov r0, #0
@@ -331,10 +332,10 @@ sub_02058D4C: ; 0x02058D4C
 	push {r3, r4, r5, lr}
 	sub sp, #8
 	add r5, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	ldr r1, [r4, #0x34]
 	cmp r1, #0x2c
 	bls _02058D66
@@ -647,7 +648,7 @@ _02058FC0:
 _02058FC6:
 	ldr r0, [r4, #0x24]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r2, r0, #0
 	mov r0, #0
 	str r0, [sp]
@@ -977,7 +978,7 @@ _02059274:
 	add r1, #0x84
 	ldrb r1, [r1]
 	ldr r0, [r4, #0x50]
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	bl Mon_GetBoxMon
 	add r2, r0, #0
 	ldr r0, [r4, #0x28]
@@ -1231,7 +1232,7 @@ sub_02059478: ; 0x02059478
 	bl sub_0205B514
 	ldr r0, [r5, #0x24]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_0205B564
@@ -1242,7 +1243,7 @@ _020594AA:
 _020594B0:
 	ldr r0, [r5, #0x24]
 	ldr r0, [r0, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	add r1, r6, #0
@@ -1329,7 +1330,7 @@ _02059546:
 	str r5, [r4, #0x24]
 	str r6, [r4, #8]
 	mov r0, #0xb
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x28]
 	mov r0, #0
 	mov r1, #0x1b
@@ -1339,11 +1340,11 @@ _02059546:
 	str r0, [r4, #0x2c]
 	mov r0, #0xc8
 	mov r1, #0xb
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0xc]
 	mov r0, #0xc8
 	mov r1, #0xb
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x10]
 	add r0, r4, #0
 	add r0, #0x14
@@ -1399,10 +1400,10 @@ _020595F0:
 	bl AllocFromHeapAtEnd
 	str r0, [r4, #0x48]
 	mov r0, #0xb
-	bl SavArray_Party_alloc
+	bl SaveArray_Party_Alloc
 	mov r1, #3
 	str r0, [r4, #0x50]
-	bl InitPartyWithMaxSize
+	bl Party_InitWithMaxSize
 	add r0, r4, #0
 	mov r1, #5
 	add r0, #0x44
@@ -1430,7 +1431,7 @@ _02059640:
 	ldr r1, _0205964C ; =sub_02058D4C
 	add r0, r5, #0
 	add r2, r4, #0
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 _0205964A:
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
@@ -1459,11 +1460,11 @@ _02059672:
 	ldr r0, [r4, #0x2c]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x28]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0xc]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x10]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x78]
 	bl DestroyListMenuCursorObj
 	add r0, r4, #0
@@ -1475,11 +1476,11 @@ _02059672:
 
 	thumb_func_start sub_0205969C
 sub_0205969C: ; 0x0205969C
-	ldr r3, _020596A4 ; =TaskManager_GetEnv
+	ldr r3, _020596A4 ; =TaskManager_GetEnvironment
 	ldr r0, [r0, #0x10]
 	bx r3
 	nop
-_020596A4: .word TaskManager_GetEnv
+_020596A4: .word TaskManager_GetEnvironment
 	thumb_func_end sub_0205969C
 
 	thumb_func_start sub_020596A8
@@ -1489,7 +1490,7 @@ sub_020596A8: ; 0x020596A8
 	ldr r0, [r7, #0x24]
 	add r5, r1, #0
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp]
 	ldr r4, [r7, #0x4c]
 	bl sub_02070D90
@@ -1507,7 +1508,7 @@ _020596CE:
 	ldrb r1, [r1]
 	ldr r0, [sp]
 	sub r1, r1, #1
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r4, #0
 	add r2, r6, #0
 	bl MI_CpuCopy8
@@ -1642,7 +1643,7 @@ sub_020597A8: ; 0x020597A8
 	add r6, r0, #0
 	ldr r0, [r5, #0x50]
 	mov r1, #3
-	bl InitPartyWithMaxSize
+	bl Party_InitWithMaxSize
 	mov r4, #0
 _020597BC:
 	add r1, r4, #0
@@ -1650,7 +1651,7 @@ _020597BC:
 	mul r1, r6
 	ldr r0, [r5, #0x50]
 	add r1, r2, r1
-	bl AddMonToParty
+	bl Party_AddMon
 	add r4, r4, #1
 	cmp r4, #3
 	blt _020597BC
@@ -1682,7 +1683,7 @@ sub_020597D4: ; 0x020597D4
 	bl MI_CpuCopy8
 	ldr r0, [r6, #0x50]
 	mov r1, #3
-	bl InitPartyWithMaxSize
+	bl Party_InitWithMaxSize
 	mov r5, #0
 _0205980A:
 	add r1, r5, #0
@@ -1690,7 +1691,7 @@ _0205980A:
 	mul r1, r4
 	ldr r0, [r6, #0x50]
 	add r1, r2, r1
-	bl AddMonToParty
+	bl Party_AddMon
 	add r5, r5, #1
 	cmp r5, #3
 	blt _0205980A
@@ -2131,10 +2132,10 @@ _02059B60:
 sub_02059B64: ; 0x02059B64
 	push {r4, r5, r6, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	mov r1, #0
 	ldr r0, [r4, #0x24]
@@ -2163,7 +2164,7 @@ _02059B96: ; jump table
 	.short _02059D24 - _02059B96 - 2 ; case 7
 _02059BA6:
 	mov r0, #4
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x18]
 	mov r0, #0
 	mov r1, #0x1b
@@ -2173,11 +2174,11 @@ _02059BA6:
 	str r0, [r4, #0x1c]
 	mov r0, #0xc8
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4]
 	mov r0, #0xc8
 	mov r1, #4
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #4]
 	ldrb r0, [r6]
 	cmp r0, #0xc
@@ -2237,13 +2238,13 @@ _02059C10:
 	mov r2, #3
 	bl sub_0205B514
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r1, r0, #0
 	add r0, r4, #0
 	add r0, #8
 	bl sub_0205B564
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	ldr r1, [r4, #4]
@@ -2270,11 +2271,11 @@ _02059C6C:
 	ldr r0, [r4, #0x1c]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x18]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #4]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #8
 	mov r1, #0
@@ -2311,7 +2312,7 @@ _02059CCC:
 	b _02059D36
 _02059CE8:
 	add r0, r5, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	bne _02059D36
 	ldr r0, [r4, #0x28]
@@ -2389,7 +2390,7 @@ _02059D66:
 	str r0, [r2, #0x28]
 	ldr r0, [sp]
 	ldr r1, _02059DAC ; =sub_02059B64
-	bl FieldSys_CreateTask
+	bl FieldSystem_CreateTask
 	bl sub_0203E2F4
 	pop {r3, r4, r5, r6, r7, pc}
 _02059D9C:
@@ -2474,7 +2475,7 @@ sub_02059E1C: ; 0x02059E1C
 	mov r0, #0
 	pop {r4, r5, r6, pc}
 _02059E2E:
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	add r6, r0, #0
 	bl sub_02037F18
 	mov r1, #0x19
@@ -2498,7 +2499,7 @@ _02059E2E:
 	str r5, [r4]
 	str r6, [r4, #4]
 	add r0, r6, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	str r0, [r4, #8]
 	add r0, r4, #0
 	bl sub_0205ABBC
@@ -2521,7 +2522,7 @@ sub_02059E88: ; 0x02059E88
 	cmp r0, #0
 	beq _02059EB4
 	add r0, sp, #0
-	bl MailMsg_init_default
+	bl MailMsg_Init_Default
 	add r0, sp, #0
 	bl sub_0205AB88
 	add r0, r4, #0
@@ -2855,7 +2856,7 @@ sub_0205A114: ; 0x0205A114
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4]
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _0205A13C
 	bl sub_02037FF0

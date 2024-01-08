@@ -49,14 +49,14 @@ scr_seq_T06_013:
 	scrcmd_609
 	lockall
 	apply_movement obj_T06_daigo, _016C
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0190
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0483_T06_00016
 	closemsg
 	apply_movement obj_T06_daigo, _0180
@@ -78,7 +78,8 @@ scr_seq_T06_013:
 	npc_msg msg_0483_T06_00021
 	closemsg
 	goto _013F
-	.byte 0x02, 0x00
+	end
+
 _0109:
 	scrcmd_452 SPECIES_LATIOS, 0
 	npc_msg msg_0483_T06_00018
@@ -94,7 +95,8 @@ _0109:
 	npc_msg msg_0483_T06_00022
 	closemsg
 	goto _013F
-	.byte 0x02, 0x00
+	end
+
 _013F:
 	apply_movement obj_T06_daigo, _0180
 	wait_movement
@@ -107,8 +109,8 @@ _013F:
 	setflag FLAG_HIDE_VERMILION_CITY_STEVEN
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _016C:
 	step 75, 1
 	step 63, 1
@@ -116,19 +118,23 @@ _016C:
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0180:
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0188:
 	step 15, 10
 	step_end
 
+	.balign 4, 0
 _0190:
 	step 65, 4
 	step 13, 1
 	step 35, 1
 	step_end
+
 scr_seq_T06_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -204,9 +210,9 @@ _0270:
 	lock obj_T06_tsure_poke_static_suicune
 	wait_cry
 	callstd std_play_eusine_music
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_coords VAR_TEMP_x4000, VAR_TEMP_x4001
 	compare VAR_TEMP_x4001, 331
 	goto_if_ne _02D5
@@ -229,9 +235,9 @@ _0300:
 	apply_movement obj_T06_tsure_poke_static_suicune, _042C
 _0318:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0483_T06_00014
 	closemsg
 	apply_movement obj_T06_minaki, _04D0
@@ -283,27 +289,31 @@ _037F:
 	apply_movement obj_player, _04F0
 	wait_movement
 	goto _034D
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _040C:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _0414:
 	step 62, 9
 	step 112, 1
 	step_end
 
+	.balign 4, 0
 _0420:
 	step 62, 11
 	step 112, 1
 	step_end
 
+	.balign 4, 0
 _042C:
 	step 62, 13
 	step 112, 1
 	step_end
 
+	.balign 4, 0
 _0438:
 	step 62, 4
 	step 21, 2
@@ -314,80 +324,96 @@ _0438:
 	step 57, 2
 	step_end
 
+	.balign 4, 0
 _0458:
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0460:
 	step 15, 2
 	step 12, 2
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _0470:
 	step 15, 2
 	step 12, 3
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _0480:
 	step 15, 2
 	step 12, 4
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _0490:
 	step 63, 1
 	step 17, 6
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _04A0:
 	step 62, 3
 	step 17, 6
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _04B0:
 	step 62, 5
 	step 17, 6
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _04C0:
 	step 62, 2
 	step 19, 1
 	step 17, 2
 	step_end
 
+	.balign 4, 0
 _04D0:
 	step 1, 1
 	step_end
 
+	.balign 4, 0
 _04D8:
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _04E0:
 	step 49, 3
 	step_end
 
+	.balign 4, 0
 _04E8:
 	step 12, 8
 	step_end
 
+	.balign 4, 0
 _04F0:
 	step 0, 1
 	step_end
 
+	.balign 4, 0
 _04F8:
 	step 62, 4
 	step 1, 1
 	step_end
 
+	.balign 4, 0
 _0504:
 	step 2, 1
 	step_end
+
 scr_seq_T06_012:
 	scrcmd_609
 	lockall
@@ -401,9 +427,9 @@ scr_seq_T06_012:
 	lock obj_T06_tsure_poke_static_suicune
 	wait_cry
 	callstd std_play_eusine_music
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_coords VAR_TEMP_x4000, VAR_TEMP_x4001
 	compare VAR_TEMP_x4000, 1324
 	goto_if_ne _057D
@@ -426,9 +452,9 @@ _05A8:
 	apply_movement obj_T06_tsure_poke_static_suicune, _042C
 _05C0:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0483_T06_00014
 	closemsg
 	apply_movement obj_T06_minaki_2, _0690
@@ -452,23 +478,26 @@ _05C0:
 	setvar VAR_UNK_4086, 1
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0630:
 	step 13, 4
 	step 15, 2
 	step_end
 
+	.balign 4, 0
 _063C:
 	step 13, 4
 	step 15, 1
 	step_end
 
+	.balign 4, 0
 _0648:
 	step 13, 4
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _0654:
 	step 63, 1
 	step 19, 7
@@ -476,6 +505,7 @@ _0654:
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _0668:
 	step 63, 2
 	step 19, 7
@@ -483,6 +513,7 @@ _0668:
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _067C:
 	step 63, 3
 	step 19, 7
@@ -490,25 +521,30 @@ _067C:
 	step 19, 1
 	step_end
 
+	.balign 4, 0
 _0690:
 	step 0, 1
 	step_end
 
+	.balign 4, 0
 _0698:
 	step 14, 2
 	step 12, 13
 	step_end
 
+	.balign 4, 0
 _06A4:
 	step 1, 1
 	step_end
 
+	.balign 4, 0
 _06AC:
 	step 63, 2
 	step 2, 1
 	step 63, 1
 	step 0, 1
 	step_end
+
 scr_seq_T06_001:
 	simple_npc_msg msg_0483_T06_00000
 	end
@@ -582,9 +618,9 @@ scr_seq_T06_010:
 	get_std_msg_naix 2, VAR_SPECIAL_RESULT
 	msgbox_extern VAR_SPECIAL_RESULT, 1
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _07DB
@@ -603,9 +639,9 @@ _07FE:
 	apply_movement obj_T06_gsmiddleman1_2, _08CC
 _080E:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	scrcmd_729 VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0835
@@ -642,13 +678,14 @@ _0883:
 	closemsg
 	releaseall
 	end
-	.byte 0x00
 
+	.balign 4, 0
 _0898:
 	step 12, 3
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _08A4:
 	step 12, 1
 	step 14, 1
@@ -656,6 +693,7 @@ _08A4:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _08B8:
 	step 12, 1
 	step 15, 1
@@ -663,11 +701,13 @@ _08B8:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _08CC:
 	step 63, 1
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _08D8:
 	step 15, 1
 	step 12, 1

@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F72DC.inc"
 	.include "global.inc"
 
 	.text
@@ -328,10 +329,10 @@ _021F7522:
 _021F7524:
 	add r0, r5, #0
 	bl MapObject_GetManager
-	bl MapObjectMan_GetFieldSysPtr
+	bl MapObjectManager_GetFieldSysPtr
 	str r0, [sp, #0x10]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	str r0, [sp, #0xc]
 	mov r1, #5
@@ -436,7 +437,7 @@ _021F761C:
 	ldr r3, [sp, #4]
 	add r1, r7, #0
 	lsr r2, r2, #0x18
-	bl FollowPokeFsysParamSet
+	bl FieldSystem_SetFollowerPokeParam
 	add r0, r5, #0
 	mov r1, #1
 	bl MapObject_ForceSetFacingDirection
@@ -453,7 +454,7 @@ _021F7636:
 	ldr r0, [r0, r1]
 	ldr r1, [sp, #0xc]
 	lsr r2, r2, #0x10
-	bl FsysUnkSub108_Set
+	bl FieldSystemUnkSub108_Set
 _021F7654:
 	add r0, r5, #0
 	bl ov01_021FA2D4

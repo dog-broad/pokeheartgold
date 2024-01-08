@@ -1,0 +1,12 @@
+#include <nitro/fs/overlay.h>
+#pragma once
+.public AllocFromHeap
+.public FreeToHeap
+.public TouchscreenHitbox_TouchHeldIsIn
+.public TouchscreenHitbox_TouchNewIsIn
+.public System_GetTouchHeld
+.public System_GetTouchNew
+.public GF_AssertFail
+.public sub_02026C44
+.public sub_02026CAC
+.public sub_02026CC4

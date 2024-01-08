@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_41.inc"
 	.include "global.inc"
 
 	.text
@@ -64,7 +65,7 @@ ov41_02245F04: ; 0x02245F04
 	add r1, sp, #0
 	bl ov41_022460DC
 	add r0, sp, #0
-	bl sub_020252F4
+	bl TouchscreenHitbox_TouchHeldIsIn
 	pop {r3, pc}
 	thumb_func_end ov41_02245F04
 
@@ -391,7 +392,7 @@ ov41_02246130: ; 0x02246130
 	ldr r0, _0224614C ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	pop {r3, pc}
 	nop
 _0224614C: .word gSystem + 0x60
@@ -403,7 +404,7 @@ ov41_02246150: ; 0x02246150
 	ldr r0, _0224616C ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	bl ov41_022467D4
 	bl ov41_022467C8
 	bl GX_ResetBankForTex
@@ -425,7 +426,7 @@ ov41_02246170: ; 0x02246170
 	stmia r2!, {r0, r1}
 	mov r0, #0x1a
 	mov r1, #0xe
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #6
 	lsl r1, r1, #6
 	str r0, [r4, r1]
@@ -476,7 +477,7 @@ ov41_022461D0: ; 0x022461D0
 	mov r0, #6
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r4, #4]
 	bl FreeToHeap
 	mov r0, #0
@@ -845,7 +846,7 @@ ov41_02246494: ; 0x02246494
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x40]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r0, [r4, #0x20]
 	bl sub_02009418
 	bl OamManager_ApplyAndResetBuffers
@@ -1097,7 +1098,7 @@ ov41_02246670: ; 0x02246670
 	add r4, r0, #0
 	mov r0, #0x1a
 	mov r1, #0xe
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #6
 	lsl r1, r1, #6
 	str r0, [r4, r1]
@@ -1121,7 +1122,7 @@ ov41_02246698: ; 0x02246698
 	mov r0, #6
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #0
 	bl ov41_02246B34
 	pop {r4, pc}
@@ -1131,7 +1132,7 @@ ov41_02246698: ; 0x02246698
 ov41_022466B8: ; 0x022466B8
 	push {r3, lr}
 	ldr r0, [r0, #0x40]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl OamManager_ApplyAndResetBuffers
 	pop {r3, pc}
 	.balign 4, 0
@@ -1158,7 +1159,7 @@ _022466DA:
 	sub r2, r2, #1
 	bne _022466DA
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -1172,7 +1173,7 @@ ov41_022466F0: ; 0x022466F0
 	bl G3X_InitMtxStack
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _02246764 ; =0x04000008
 	mov r1, #3
 	ldrh r2, [r0]
@@ -1249,14 +1250,14 @@ ov41_02246778: ; 0x02246778
 	orr r0, r1
 	str r0, [r2]
 	bl NNS_G2dInitOamManagerModule
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r0, #0x1f
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x13
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	add sp, #0x10
 	pop {r4, pc}
 	.balign 4, 0
@@ -1275,8 +1276,8 @@ ov41_022467C8: ; 0x022467C8
 	thumb_func_start ov41_022467D4
 ov41_022467D4: ; 0x022467D4
 	push {r3, lr}
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	bl NNS_G2dInitOamManagerModule
 	pop {r3, pc}
 	thumb_func_end ov41_022467D4
@@ -1708,7 +1709,7 @@ ov41_02246B34: ; 0x02246B34
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0x44]
-	bl sub_02024504
+	bl SpriteList_Delete
 	mov r4, #0
 _02246B40:
 	ldr r0, [r5, #0x48]
@@ -2152,7 +2153,7 @@ _02246E42:
 	add r3, r4, #0
 	bl ov41_02248F18
 	mov r0, #0xd
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	ldr r1, _02246F00 ; =0x000006B8
 	str r0, [r4, r1]
 	mov r0, #0xd
@@ -2511,11 +2512,11 @@ _0224719C:
 _022471AA:
 	ldr r0, _02247234 ; =0x000006B8
 	ldr r0, [r4, r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	ldr r0, _02247238 ; =0x000006BC
 	mov r1, #1
 	ldr r0, [r4, r0]
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	add r0, r4, #0
 	bl ov41_022476A8
 	ldr r0, _0224723C ; =0x00000498
@@ -3187,7 +3188,7 @@ ov41_022476B8: ; 0x022476B8
 	mov r1, #0x10
 	mov r2, #0xa
 	mov r3, #0xd
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	str r5, [r0]
 	str r4, [r0, #4]
@@ -3264,7 +3265,7 @@ _0224774A:
 	sub r1, #0x18
 	mov r2, #0
 	mov r3, #0xa
-	bl sub_0200B484
+	bl StartBrightnessTransition
 	ldr r0, [r4, #0xc]
 	add sp, #4
 	add r0, r0, #1
@@ -3272,7 +3273,7 @@ _0224774A:
 	pop {r3, r4, pc}
 _02247766:
 	mov r0, #1
-	bl sub_0200B5C0
+	bl IsBrightnessTransitionActive
 	cmp r0, #0
 	beq _02247822
 	ldr r0, [r4, #0xc]
@@ -3341,7 +3342,7 @@ _022477E8:
 	mov r0, #8
 	sub r2, #0x10
 	mov r3, #0xa
-	bl sub_0200B484
+	bl StartBrightnessTransition
 	ldr r0, [r4, #0xc]
 	add sp, #4
 	add r0, r0, #1
@@ -3349,7 +3350,7 @@ _022477E8:
 	pop {r3, r4, pc}
 _02247804:
 	mov r0, #1
-	bl sub_0200B5C0
+	bl IsBrightnessTransitionActive
 	cmp r0, #0
 	beq _02247822
 	ldr r0, [r4, #0xc]
@@ -3361,7 +3362,7 @@ _02247818:
 	ldr r1, [r4, #4]
 	mov r2, #1
 	str r2, [r1]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 _02247822:
 	add sp, #4
 	pop {r3, r4, pc}
@@ -3377,7 +3378,7 @@ ov41_02247828: ; 0x02247828
 	mov r1, #0x10
 	mov r2, #0xa
 	mov r3, #0xd
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	str r5, [r0]
 	str r4, [r0, #4]
@@ -3424,7 +3425,7 @@ _0224787E:
 	sub r1, #0x18
 	mov r2, #0
 	mov r3, #0xa
-	bl sub_0200B484
+	bl StartBrightnessTransition
 	ldr r0, [r4, #0xc]
 	add sp, #4
 	add r0, r0, #1
@@ -3432,7 +3433,7 @@ _0224787E:
 	pop {r3, r4, pc}
 _0224789A:
 	mov r0, #1
-	bl sub_0200B5C0
+	bl IsBrightnessTransitionActive
 	cmp r0, #0
 	beq _022479A2
 	ldr r0, [r4, #0xc]
@@ -3507,7 +3508,7 @@ _0224792C:
 	mov r0, #8
 	sub r2, #0x10
 	mov r3, #0xa
-	bl sub_0200B484
+	bl StartBrightnessTransition
 	ldr r0, [r4, #0xc]
 	add sp, #4
 	add r0, r0, #1
@@ -3515,7 +3516,7 @@ _0224792C:
 	pop {r3, r4, pc}
 _02247948:
 	mov r0, #1
-	bl sub_0200B5C0
+	bl IsBrightnessTransitionActive
 	cmp r0, #0
 	beq _022479A2
 	ldr r0, [r4, #0xc]
@@ -3557,7 +3558,7 @@ _02247998:
 	ldr r1, [r4, #4]
 	mov r2, #1
 	str r2, [r1]
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 _022479A2:
 	add sp, #4
 	pop {r3, r4, pc}
@@ -3591,7 +3592,7 @@ ov41_022479A8: ; 0x022479A8
 	add r1, r5, #0
 	bl sub_0202BDC8
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 _022479E8:
 	ldr r0, [sp]
 	mov r5, #0
@@ -3750,7 +3751,7 @@ ov41_02247AB4: ; 0x02247AB4
 	strb r0, [r3, #0x12]
 	ldr r0, [r4, r2]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r4, #0
 	mov r1, #1
 	bl ov41_02247D1C
@@ -3804,7 +3805,7 @@ ov41_02247B7C: ; 0x02247B7C
 	add r5, r0, #0
 	ldr r0, _02247BB0 ; =0x000006B8
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r4, r0, #0
 	beq _02247B96
 	cmp r4, #1
@@ -3904,9 +3905,9 @@ ov41_02247BB8: ; 0x02247BB8
 	ldr r0, [r5, r0]
 	mov r1, #1
 	add r2, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	bl DestroyMsgData
 	ldr r0, _02247C74 ; =0x000006BC
@@ -3942,7 +3943,7 @@ ov41_02247C7C: ; 0x02247C7C
 	mov r0, #1
 	lsl r0, r0, #8
 	mov r1, #0xd
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, _02247CF8 ; =0x000006E8
 	add r1, r4, #0
@@ -3959,11 +3960,11 @@ ov41_02247C7C: ; 0x02247C7C
 	ldr r0, [r5, r0]
 	mov r1, #1
 	add r2, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
 	bl DestroyMsgData
 	ldr r0, _02247CF4 ; =0x000006BC
@@ -4079,7 +4080,7 @@ ov41_02247D64: ; 0x02247D64
 	ldr r0, _02247DF0 ; =0x000006B8
 	add r1, sp, #0
 	ldr r0, [r4, r0]
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r4, #0
 	mov r1, #2
 	bl ov41_02247D34
@@ -4117,7 +4118,7 @@ ov41_02247DF8: ; 0x02247DF8
 	add r5, r0, #0
 	ldr r0, _02247E2C ; =0x000006B8
 	ldr r0, [r5, r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	add r4, r0, #0
 	beq _02247E12
 	cmp r4, #1
@@ -4678,7 +4679,7 @@ ov41_022481BC: ; 0x022481BC
 	mov r1, #0xf6
 	strb r1, [r0, #3]
 	add r0, sp, #0
-	bl sub_020252F4
+	bl TouchscreenHitbox_TouchHeldIsIn
 	pop {r3, pc}
 	thumb_func_end ov41_022481BC
 
@@ -4695,7 +4696,7 @@ ov41_022481D8: ; 0x022481D8
 	mov r3, #0xf6
 	strb r3, [r0, #3]
 	add r0, sp, #0
-	bl sub_020253F0
+	bl TouchscreenHitbox_PointIsIn
 	pop {r3, pc}
 	thumb_func_end ov41_022481D8
 
@@ -5587,7 +5588,7 @@ ov41_02248820: ; 0x02248820
 	mov r1, #0x76
 	strb r1, [r0, #3]
 	add r0, sp, #0
-	bl sub_020252F4
+	bl TouchscreenHitbox_TouchHeldIsIn
 	pop {r3, pc}
 	thumb_func_end ov41_02248820
 
@@ -5604,7 +5605,7 @@ ov41_0224883C: ; 0x0224883C
 	mov r3, #0x76
 	strb r3, [r0, #3]
 	add r0, sp, #0
-	bl sub_020253F0
+	bl TouchscreenHitbox_PointIsIn
 	pop {r3, pc}
 	thumb_func_end ov41_0224883C
 
@@ -6097,7 +6098,7 @@ ov41_02248B84: ; 0x02248B84
 	mov r1, #0x30
 	mov r2, #0
 	mov r3, #0xd
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	add r4, r0, #0
 	str r5, [r4]
@@ -6315,7 +6316,7 @@ _02248D20:
 	ldr r0, [r4, #0x28]
 	bl FreeToHeap
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	add sp, #4
 	pop {r3, r4, r5, r6, pc}
 _02248D54:
@@ -7307,7 +7308,7 @@ ov41_02249480: ; 0x02249480
 	mov r1, #0x2c
 	mov r2, #0
 	mov r3, #0xd
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	add r4, r0, #0
 	ldr r0, [r5, #8]
@@ -7403,7 +7404,7 @@ _02249532:
 	bl ov41_022463FC
 _0224955A:
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	add sp, #8
 	pop {r3, r4, r5, pc}
 _02249564:
@@ -7684,20 +7685,20 @@ ov41_0224971C: ; 0x0224971C
 
 	thumb_func_start ov41_02249768
 ov41_02249768: ; 0x02249768
-	ldr r3, _02249770 ; =sub_020252F4
+	ldr r3, _02249770 ; =TouchscreenHitbox_TouchHeldIsIn
 	add r0, r0, #4
 	bx r3
 	nop
-_02249770: .word sub_020252F4
+_02249770: .word TouchscreenHitbox_TouchHeldIsIn
 	thumb_func_end ov41_02249768
 
 	thumb_func_start ov41_02249774
 ov41_02249774: ; 0x02249774
-	ldr r3, _0224977C ; =sub_020253F0
+	ldr r3, _0224977C ; =TouchscreenHitbox_PointIsIn
 	add r0, r0, #4
 	bx r3
 	nop
-_0224977C: .word sub_020253F0
+_0224977C: .word TouchscreenHitbox_PointIsIn
 	thumb_func_end ov41_02249774
 
 	thumb_func_start ov41_02249780
@@ -8612,7 +8613,7 @@ ov41_02249DB4: ; 0x02249DB4
 	mov r1, #0x4c
 	mov r2, #0
 	mov r3, #0xd
-	bl sub_02007200
+	bl CreateSysTaskAndEnvironment
 	bl sub_0201F988
 	add r4, r0, #0
 	str r6, [r4]
@@ -8830,7 +8831,7 @@ _02249F40:
 	str r0, [r1]
 _02249F74:
 	add r0, r5, #0
-	bl sub_02007234
+	bl DestroySysTaskAndEnvironment
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov41_02249F0C
 
@@ -9125,7 +9126,7 @@ ov41_0224A1A8: ; 0x0224A1A8
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4]
-	bl sub_02024758
+	bl Sprite_Delete
 	mov r1, #0x10
 	mov r0, #0
 _0224A1B6:
@@ -9231,32 +9232,32 @@ ov41_0224A254: ; 0x0224A254
 
 	thumb_func_start ov41_0224A258
 ov41_0224A258: ; 0x0224A258
-	ldr r3, _0224A260 ; =sub_020249D4
+	ldr r3, _0224A260 ; =Sprite_SetAnimCtrlCurrentFrame
 	ldr r0, [r0]
 	mov r1, #2
 	bx r3
 	.balign 4, 0
-_0224A260: .word sub_020249D4
+_0224A260: .word Sprite_SetAnimCtrlCurrentFrame
 	thumb_func_end ov41_0224A258
 
 	thumb_func_start ov41_0224A264
 ov41_0224A264: ; 0x0224A264
-	ldr r3, _0224A26C ; =sub_020249D4
+	ldr r3, _0224A26C ; =Sprite_SetAnimCtrlCurrentFrame
 	ldr r0, [r0]
 	mov r1, #0
 	bx r3
 	.balign 4, 0
-_0224A26C: .word sub_020249D4
+_0224A26C: .word Sprite_SetAnimCtrlCurrentFrame
 	thumb_func_end ov41_0224A264
 
 	thumb_func_start ov41_0224A270
 ov41_0224A270: ; 0x0224A270
-	ldr r3, _0224A278 ; =sub_020249D4
+	ldr r3, _0224A278 ; =Sprite_SetAnimCtrlCurrentFrame
 	ldr r0, [r0]
 	mov r1, #1
 	bx r3
 	.balign 4, 0
-_0224A278: .word sub_020249D4
+_0224A278: .word Sprite_SetAnimCtrlCurrentFrame
 	thumb_func_end ov41_0224A270
 
 	thumb_func_start ov41_0224A27C
@@ -10183,9 +10184,9 @@ _0224A940:
 	str r1, [sp, #0xc]
 	add r0, r4, #0
 	mov r1, #2
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
 	bl DestroyMsgData
 	add r0, r4, #0
@@ -10197,11 +10198,11 @@ _0224A9AC: .word 0x00010203
 
 	thumb_func_start ov41_0224A9B0
 ov41_0224A9B0: ; 0x0224A9B0
-	ldr r3, _0224A9B8 ; =WindowArray_dtor
+	ldr r3, _0224A9B8 ; =WindowArray_Delete
 	mov r1, #1
 	bx r3
 	nop
-_0224A9B8: .word WindowArray_dtor
+_0224A9B8: .word WindowArray_Delete
 	thumb_func_end ov41_0224A9B0
 
 	thumb_func_start ov41_0224A9BC
@@ -10212,7 +10213,7 @@ ov41_0224A9BC: ; 0x0224A9BC
 	ldr r0, [r5]
 	add r4, r1, #0
 	add r6, r2, #0
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r3, r0, #0
 	add r2, sp, #0
 	ldmia r3!, {r0, r1}
@@ -10230,7 +10231,7 @@ ov41_0224A9BC: ; 0x0224A9BC
 	str r0, [sp, #4]
 	ldr r0, [r5]
 	add r1, r7, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add sp, #0xc
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -10578,7 +10579,7 @@ ov41_0224AC80: ; 0x0224AC80
 	mov r0, #0x51
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #0x51
 	mov r1, #0
 	lsl r0, r0, #2
@@ -10716,11 +10717,11 @@ _0224AD80: .word ov41_02249CC4
 
 	thumb_func_start ov41_0224AD84
 ov41_0224AD84: ; 0x0224AD84
-	ldr r3, _0224AD8C ; =WindowArray_dtor
+	ldr r3, _0224AD8C ; =WindowArray_Delete
 	mov r1, #1
 	bx r3
 	nop
-_0224AD8C: .word WindowArray_dtor
+_0224AD8C: .word WindowArray_Delete
 	thumb_func_end ov41_0224AD84
 
 	thumb_func_start ov41_0224AD90
@@ -10826,10 +10827,10 @@ _0224AE3C:
 	mov r0, #0
 	str r0, [sp, #0xc]
 	add r0, r6, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r6, r0, #0
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	bl DestroyMsgData
 	add r0, r6, #0
@@ -10877,7 +10878,7 @@ _0224AEA4:
 	str r0, [sp, #0xc]
 	ldr r2, [r4]
 	add r0, r7, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r4, r0, #0
 	add r0, r5, #0
 	bl DestroyMsgData
@@ -11029,7 +11030,7 @@ ov41_0224AFD4: ; 0x0224AFD4
 	add r5, r6, #0
 _0224AFDE:
 	ldr r0, [r5, #0x10]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #0x14
@@ -11651,7 +11652,7 @@ ov41_0224B450: ; 0x0224B450
 	str r0, [sp, #4]
 	ldr r0, [r5, #4]
 	add r1, r2, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	add r6, r5, #0
 	add r6, #0x18
 	add r3, sp, #0
@@ -11666,7 +11667,7 @@ ov41_0224B450: ; 0x0224B450
 	str r0, [sp, #4]
 	ldr r0, [r5, #8]
 	add r1, r2, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	cmp r4, #0
 	beq _0224B4E2
 	mov r0, #0
@@ -11943,7 +11944,7 @@ ov41_0224B6CC: ; 0x0224B6CC
 	ldr r1, [r4, #0x68]
 	add r5, r0, #0
 	mov r0, #0x1a
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #6
 	lsl r1, r1, #6
 	str r0, [r5, r1]
@@ -12022,7 +12023,7 @@ _0224B772:
 	mov r0, #6
 	lsl r0, r0, #6
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov41_0224B754
@@ -12413,7 +12414,7 @@ ov41_0224BA10: ; 0x0224BA10
 	ldr r0, _0224BAC8 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	add r0, r5, #0
 	add r0, #0x14
 	mov r1, #0xe
@@ -12786,7 +12787,7 @@ ov41_0224BCF0: ; 0x0224BCF0
 	str r0, [r4, r1]
 	ldr r0, [r4, r1]
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	add sp, #0xc
 	pop {r3, r4, pc}
 	thumb_func_end ov41_0224BCF0
@@ -12817,7 +12818,7 @@ ov41_0224BD8C: ; 0x0224BD8C
 	mov r0, #0x66
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_02024758
+	bl Sprite_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov41_0224BD8C
@@ -12887,7 +12888,7 @@ ov41_0224BE34: ; 0x0224BE34
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl WindowArray_dtor
+	bl WindowArray_Delete
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov41_0224BE34
@@ -12927,7 +12928,7 @@ ov41_0224BE80: ; 0x0224BE80
 	bl GF_AssertFail
 _0224BE9C:
 	mov r0, #0xd
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r6, r0, #0
 	mov r0, #0x66
 	lsl r0, r0, #2
@@ -12946,10 +12947,10 @@ _0224BE9C:
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, sp, #0x14
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0xc
 	mov r1, #0xd
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	ldr r0, [r5]
 	add r1, r7, #0
@@ -12975,9 +12976,9 @@ _0224BE9C:
 	ldr r0, [r5, r0]
 	add r2, r7, #0
 	sub r3, r3, r4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r5]
 	bl sub_0202BE98
 	add r2, r0, #0
@@ -12986,7 +12987,7 @@ _0224BE9C:
 	bl BufferECWord
 	mov r0, #0xc8
 	mov r1, #0xd
-	bl String_ctor
+	bl String_New
 	add r4, r0, #0
 	ldr r0, [sp, #0x10]
 	mov r1, #0x2d
@@ -13017,15 +13018,15 @@ _0224BE9C:
 	mov r3, #0x80
 	add r2, r4, #0
 	sub r3, r3, r5
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x10]
 	bl DestroyMsgData
 	add r0, r6, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add sp, #0x20
 	pop {r3, r4, r5, r6, r7, pc}
 	nop

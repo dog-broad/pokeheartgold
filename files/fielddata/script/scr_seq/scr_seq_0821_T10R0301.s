@@ -22,25 +22,26 @@ _0023:
 scr_seq_T10R0301_000:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0060
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_DP_KI_GASYAN
 	clearflag FLAG_HIDE_KOGAS_ROOM_RETREAT
 	show_person obj_T10R0301_babyboy1_11
 	setvar VAR_TEMP_x4001, 1
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _0060:
 	step 12, 6
 	step_end
+
 scr_seq_T10R0301_001:
 	play_se SEQ_SE_DP_SELECT
 	lockall

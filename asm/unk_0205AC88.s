@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_0205AC88.inc"
 	.include "global.inc"
 
 	.public _020FC824
@@ -34,7 +35,7 @@ sub_0205AC88: ; 0x0205AC88
 	ldr r0, [r4, r1]
 	mov r1, #8
 	ldr r0, [r0, #0xc]
-	bl SavArray_get
+	bl SaveArray_Get
 	ldr r1, _0205AD00 ; =0x000004D8
 	ldr r2, _0205AD04 ; =0x00002710
 	str r0, [r4, r1]
@@ -122,7 +123,7 @@ sub_0205AD60: ; 0x0205AD60
 	add r5, r1, #0
 	ldr r0, [r5, r0]
 	ldr r4, [r5]
-	bl Fsys_TaskIsRunning
+	bl FieldSystem_TaskIsRunning
 	cmp r0, #0
 	bne _0205AD96
 	ldr r3, _0205AD98 ; =0x000004D4
@@ -541,7 +542,7 @@ _0205B07A:
 	strb r0, [r4, #0x15]
 	add r0, r5, #0
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r5, #0
 	mov r1, #0
 	bl MapObject_ClearFlag18
@@ -678,7 +679,7 @@ _0205B16C:
 	bl MapObject_SetHeldMovement
 	add r0, r4, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r4, #0
 	mov r1, #1
 	bl MapObject_ClearFlag18
@@ -778,7 +779,7 @@ _0205B24C:
 _0205B25C:
 	add r0, r4, #0
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r4, #0
 	mov r1, #0
 	bl MapObject_ClearFlag18
@@ -838,7 +839,7 @@ _0205B2C4:
 	bl MapObject_SetHeldMovement
 	add r0, r4, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	add r0, r4, #0
 	mov r1, #1
 	bl MapObject_ClearFlag18
@@ -889,14 +890,14 @@ sub_0205B338: ; 0x0205B338
 	add r4, r0, #0
 	mov r0, #8
 	mov r1, #0x57
-	bl String_ctor
+	bl String_New
 	str r0, [r4]
 	mov r1, #0
 	add r0, r4, #0
 	str r1, [r4, #4]
 	add r0, #0x14
 	str r1, [r4, #8]
-	bl MailMsg_init_withBank
+	bl MailMsg_Init_WithBank
 	mov r0, #0
 	str r0, [r4, #0x10]
 	str r0, [r4, #0xc]
@@ -934,12 +935,12 @@ sub_0205B380: ; 0x0205B380
 	ldr r0, [r4, #4]
 	cmp r0, #0
 	beq _0205B394
-	bl String_dtor
+	bl String_Delete
 _0205B394:
 	ldr r0, [r4, #8]
 	cmp r0, #0
 	beq _0205B39E
-	bl String_dtor
+	bl String_Delete
 _0205B39E:
 	pop {r4, pc}
 	thumb_func_end sub_0205B380

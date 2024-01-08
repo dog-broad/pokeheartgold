@@ -423,7 +423,7 @@
     {
       "name": "scrcmd_066",
       "args": [
-        1,
+        "message",
         1
       ]
     },
@@ -1387,7 +1387,7 @@
       ]
     },
     {
-      "name": "scrcmd_221",
+      "name": "static_wild_won_or_caught",
       "args": [
         "var",
         1
@@ -1771,11 +1771,11 @@
       "args": []
     },
     {
-      "name": "scrcmd_287",
+      "name": "buffer_union_room_avatar_choices",
       "args": []
     },
     {
-      "name": "scrcmd_288",
+      "name": "union_room_avatar_idx_to_trainer_class",
       "args": [
         "var",
         "var"
@@ -2635,7 +2635,7 @@
       ]
     },
     {
-      "name": "scrcmd_425",
+      "name": "show_certificate",
       "args": [
         2
       ]
@@ -3219,7 +3219,7 @@
       ]
     },
     {
-      "name": "scrcmd_508",
+      "name": "palpark_action",
       "args": [
         2
       ]
@@ -3720,7 +3720,7 @@
       "args": []
     },
     {
-      "name": "scrcmd_588",
+      "name": "lati_caught_check",
       "args": [
         "var"
       ]
@@ -3792,17 +3792,17 @@
       "args": []
     },
     {
-      "name": "scrcmd_602",
+      "name": "toggle_following_pokemon_movement",
       "args": [
         2
       ]
     },
     {
-      "name": "scrcmd_603",
+      "name": "wait_following_pokemon_movement",
       "args": []
     },
     {
-      "name": "scrcmd_604",
+      "name": "following_pokemon_movement",
       "args": [
         2
       ]
@@ -4163,7 +4163,7 @@
       ]
     },
     {
-      "name": "set_mon_forme",
+      "name": "set_mon_form",
       "args": [
         2,
         2
@@ -4255,7 +4255,7 @@
       ]
     },
     {
-      "name": "get_owned_rotom_formes",
+      "name": "get_owned_rotom_forms",
       "args": [
         "var",
         "var",
@@ -4272,7 +4272,7 @@
       ]
     },
     {
-      "name": "update_rotom_forme",
+      "name": "update_rotom_form",
       "args": [
         "var",
         "var",
@@ -4281,7 +4281,7 @@
       ]
     },
     {
-      "name": "get_party_mon_forme",
+      "name": "get_party_mon_form",
       "args": [
         "var",
         "var"
@@ -5164,7 +5164,7 @@
       ]
     },
     {
-      "name": "get_partymon_forme",
+      "name": "get_partymon_form",
       "args": [
         "var",
         "var"

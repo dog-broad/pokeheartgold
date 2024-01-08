@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_020979A8.inc"
 	.include "global.inc"
 
 	.text
@@ -96,10 +97,10 @@ _02097A44: .word sub_02097A48
 sub_02097A48: ; 0x02097A48
 	push {r4, r5, r6, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r6, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -119,7 +120,7 @@ _02097A72:
 	b _02097A94
 _02097A7C:
 	add r0, r4, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _02097A94
 	mov r0, #0
@@ -143,10 +144,10 @@ sub_02097AA0: ; 0x02097AA0
 	push {r3, r4, r5, r6, lr}
 	sub sp, #0xc
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4]
 	cmp r1, #5

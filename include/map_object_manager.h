@@ -1,9 +1,8 @@
 #ifndef POKEHEARTGOLD_MAP_OBJECT_MANAGER_H
 #define POKEHEARTGOLD_MAP_OBJECT_MANAGER_H
 
-typedef struct MapObjectMan MapObjectMan;
-typedef struct FieldSystem FieldSystem; // script.h
+#include "field_system.h"
 
-FieldSystem *MapObjectMan_GetFieldSysPtr(MapObjectMan *mapObjectMan);
+FieldSystem *MapObjectManager_GetFieldSysPtr(MapObjectManager *mapObjectManager);
 
 #endif //POKEHEARTGOLD_MAP_OBJECT_MANAGER_H

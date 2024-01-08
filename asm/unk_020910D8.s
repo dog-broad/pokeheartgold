@@ -5,6 +5,7 @@
 #include "constants/pokemon.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_020910D8.inc"
 	.include "global.inc"
 
 	.public _02102610
@@ -16,7 +17,7 @@ sub_020910D8: ; 0x020910D8
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	add r5, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4]
 	cmp r1, #6
@@ -58,11 +59,11 @@ _0209111C:
 	b _02091232
 _0209112E:
 	add r0, r5, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	ldr r5, [r4, #0xc]
-	bl Fsys_GetSaveDataPtr
-	bl Sav2_PlayerData_GetProfileAddr
+	bl FieldSystem_GetSaveData
+	bl Save_PlayerData_GetProfileAddr
 	add r7, r0, #0
 	ldr r0, [r6, #0x20]
 	ldr r0, [r0]
@@ -89,7 +90,7 @@ _0209112E:
 	add r1, r5, #0
 	bl sub_02093134
 	add r0, r6, #0
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	ldr r1, [r4, #0xc]
 	bl UpdatePokedexWithReceivedSpecies
 	ldr r0, [r4, #4]
@@ -104,7 +105,7 @@ _02091194:
 	b _02091232
 _0209119A:
 	add r0, r5, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	ldr r0, [r4, #0xc]
 	mov r1, #MON_DATA_SPECIES
@@ -112,8 +113,8 @@ _0209119A:
 	bl GetMonData
 	add r7, r0, #0
 	add r0, r6, #0
-	bl Fsys_GetSaveDataPtr
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl FieldSystem_GetSaveData
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [sp]
 	mov r0, #0
 	str r0, [sp, #4]
@@ -131,7 +132,7 @@ _0209119A:
 	mov r2, #0
 	str r0, [r1, #0x10]
 	ldr r0, [r4, #0xc]
-	mov r1, #MON_DATA_FORME
+	mov r1, #MON_DATA_FORM
 	bl GetMonData
 	ldr r1, [r4, #8]
 	str r0, [r1, #8]
@@ -161,7 +162,7 @@ _0209120C:
 	b _02091232
 _0209121A:
 	add r0, r5, #0
-	bl sub_020552A4
+	bl CallTask_RestoreOverworld
 	ldr r0, [r4]
 	add r0, r0, #1
 	str r0, [r4]

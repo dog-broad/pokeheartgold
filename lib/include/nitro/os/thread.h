@@ -6,12 +6,21 @@
 
 #define SDK_THREAD_INFINITY
 
+s32 OSi_GetUnusedThreadId(void);
+OSThread *OSi_RemoveLinkFromQueue(OSThreadQueue *queue);
+OSThread *OSi_RemoveSpecifiedLinkFromQueue(OSThreadQueue *queue, OSThread *thread);
 OSMutex *OSi_RemoveMutexLinkFromQueue(OSMutexQueue *queue);
+void OSi_InsertThreadToList(OSThread *thread);
+void OSi_RemoveThreadFromList(OSThread *thread);
+void OSi_RescheduleThread(void);
 void OS_InitThread(void);
 BOOL OS_IsThreadAvailable(void);
 void OS_CreateThread(OSThread *thread, void (*func) (void *), void *arg, void *stack, u32 stackSize, u32 prio);
 void OS_ExitThread(void);
 void OS_DestroyThread(OSThread *thread);
+void OS_KillThread(OSThread *thread, void *arg);
+void OS_KillThreadWithPriority(OSThread *thread, void *arg, u32 prio);
+void OSi_CancelThreadAlarmForSleep(OSThread *thread);
 void OS_JoinThread(OSThread *thread);
 BOOL OS_IsThreadTerminated(const OSThread *thread);
 void OS_SleepThread(OSThreadQueue *queue);
@@ -27,5 +36,6 @@ OSSwitchThreadCallback OS_SetSwitchThreadCallback(OSSwitchThreadCallback callbac
 u32 OS_DisableScheduler(void);
 u32 OS_EnableScheduler(void);
 void OS_SetThreadDestructor(OSThread *thread, OSThreadDestructor dtor);
+void OSi_InsertLinkToQueue(OSThreadQueue *queue, OSThread *thread);
 
 #endif //NITRO_OS_THREAD_H_

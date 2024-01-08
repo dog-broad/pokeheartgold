@@ -5,6 +5,7 @@
 #include "constants/pokemon.h"
 #include "constants/std_script.h"
 	.include "asm/macros.inc"
+	.include "overlay_02.inc"
 	.include "global.inc"
 
 	.text
@@ -13,7 +14,7 @@
 ov02_02245B80: ; 0x02245B80
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl ov02_02245B9C
 	add r2, r0, #0
 	ldr r1, _02245B98 ; =ov02_02245BC8
@@ -52,7 +53,7 @@ _02245BB4:
 ov02_02245BC8: ; 0x02245BC8
 	push {r3, r4, lr}
 	sub sp, #0xc
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrh r1, [r4, #8]
 	cmp r1, #4
@@ -675,7 +676,7 @@ ov02_022460AC: ; 0x022460AC
 	push {r3, r4, r5, lr}
 	add r4, r1, #0
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r1, r4, #0
 	bl ov02_022460CC
 	add r2, r0, #0
@@ -717,7 +718,7 @@ _022460E6:
 ov02_022460FC: ; 0x022460FC
 	push {r3, r4, lr}
 	sub sp, #0xc
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrh r0, [r4, #0xc]
 	cmp r0, #0
@@ -788,7 +789,7 @@ ShowLegendaryWing: ; 0x0224618C
 	push {r3, r4, r5, lr}
 	add r4, r1, #0
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r1, r4, #0
 	bl ov02_022461AC
 	add r2, r0, #0
@@ -831,7 +832,7 @@ ov02_022461DC: ; 0x022461DC
 	push {r4, r5, lr}
 	sub sp, #0xc
 	add r5, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrh r0, [r4, #0x12]
 	cmp r0, #4
@@ -958,7 +959,7 @@ _022462E4: .word ov02_02246048
 ov02_022462E8: ; 0x022462E8
 	push {r4, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	bl ov02_02246304
 	add r2, r0, #0
 	ldr r1, _02246300 ; =ov02_02246330
@@ -996,7 +997,7 @@ _0224631C:
 	thumb_func_start ov02_02246330
 ov02_02246330: ; 0x02246330
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #8]
 	cmp r1, #0
@@ -1062,7 +1063,7 @@ ov02_02246398: ; 0x02246398
 	bl G2x_SetBlendAlpha_
 	ldr r1, [r5]
 	mov r0, #0xae
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x20
 	str r1, [sp]
 	ldr r1, [r5]
@@ -1115,9 +1116,9 @@ ov02_02246398: ; 0x02246398
 	bl SetBgPriority
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x10
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
@@ -1131,7 +1132,7 @@ ov02_02246444: ; 0x02246444
 	add r4, r0, #0
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldrb r1, [r4, #0xe]
 	mov r0, #0
 	bl SetBgPriority
@@ -1245,7 +1246,7 @@ ov02_0224650C: ; 0x0224650C
 	str r6, [r4]
 	add r0, r6, #0
 	str r5, [r4, #4]
-	bl GF_Camera_Create
+	bl Camera_New
 	str r0, [r4, #0x18]
 	add r0, r4, #0
 	pop {r4, r5, r6, pc}
@@ -1256,7 +1257,7 @@ ov02_02246534: ; 0x02246534
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x18]
-	bl sub_02023120
+	bl Camera_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -1338,10 +1339,10 @@ _022465D8:
 	ldr r0, [r5, #4]
 	ldr r1, [r5, #0x18]
 	ldr r0, [r0, #0x24]
-	bl sub_02023128
+	bl Camera_Copy
 	ldr r1, [r5, #0x18]
 	add r0, sp, #0
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r4, sp, #0
 	add r3, r5, #0
 	add r3, #0x20
@@ -1359,9 +1360,9 @@ _022465D8:
 	str r0, [r3]
 	ldr r1, [r5, #0x18]
 	add r0, r2, #0
-	bl sub_02023214
+	bl Camera_SetFixedTarget
 	ldr r0, [r5, #0x18]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -1376,7 +1377,7 @@ ov02_0224662C: ; 0x0224662C
 	ldr r0, [r0, #0x24]
 	bx r3
 	.balign 4, 0
-_02246638: .word GF_Camera_RegisterToStaticPtr
+_02246638: .word Camera_SetStaticPtr
 	thumb_func_end ov02_0224662C
 
 	thumb_func_start ov02_0224663C
@@ -1493,7 +1494,7 @@ ov02_02246714: ; 0x02246714
 	add r4, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r1, sp, #8
 	ldrh r1, [r1, #0x10]
 	add r2, r6, #0
@@ -1555,7 +1556,7 @@ _02246766:
 	thumb_func_start ov02_02246798
 ov02_02246798: ; 0x02246798
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #8]
 	bl ov02_0224663C
@@ -1579,7 +1580,7 @@ OpenAlphHiddenRoom: ; 0x022467C4
 	push {r3, r4, r5, lr}
 	add r5, r1, #0
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	lsl r1, r5, #0x18
 	lsr r1, r1, #0x18
 	bl ov02_022467E8
@@ -1621,7 +1622,7 @@ _02246802:
 	thumb_func_start ov02_02246818
 ov02_02246818: ; 0x02246818
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #0x18]
 	cmp r1, #0
@@ -1666,7 +1667,7 @@ ov02_0224686C: ; 0x0224686C
 	add r5, r0, #0
 	ldr r1, [r5]
 	mov r0, #0xae
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x20
 	str r1, [sp]
 	ldr r1, [r5]
@@ -1710,9 +1711,9 @@ ov02_0224686C: ; 0x0224686C
 	bl SetBgPriority
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r5, #4]
 	add r1, r5, #0
 	ldr r0, [r0, #8]
@@ -1754,12 +1755,12 @@ ov02_0224686C: ; 0x0224686C
 	add r0, #8
 	mov r1, #3
 	asr r3, r3, #1
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r5, #8
 	add r0, r5, #0
 	bl ScheduleWindowCopyToVram
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	bl DestroyMsgData
 	add sp, #0x10
@@ -1775,7 +1776,7 @@ ov02_02246964: ; 0x02246964
 	add r4, r0, #0
 	mov r0, #2
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldrb r1, [r4, #0x1a]
 	mov r0, #1
 	bl SetBgPriority
@@ -1817,7 +1818,7 @@ ov02_022469B4: ; 0x022469B4
 	add r4, r1, #0
 	add r6, r2, #0
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r1, r4, #0
 	add r2, r6, #0
 	bl ov02_022469D8
@@ -1878,7 +1879,7 @@ _022469F8:
 	thumb_func_start ov02_02246A34
 ov02_02246A34: ; 0x02246A34
 	push {r4, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	cmp r0, #0
@@ -2046,7 +2047,7 @@ ov02_02246B58: ; 0x02246B58
 	add r4, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	str r0, [sp]
 	bl RoamerSave_OutbreakActive
 	cmp r0, #0
@@ -2080,7 +2081,7 @@ ov02_02246B9C: ; 0x02246B9C
 	ldr r0, [r5, #0xc]
 	add r4, r1, #0
 	add r6, r2, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	add r7, r0, #0
 	bl RoamerSave_OutbreakActive
 	cmp r0, #0
@@ -2113,7 +2114,7 @@ ov02_02246BD8: ; 0x02246BD8
 	add r7, r1, #0
 	add r5, r2, #0
 	add r4, r3, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	str r0, [sp]
 	bl RoamerSave_OutbreakActive
 	cmp r0, #0
@@ -2237,14 +2238,14 @@ _02246CD6:
 	add r0, r5, #0
 	bl ov02_02248698
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r6, r0, #0
 	add r0, r5, #0
 	bl MapEvents_GetLoadedEncTable
 	add r4, r0, #0
 	add r0, r6, #0
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #0x10]
 	ldr r1, [sp, #0x10]
 	add r0, r5, #0
@@ -2252,7 +2253,7 @@ _02246CD6:
 	add r3, sp, #0x24
 	bl ov02_02248618
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl RoamerSave_RepelNotInUse
 	cmp r0, #0
 	bne _02246D26
@@ -2267,8 +2268,8 @@ _02246CD6:
 	strb r0, [r1, #0x18]
 _02246D26:
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetWeatherType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetWeatherType
 	add r3, r0, #0
 	ldr r0, [sp, #0x10]
 	add r1, sp, #0x18
@@ -2304,8 +2305,8 @@ _02246D6C:
 	pop {r3, r4, r5, r6, r7, pc}
 _02246D76:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckHaveFollower
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckHaveFollower
 	cmp r0, #0
 	beq _02246D88
 	mov r6, #1
@@ -2332,10 +2333,10 @@ _02246D8A:
 	mov r0, #0xb
 	add r1, r0, #0
 	add r1, #0xf5
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [sp, #0x20]
 	add r1, r5, #0
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	ldr r0, [sp, #0x24]
 	ldr r1, [sp, #0x1c]
 	ldr r2, [sp, #0x20]
@@ -2352,9 +2353,9 @@ _02246DDA:
 	pop {r3, r4, r5, r6, r7, pc}
 _02246DE0:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	str r0, [sp, #0x14]
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_CheckSafariSysFlag
 	str r0, [sp, #0xc]
 	ldr r0, [sp, #0x14]
 	bl CheckFlag996
@@ -2380,12 +2381,12 @@ _02246E0E:
 _02246E18:
 	mov r0, #0xb
 	mov r1, #0x4a
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [sp, #0x20]
 _02246E22:
 	ldr r0, [sp, #0x20]
 	add r1, r5, #0
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	add r0, sp, #0x18
 	ldrb r0, [r0, #1]
 	cmp r0, #0
@@ -2443,8 +2444,8 @@ _02246E8C:
 	b _02246F26
 _02246EA0:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_GetFollowerTrainerNum
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_GetFollowerTrainerNum
 	ldr r1, [sp, #0x20]
 	mov r2, #0xb
 	str r0, [r1, #0x20]
@@ -2500,7 +2501,7 @@ _02246ED4:
 _02246F16:
 	bl GF_AssertFail
 	ldr r0, [sp, #0x20]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 	add sp, #0xa0
 	mov r0, #0
 	pop {r3, r4, r5, r6, r7, pc}
@@ -2535,7 +2536,7 @@ _02246F5E:
 	cmp r7, #0
 	bne _02246F68
 	ldr r0, [sp, #0x20]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 _02246F68:
 	add r0, r7, #0
 	add sp, #0xa0
@@ -2559,9 +2560,9 @@ ov02_02246F70: ; 0x02246F70
 _02246F88:
 	ldr r0, [sp, #0x20]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #0x1c]
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x1c]
@@ -2570,8 +2571,8 @@ _02246F88:
 	bl ov02_02248618
 	ldr r0, [sp, #0x20]
 	ldr r0, [r0, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetWeatherType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetWeatherType
 	add r3, r0, #0
 	ldr r0, [sp, #0x1c]
 	add r1, r4, #0
@@ -2593,8 +2594,8 @@ _02246F88:
 _02246FDA:
 	ldr r0, [sp, #0x20]
 	ldr r0, [r0, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckSafariSysFlag
 	str r0, [sp, #0x18]
 	cmp r0, #0
 	beq _02246FF8
@@ -2612,7 +2613,7 @@ _02247002:
 	ldr r0, [sp, #0x10]
 	ldr r1, [sp, #0x20]
 	ldr r0, [r0]
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	ldr r0, [sp, #0x10]
 	ldr r0, [r0]
 	bl sub_02052544
@@ -2706,9 +2707,9 @@ ov02_022470A0: ; 0x022470A0
 _022470B8:
 	ldr r0, [sp, #0xc]
 	ldr r0, [r0, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #8]
 	ldr r0, [sp, #0xc]
 	ldr r1, [sp, #8]
@@ -2717,8 +2718,8 @@ _022470B8:
 	bl ov02_02248618
 	ldr r0, [sp, #0xc]
 	ldr r0, [r0, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetWeatherType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetWeatherType
 	add r3, r0, #0
 	ldr r0, [sp, #8]
 	add r1, r4, #0
@@ -2743,7 +2744,7 @@ _02247106:
 	ldr r0, [sp, #4]
 	ldr r1, [sp, #0xc]
 	ldr r0, [r0]
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	ldr r0, [sp, #0xc]
 	bl MapEvents_GetLoadedEncTable
 	add r5, r0, #0
@@ -2778,7 +2779,7 @@ _02247126:
 	bne _0224716A
 	ldr r0, [sp, #4]
 	ldr r0, [r0]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 	add sp, #0x8c
 	mov r0, #0
 	pop {r4, r5, r6, r7, pc}
@@ -2795,7 +2796,7 @@ ov02_02247170: ; 0x02247170
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
 	str r1, [sp, #8]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r7, r0, #0
 	ldr r0, [r5, #0x40]
 	bl GetPlayerXCoord
@@ -2817,14 +2818,14 @@ ov02_02247170: ; 0x02247170
 	pop {r4, r5, r6, r7, pc}
 _022471AC:
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r6, r0, #0
 	add r0, r5, #0
 	bl MapEvents_GetLoadedEncTable
 	add r4, r0, #0
 	add r0, r6, #0
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #0x10]
 	ldr r1, [sp, #0x10]
 	add r0, r5, #0
@@ -2834,7 +2835,7 @@ _022471AC:
 	mov r0, #1
 	str r0, [sp, #0x28]
 	add r0, r7, #0
-	bl ScriptState_CheckHaveFollower
+	bl Save_VarsFlags_CheckHaveFollower
 	str r0, [sp, #0xc]
 	cmp r0, #0
 	bne _0224721A
@@ -2846,10 +2847,10 @@ _022471AC:
 	mov r0, #0xb
 	add r1, r0, #0
 	add r1, #0xf5
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [sp, #0x1c]
 	add r1, r5, #0
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x18]
 	ldr r2, [sp, #0x1c]
@@ -2863,7 +2864,7 @@ _022471AC:
 	pop {r4, r5, r6, r7, pc}
 _0224721A:
 	add r0, r7, #0
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_CheckSafariSysFlag
 	add r6, r0, #0
 	add r0, r7, #0
 	bl CheckFlag996
@@ -2888,12 +2889,12 @@ _02247240:
 _0224724A:
 	mov r0, #0xb
 	mov r1, #0x4a
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [sp, #0x1c]
 _02247254:
 	ldr r0, [sp, #0x1c]
 	add r1, r5, #0
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	add r0, sp, #0x14
 	ldrb r0, [r0]
 	cmp r0, #0
@@ -2949,8 +2950,8 @@ _022472BA:
 	b _0224734C
 _022472CE:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
-	bl ScriptState_GetFollowerTrainerNum
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_GetFollowerTrainerNum
 	ldr r1, [sp, #0x1c]
 	mov r2, #0xb
 	str r0, [r1, #0x20]
@@ -3038,9 +3039,9 @@ ov02_02247374: ; 0x02247374
 	ldr r0, [r5, #0xc]
 	str r1, [sp, #0xc]
 	add r4, r2, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	str r0, [sp, #0x10]
 	ldr r1, [sp, #0x10]
 	add r0, r5, #0
@@ -3054,7 +3055,7 @@ ov02_02247374: ; 0x02247374
 	ldr r0, [sp, #0xc]
 	add r1, r5, #0
 	ldr r0, [r0]
-	bl BattleStruct_InitFromFsys
+	bl BattleSetup_InitFromFieldSystem
 	mov r5, #0
 	add r0, sp, #0x14
 _022473B0:
@@ -3107,7 +3108,7 @@ _022473D2:
 	bne _0224741C
 	ldr r0, [sp, #0xc]
 	ldr r0, [r0]
-	bl sub_02051BF8
+	bl BattleSetup_Delete
 	add sp, #0xa8
 	mov r0, #0
 	pop {r3, r4, r5, r6, r7, pc}
@@ -3418,7 +3419,7 @@ ov02_0224762C: ; 0x0224762C
 	cmp r0, #0
 	beq _02247668
 	add r0, r6, #0
-	bl sub_0205B778
+	bl MetatileBehavior_IsSurfableWater
 	cmp r0, #0
 	beq _02247658
 	mov r0, #1
@@ -3713,7 +3714,7 @@ ApplyFluteEffectToEncounterRate: ; 0x0224782C
 	push {r4, lr}
 	ldr r0, [r0, #0xc]
 	add r4, r1, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl RoamerSave_GetFlute
 	cmp r0, #1
 	bne _02247846
@@ -4410,7 +4411,7 @@ ov02_02247DA0: ; 0x02247DA0
 	add r6, r1, #0
 	str r2, [sp, #0xc]
 	add r5, r3, #0
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	mov r1, #3
 	bl SafariZone_GetAreaSet
 	str r0, [sp, #0x14]
@@ -4559,7 +4560,7 @@ ov02_02247ED8: ; 0x02247ED8
 	sub sp, #0xc
 	add r6, r1, #0
 	add r5, r3, #0
-	bl FieldSys_BugContest_get
+	bl FieldSystem_BugContest_Get
 	mov r1, #4
 	bl BugContest_GetEncounterSlot
 	add r4, r0, #0
@@ -4605,9 +4606,9 @@ ov02_02247F30: ; 0x02247F30
 	add r6, r1, #0
 	add r7, r2, #0
 	str r3, [sp, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r4, r0, #0
 	add r0, r5, #0
 	add r1, r4, #0
@@ -4618,7 +4619,7 @@ ov02_02247F30: ; 0x02247F30
 	cmp r0, #0
 	beq _02247F80
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerID
 	add r3, r0, #0
 	add r0, sp, #0x10
@@ -4659,7 +4660,7 @@ ov02_02247F9C: ; 0x02247F9C
 	cmp r0, #0
 	beq _02247FCA
 	add r0, r6, #0
-	bl sub_0205B778
+	bl MetatileBehavior_IsSurfableWater
 	cmp r0, #0
 	beq _02247FC2
 	add r0, r5, #0
@@ -4684,13 +4685,13 @@ _02247FCA:
 	bhi _02248008
 _02247FE0:
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r4, r0, #0
 	mov r5, #0
 _02247FEA:
 	add r0, r4, #0
 	add r1, r5, #0
-	bl ScriptState_CheckAlphPuzzleFlag
+	bl Save_VarsFlags_CheckAlphPuzzleFlag
 	cmp r0, #0
 	beq _02247FFA
 	mov r0, #1
@@ -4768,7 +4769,7 @@ _02248060:
 	cmp r0, #0
 	beq _0224808A
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	mov r1, #9
 	mov r2, #0
@@ -5053,29 +5054,29 @@ ov02_02248244: ; 0x02248244
 	b _02248284
 _02248252:
 	ldr r0, [r0, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetSafariBallsCounter
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetSafariBallsCounter
 	add r1, r0, #0
 	ldrh r1, [r1]
 	mov r0, #0xb
-	bl sub_02051A60
+	bl BattleSetup_New_SafariZone
 	str r0, [r5]
 	pop {r3, r4, r5, pc}
 _0224826A:
-	bl FieldSys_BugContest_get
+	bl FieldSystem_BugContest_Get
 	add r4, r0, #0
 	bl BugContest_GetSportBallsAddr
 	add r1, r0, #0
 	ldrh r1, [r1]
 	ldr r2, [r4, #0x10]
 	mov r0, #0xb
-	bl sub_02051A74
+	bl BattleSetup_New_BugContest
 	str r0, [r5]
 	pop {r3, r4, r5, pc}
 _02248284:
 	mov r0, #0xb
 	mov r1, #0
-	bl BattleStruct_new
+	bl BattleSetup_New
 	str r0, [r5]
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov02_02248244
@@ -5172,7 +5173,7 @@ ov02_022482BC: ; 0x022482BC
 	bl SetMonData
 	ldr r0, [r6, #8]
 	add r1, r4, #0
-	bl AddMonToParty
+	bl Party_AddMon
 	cmp r0, #0
 	bne _02248350
 	bl GF_AssertFail
@@ -5186,7 +5187,7 @@ _02248350:
 	bx r3
 	thumb_func_end ov02_022482BC
 
-; BOOL ov02_GetRandomActiveRoamerInCurrMap(FieldSystem *fsys, ROAMER **out);
+; BOOL ov02_GetRandomActiveRoamerInCurrMap(FieldSystem *fieldSystem, Roamer **out);
 	thumb_func_start ov02_GetRandomActiveRoamerInCurrMap
 ov02_GetRandomActiveRoamerInCurrMap: ; 0x02248360
 	push {r3, r4, r5, r6, r7, lr}
@@ -5195,7 +5196,7 @@ ov02_GetRandomActiveRoamerInCurrMap: ; 0x02248360
 	ldr r0, [r0, #0xc]
 	str r1, [sp, #4]
 	mov r5, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	add r6, r0, #0
 	add r4, r5, #0
 _02248374:
@@ -5296,7 +5297,7 @@ _02248426:
 	add r0, r7, #0
 	add r1, r4, #0
 	mov r2, #1
-	bl Pokedex_GetSeenFormeByIdx_Unown
+	bl Pokedex_GetSeenFormByIdx_Unown
 	cmp r6, r0
 	bne _02248438
 	mov r0, #1
@@ -5362,7 +5363,7 @@ _022484A4:
 	ldr r0, [r0, #0x18]
 	mov r1, #1
 	add r7, r6, #0
-	bl Pokedex_GetSeenFormeNum_Unown
+	bl Pokedex_GetSeenFormNum_Unown
 	lsl r0, r0, #0x18
 	add r1, r6, #0
 	lsr r0, r0, #0x18
@@ -5486,7 +5487,7 @@ _022485A2:
 	add r0, r6, r0
 	ldr r0, [r0, #4]
 	add r1, r4, #0
-	bl AddMonToParty
+	bl Party_AddMon
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov02_0224855C
 
@@ -5582,7 +5583,7 @@ _02248642:
 	strb r0, [r5, #0xf]
 	strb r0, [r5, #0x10]
 	ldr r0, [r7, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r6, r0, #0
 	ldr r0, [r7, #0x20]
 	ldr r1, [r0]
@@ -5599,17 +5600,17 @@ _02248668:
 _0224866C:
 	add r0, r6, #0
 	add r1, r4, #0
-	bl ScriptState_CheckAlphPuzzleFlag
+	bl Save_VarsFlags_CheckAlphPuzzleFlag
 	add r1, r5, r4
 	add r4, r4, #1
 	strb r0, [r1, #0x12]
 	cmp r4, #4
 	blt _0224866C
 	ldr r0, [r7, #0xc]
-	bl Sav2_Pokedex_get
+	bl Save_Pokedex_Get
 	str r0, [r5, #0x18]
 	ldr r0, [r7, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerID
 	str r0, [r5]
 	pop {r3, r4, r5, r6, r7, pc}
@@ -5997,7 +5998,7 @@ _02248920:
 	ldr r0, [r5, #8]
 	bl sub_02024544
 	ldr r0, [r5, #8]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 	thumb_func_end ov02_0224886C
@@ -6445,7 +6446,7 @@ _02248C92:
 ov02_02248C98: ; 0x02248C98
 	push {r4, lr}
 	add r4, r1, #0
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r2, r0, #0
 	ldmia r2!, {r0, r1}
 	stmia r4!, {r0, r1}
@@ -6620,11 +6621,11 @@ _02248DDA:
 
 	thumb_func_start ov02_02248DE4
 ov02_02248DE4: ; 0x02248DE4
-	ldr r3, _02248DEC ; =sub_02024758
+	ldr r3, _02248DEC ; =Sprite_Delete
 	ldr r0, [r1, #0x68]
 	bx r3
 	nop
-_02248DEC: .word sub_02024758
+_02248DEC: .word Sprite_Delete
 	thumb_func_end ov02_02248DE4
 
 	thumb_func_start ov02_02248DF0
@@ -6747,7 +6748,7 @@ ov02_02248E20: ; 0x02248E20
 	str r0, [sp, #0x28]
 	ldr r0, [r4, #0x68]
 	add r1, sp, #0x24
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x68]
 	add r1, sp, #0x18
 	bl sub_020247F4
@@ -6763,7 +6764,7 @@ ov02_02248E20: ; 0x02248E20
 	bl sub_02024818
 	ldr r0, [r4, #0x68]
 	mov r1, #0x84
-	bl sub_02024ADC
+	bl Sprite_SetDrawPriority
 	ldr r0, [r4, #0x68]
 	mov r1, #1
 	bl Set2dSpriteVisibleFlag
@@ -6924,7 +6925,7 @@ _0224902A:
 	str r0, [sp, #4]
 	add r0, r6, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x12
 	ldr r1, [sp, #4]
 	lsl r0, r0, #0xc
@@ -6932,7 +6933,7 @@ _0224902A:
 	str r0, [sp, #4]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r5, #0x48]
 	cmp r0, #0
 	bne _0224907A
@@ -7083,7 +7084,7 @@ _02249168:
 	str r0, [sp, #4]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r1, [sp, #4]
 	asr r0, r1, #0xb
 	lsr r0, r0, #0x14
@@ -7180,7 +7181,7 @@ _022491E2:
 	str r0, [r4, #0x4c]
 	ldr r0, [r4, #0x68]
 	add r1, r6, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x68]
 	add r1, sp, #0
 	bl sub_020247F4
@@ -7334,7 +7335,7 @@ _0224934C:
 	str r0, [sp, #4]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r5, #0x48]
 	cmp r0, #0
 	bgt _02249390
@@ -7403,12 +7404,12 @@ ov02_022493EC: ; 0x022493EC
 
 	thumb_func_start ov02_022493F0
 ov02_022493F0: ; 0x022493F0
-	ldr r3, _022493F8 ; =NARC_ctor
+	ldr r3, _022493F8 ; =NARC_New
 	mov r0, #0x5d
 	mov r1, #4
 	bx r3
 	.balign 4, 0
-_022493F8: .word NARC_ctor
+_022493F8: .word NARC_New
 	thumb_func_end ov02_022493F0
 
 	thumb_func_start ov02_022493FC
@@ -7459,7 +7460,7 @@ ov02_02249444: ; 0x02249444
 	add r4, r1, #0
 	bl PlayerAvatar_GetMapObject
 	add r1, r4, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	pop {r4, pc}
 	.balign 4, 0
 	thumb_func_end ov02_02249444
@@ -7902,7 +7903,7 @@ ov02_02249774: ; 0x02249774
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r3, r0, #0
 	ldmia r3!, {r0, r1}
 	add r2, sp, #0
@@ -7928,7 +7929,7 @@ _022497AC:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0
 	add sp, #0xc
 	pop {r3, r4, pc}
@@ -7971,7 +7972,7 @@ _02249802:
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r5, r0, #0
 	add r3, sp, #0
 	ldmia r5!, {r0, r1}
@@ -7987,7 +7988,7 @@ _02249802:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, r2, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0
 	add sp, #0xc
 	pop {r4, r5, pc}
@@ -8032,7 +8033,7 @@ _0224986C:
 	mov r0, #0x7a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r5, r0, #0
 	add r3, sp, #0
 	ldmia r5!, {r0, r1}
@@ -8048,7 +8049,7 @@ _0224986C:
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	add r1, r2, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r1, [sp]
 	ldr r0, _022498B8 ; =0xFFFD8000
 	cmp r1, r0
@@ -8964,7 +8965,7 @@ ov02_02249EC0: ; 0x02249EC0
 	strh r0, [r2, #4]
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r2, r5, #0
 	add r0, r4, #0
 #ifdef HEARTGOLD
@@ -9000,7 +9001,7 @@ ov02_02249EC0: ; 0x02249EC0
 	add r1, r4, #0
 	bl ov02_0224A080
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #4
 	mov r1, #0x20
 	bl sub_020689C8
@@ -9009,7 +9010,7 @@ ov02_02249EC0: ; 0x02249EC0
 	str r0, [r5, r1]
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 _02249F68: .word 0x0400000A
@@ -9043,12 +9044,12 @@ ov02_02249F6C: ; 0x02249F6C
 	strh r0, [r2, #4]
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r5, #0
 	add r1, r4, #0
 	bl ov02_0224A080
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #4
 	mov r1, #0x20
 	bl sub_020689C8
@@ -9057,7 +9058,7 @@ ov02_02249F6C: ; 0x02249F6C
 	str r0, [r5, r1]
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 _02249FD0: .word 0x0400000A
@@ -9069,7 +9070,7 @@ ov02_02249FD4: ; 0x02249FD4
 	add r4, r0, #0
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x1e
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -9096,7 +9097,7 @@ ov02_02249FD4: ; 0x02249FD4
 	bl sub_0205B4EC
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r4, pc}
 	nop
 _0224A024: .word 0x04000008
@@ -9108,7 +9109,7 @@ ov02_0224A028: ; 0x0224A028
 	add r4, r0, #0
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x1e
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
@@ -9132,7 +9133,7 @@ ov02_0224A028: ; 0x0224A028
 	bl sub_0205B4EC
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	pop {r4, pc}
 	nop
 _0224A070: .word 0x04000008
@@ -9140,12 +9141,12 @@ _0224A070: .word 0x04000008
 
 	thumb_func_start ov02_0224A074
 ov02_0224A074: ; 0x0224A074
-	ldr r3, _0224A07C ; =NARC_ctor
+	ldr r3, _0224A07C ; =NARC_New
 	mov r0, #0x5d
 	mov r1, #4
 	bx r3
 	.balign 4, 0
-_0224A07C: .word NARC_ctor
+_0224A07C: .word NARC_New
 	thumb_func_end ov02_0224A074
 
 	thumb_func_start ov02_0224A080
@@ -9468,7 +9469,7 @@ _0224A2EC:
 	ldr r0, [r6, #0x70]
 	bl sub_02024544
 	ldr r0, [r6, #0x70]
-	bl sub_02024504
+	bl SpriteList_Delete
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 	thumb_func_end ov02_0224A288
@@ -9773,7 +9774,7 @@ _0224A55C:
 	bl GF_AssertFail
 _0224A564:
 	add r0, r6, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0xc
 	pop {r3, r4, r5, r6, pc}
 	.balign 4, 0
@@ -10514,11 +10515,11 @@ ov02_0224AA80: ; 0x0224AA80
 
 	thumb_func_start ov02_0224AAC8
 ov02_0224AAC8: ; 0x0224AAC8
-	ldr r3, _0224AAD0 ; =sub_02024758
+	ldr r3, _0224AAD0 ; =Sprite_Delete
 	ldr r0, [r1, #8]
 	bx r3
 	nop
-_0224AAD0: .word sub_02024758
+_0224AAD0: .word Sprite_Delete
 	thumb_func_end ov02_0224AAC8
 
 	thumb_func_start ov02_0224AAD4
@@ -10545,7 +10546,7 @@ ov02_0224AAD4: ; 0x0224AAD4
 	bl sub_02068DA8
 	ldr r0, [r4, #8]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x10]
 	cmp r0, #1
 	bne _0224AB4E
@@ -10684,11 +10685,11 @@ ov02_0224ABCC: ; 0x0224ABCC
 
 	thumb_func_start ov02_0224ABF8
 ov02_0224ABF8: ; 0x0224ABF8
-	ldr r3, _0224AC00 ; =sub_02024758
+	ldr r3, _0224AC00 ; =Sprite_Delete
 	ldr r0, [r1, #0x58]
 	bx r3
 	nop
-_0224AC00: .word sub_02024758
+_0224AC00: .word Sprite_Delete
 	thumb_func_end ov02_0224ABF8
 
 	thumb_func_start ov02_0224AC04
@@ -10786,7 +10787,7 @@ ov02_0224AC38: ; 0x0224AC38
 	lsl r0, r3, #0xd
 	str r0, [r4, #0x4c]
 	ldr r0, [r4, #0x58]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x58]
 	add r1, sp, #0
 	bl sub_020247F4
@@ -10922,7 +10923,7 @@ _0224AD90:
 	str r0, [sp, #4]
 	add r0, r4, #0
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r1, [sp, #4]
 	ldr r0, _0224ADE8 ; =0xFFFC0000
 	cmp r1, r0
@@ -11054,7 +11055,7 @@ ov02_0224ADF0: ; 0x0224ADF0
 	str r0, [sp, #0x28]
 	ldr r0, [r4, #0x58]
 	add r1, sp, #0x24
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0x58]
 	add r1, sp, #0x18
 	bl sub_020247F4
@@ -11254,7 +11255,7 @@ _0224B03A:
 	str r0, [sp, #0x10]
 	add r0, r4, #0
 	add r1, sp, #0xc
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r5, #0x48]
 	cmp r0, #0
 	bne _0224B07C
@@ -11339,10 +11340,10 @@ ov02_0224B0E0: ; 0x0224B0E0
 	ldr r0, [r1, r0]
 	bl sub_0205F484
 	add r0, r5, #0
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r5, [r0, #4]
 	ldr r0, [r4, #0x58]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r0, [r0, #4]
 	sub r0, r5, r0
 	str r0, [r4, #0x54]
@@ -11495,7 +11496,7 @@ _0224B20A:
 	str r0, [sp, #0x10]
 	add r0, r7, #0
 	mov r1, ip
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #1
 	ldr r1, [sp]
 	lsl r0, r0, #8
@@ -11527,7 +11528,7 @@ _0224B272:
 	bl sub_020247F4
 	add r0, r6, #0
 	add r1, sp, #0x18
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0
 	add sp, #0x24
 	pop {r4, r5, r6, r7, pc}
@@ -11588,7 +11589,7 @@ ov02_0224B2CC: ; 0x0224B2CC
 	str r0, [r4, #0x14]
 	str r0, [r4, #0x18]
 	ldr r0, [r4, #0x20]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r6, r0, #0
 	add r3, sp, #0
 	ldmia r6!, {r0, r1}
@@ -11671,7 +11672,7 @@ ov02_0224B364: ; 0x0224B364
 	str r0, [sp, #4]
 	ldr r0, [r4, #0x20]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0xc]
 	add r0, r0, #1
 	str r0, [r4, #0xc]
@@ -11712,7 +11713,7 @@ ov02_0224B3B0: ; 0x0224B3B0
 	str r0, [sp, #4]
 	ldr r0, [r4, #0x20]
 	add r1, sp, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	ldr r0, [r4, #0xc]
 	add r0, r0, #1
 	str r0, [r4, #0xc]
@@ -11972,7 +11973,7 @@ _0224B57C:
 	bl ov02_02248AFC
 _0224B5DC:
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r0, [r5]
 	add r0, r0, #1
 	str r0, [r5]
@@ -12102,7 +12103,7 @@ ov02_0224B6B0: ; 0x0224B6B0
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
 	add r1, r4, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 	thumb_func_end ov02_0224B6B0
@@ -12125,7 +12126,7 @@ ov02_0224B6E4: ; 0x0224B6E4
 	push {r3, r4, r5, lr}
 	add r4, r1, #0
 	ldr r0, [r4]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	ldr r1, [r4, #4]
 	ldr r0, [r0, #4]
 	ldr r5, [r1, #0x4c]
@@ -12443,7 +12444,7 @@ ov02_0224B938: ; 0x0224B938
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #0x83
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -12494,10 +12495,10 @@ ov02_BattleExit_HandleRoamerAction: ; 0x0224B998
 	ldr r0, [r1, #8]
 	str r1, [sp]
 	mov r1, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r7, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	add r6, r0, #0
 	add r0, r7, #0
 	mov r1, #5
@@ -12533,9 +12534,9 @@ ov02_BattleExit_HandleRoamerAction: ; 0x0224B998
 	cmp r4, #0
 	bne _0224BA14
 	add r0, sp, #8
-	bl RoamerMon_init
+	bl RoamerMon_Init
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	ldr r1, [sp, #4]
 	mov r2, #2
 	bl sub_02066BE8
@@ -12544,9 +12545,9 @@ _0224BA14:
 	cmp r0, #4
 	bne _0224BA2E
 	add r0, sp, #8
-	bl RoamerMon_init
+	bl RoamerMon_Init
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	ldr r1, [sp, #4]
 	mov r2, #1
 	bl sub_02066BE8
@@ -12651,7 +12652,7 @@ _0224BAD4:
 PlayerStepEvent_RepelCounterDecrement: ; 0x0224BAE4
 	push {r4, lr}
 	add r4, r1, #0
-	bl Save_Roamers_get
+	bl Save_Roamers_Get
 	bl RoamerSave_GetRepelAddr
 	ldrb r1, [r0]
 	cmp r1, #0
@@ -12737,10 +12738,10 @@ PokecenterAnimRun: ; 0x0224BB90
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x34
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #0xf]
 	cmp r1, #5
@@ -13061,10 +13062,10 @@ ov02_0224BE24: ; 0x0224BE24
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x1c
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #2]
 	cmp r1, #4
@@ -13323,10 +13324,10 @@ _0224C01A:
 Task_FieldEscapeRope: ; 0x0224C020
 	push {r3, r4, r5, r6, r7, lr}
 	add r6, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r7, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 _0224C032:
 	ldr r3, [r5]
@@ -13526,8 +13527,8 @@ ov02_0224C1B8: ; 0x0224C1B8
 	add r5, r0, #0
 	ldr r0, [r1, #0xc]
 	add r4, r2, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetSpecialSpawnWarpPtr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetSpecialSpawnWarpPtr
 	add r1, r0, #0
 	ldr r2, [r4, #0xc]
 	add r0, r5, #0
@@ -13559,10 +13560,10 @@ ov02_0224C1D8: ; 0x0224C1D8
 ov02_0224C1F8: ; 0x0224C1F8
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r7, _0224C230 ; =ov02_022536F0
 	add r4, r0, #0
 _0224C20C:
@@ -13783,10 +13784,10 @@ _0224C3A8:
 Task_FieldDig: ; 0x0224C3AC
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r7, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r7, #0
 	bl TaskManager_GetStatePtr
@@ -13834,7 +13835,7 @@ _0224C3F8:
 	ldr r0, [r6, r0]
 	mov r1, #1
 	mov r4, #2
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	b _0224C420
 _0224C41E:
 	mov r4, #1
@@ -14006,10 +14007,10 @@ _0224C552:
 Task_FieldTeleport: ; 0x0224C558
 	push {r3, r4, r5, r6, r7, lr}
 	add r7, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r7, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r7, #0
 	bl TaskManager_GetStatePtr
@@ -14057,7 +14058,7 @@ _0224C5A4:
 	ldr r0, [r6, r0]
 	mov r1, #1
 	mov r4, #2
-	bl FsysUnkSub108_AddMonMood
+	bl FieldSystemUnkSub108_AddMonMood
 	b _0224C5CC
 _0224C5CA:
 	mov r4, #1
@@ -14381,14 +14382,14 @@ ov02_0224C840: ; 0x0224C840
 	add r5, r0, #0
 	ldr r0, [r1, #0xc]
 	add r4, r2, #0
-	bl Save_FlyPoints_get
+	bl Save_LocalFieldData_Get
 	add r6, r0, #0
-	bl FlyPoints_GetDeathSpawn
+	bl LocalFieldData_GetBlackoutSpawn
 	add r1, sp, #0
 	add r7, r0, #0
 	bl GetFlyWarpData
 	add r0, r6, #0
-	bl FlyPoints_GetSpecialSpawnWarpPtr
+	bl LocalFieldData_GetSpecialSpawnWarpPtr
 	add r1, r0, #0
 	add r0, r7, #0
 	bl GetSpecialSpawnWarpData
@@ -14624,8 +14625,8 @@ ov02_0224CA38: ; 0x0224CA38
 	add r5, r0, #0
 	ldr r0, [r1, #0xc]
 	add r4, r2, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetSpecialSpawnWarpPtr
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetSpecialSpawnWarpPtr
 	add r1, r0, #0
 	ldr r2, [r4, #0xc]
 	add r0, r5, #0
@@ -14699,7 +14700,7 @@ ov02_0224CAB8: ; 0x0224CAB8
 	add r6, r2, #0
 	str r1, [sp]
 	add r7, r3, #0
-	bl WallpaperPasswordBank_GetNum
+	bl WallpaperPasswordBank_GetCount
 	add r4, r0, #0
 	add r0, r5, #0
 	add r1, r6, #0
@@ -14867,7 +14868,7 @@ ov02_0224CBF8: ; 0x0224CBF8
 	add r6, r2, #0
 	str r1, [sp]
 	add r7, r3, #0
-	bl WallpaperPasswordBank_GetNum
+	bl WallpaperPasswordBank_GetCount
 	add r4, r0, #0
 	add r0, r5, #0
 	add r1, r6, #0
@@ -15152,10 +15153,10 @@ ov02_0224CE28: ; 0x0224CE28
 	push {r4, r5, r6, lr}
 	sub sp, #0x30
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldrb r1, [r4, #0xf]
 	cmp r1, #5
@@ -16781,7 +16782,7 @@ ov02_0224D9C0: ; 0x0224D9C0
 	bl ov02_0224D044
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0x10
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #0x10
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -16791,7 +16792,7 @@ ov02_0224D9C0: ; 0x0224D9C0
 	str r0, [r2]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #4
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r3, sp, #4
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -16897,7 +16898,7 @@ ov02_0224DAA4: ; 0x0224DAA4
 	bl ov02_0224CFD8
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0x10
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #0x10
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -16907,7 +16908,7 @@ ov02_0224DAA4: ; 0x0224DAA4
 	str r0, [r2]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #4
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r3, sp, #4
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -17038,17 +17039,17 @@ _0224DBB0:
 	add r0, #0xe5
 	ldr r1, [r5, #0x24]
 	add r0, r4, r0
-	bl GF_Camera_ShiftBy
+	bl Camera_OffsetLookAtPosAndTarget
 	b _0224DC1C
 _0224DBF4:
 	add r0, r4, #0
 	ldr r1, [r5, #0x24]
 	add r0, #0xf8
-	bl sub_0202365C
+	bl Camera_SetLookAtCamTarget
 	add r0, r4, #0
 	ldr r1, [r5, #0x24]
 	add r0, #0xec
-	bl sub_0202366C
+	bl Camera_SetLookAtCamPos
 	ldr r0, _0224DC54 ; =0x00000112
 	ldrb r1, [r4, r0]
 	add r1, r1, #1
@@ -17077,11 +17078,11 @@ _0224DC38:
 	add r0, r4, #0
 	ldr r1, [r5, #0x24]
 	add r0, #0xf8
-	bl sub_0202365C
+	bl Camera_SetLookAtCamTarget
 	add r4, #0xec
 	ldr r1, [r5, #0x24]
 	add r0, r4, #0
-	bl sub_0202366C
+	bl Camera_SetLookAtCamPos
 _0224DC4C:
 	pop {r3, r4, r5, pc}
 	nop
@@ -17736,10 +17737,10 @@ ov02_0224E0D4: ; 0x0224E0D4
 ov02_0224E0EC: ; 0x0224E0EC
 	push {r4, r5, r6, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4]
 	mov r5, #0
@@ -18079,13 +18080,13 @@ ov02_0224E35C: ; 0x0224E35C
 	sub sp, #0x1c
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r6, r0, #0
 	ldr r0, [r5, #0xc]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetPosition
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetCurrentPosition
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	add r4, r0, #0
 	ldr r0, [r5, #0x20]
 	ldr r0, [r0]
@@ -18097,7 +18098,7 @@ ov02_0224E35C: ; 0x0224E35C
 	pop {r4, r5, r6, r7, pc}
 _0224E38E:
 	add r0, r6, #0
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_CheckSafariSysFlag
 	cmp r0, #0
 	bne _0224E39E
 	add sp, #0x1c
@@ -18287,7 +18288,7 @@ ov02_0224E4EC: ; 0x0224E4EC
 	add r4, r0, #0
 	bl MI_CpuFill8
 	add r0, r5, #0
-	bl Fsys_GetSaveDataPtr
+	bl FieldSystem_GetSaveData
 	str r0, [r4]
 	mov r0, #0x43
 	lsl r0, r0, #2
@@ -18443,11 +18444,11 @@ _0224E638:
 ov02_0224E640: ; 0x0224E640
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerID
 	add r5, r0, #0
 	add r0, r4, #0
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	bl sub_0202F720
 	add r4, r0, #0
 	add r0, r5, #0
@@ -18505,7 +18506,7 @@ ov02_0224E698: ; 0x0224E698
 	add r1, sp, #0x14
 	bl PlayerAvatar_GetPositionVec
 	ldr r0, [r5, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	mov r1, #0
 	bl SafariZone_GetAreaSet
 	add r2, r0, #0
@@ -18599,7 +18600,7 @@ ov02_0224E754: ; 0x0224E754
 	bl GetDeltaYByFacingDirection
 	add r6, r5, r0
 	ldr r0, [r4, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	bl PlayerProfile_GetTrainerGender
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -18620,7 +18621,7 @@ ov02_0224E754: ; 0x0224E754
 	ror r0, r2
 	add r6, r1, r0
 	ldr r0, [r4, #0xc]
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	mov r1, #0
 	bl SafariZone_GetAreaSet
 	mov r1, #0x7a
@@ -19615,8 +19616,8 @@ _0224EF78:
 	.balign 4, 0
 	thumb_func_end ov02_0224EF6C
 
-	thumb_func_start Fsys_FollowPokeInteract
-Fsys_FollowPokeInteract: ; 0x0224EF80
+	thumb_func_start FieldSystem_FollowPokeInteract
+FieldSystem_FollowPokeInteract: ; 0x0224EF80
 	ldr r3, _0224EF8C ; =TaskManager_Call
 	ldr r0, [r0, #0x10]
 	ldr r1, _0224EF90 ; =Task_FollowPokeInteract
@@ -19625,7 +19626,7 @@ Fsys_FollowPokeInteract: ; 0x0224EF80
 	nop
 _0224EF8C: .word TaskManager_Call
 _0224EF90: .word Task_FollowPokeInteract
-	thumb_func_end Fsys_FollowPokeInteract
+	thumb_func_end FieldSystem_FollowPokeInteract
 
 	thumb_func_start ov02_0224EF94
 ov02_0224EF94: ; 0x0224EF94
@@ -19734,7 +19735,7 @@ ov02_0224F058: ; 0x0224F058
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
 	add r4, r1, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	mov r1, #5
 	mov r2, #0
@@ -19823,9 +19824,9 @@ _0224F124:
 	cmp r7, #0
 	beq _0224F13E
 	ldr r0, [r6, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	add r1, r7, #0
-	bl CheckFlagInArray
+	bl Save_VarsFlags_CheckFlagInArray
 	cmp r0, #0
 	bne _0224F13E
 	mov r0, #0
@@ -20326,10 +20327,10 @@ ov02_0224F4BC: ; 0x0224F4BC
 	bl GetPlayerYCoord
 	str r0, [sp]
 	ldr r0, [r4, #0x3c]
-	bl MapObjectMan_GetCount
+	bl MapObjectManager_GetCount
 	str r0, [sp, #8]
 	ldr r0, [r4, #0x3c]
-	bl MapObjectMan_GetObjects
+	bl MapObjectManager_GetObjects
 	str r0, [sp, #0x10]
 	mov r0, #0
 	str r0, [sp, #0xc]
@@ -20432,7 +20433,7 @@ _0224F5A4:
 	bl HiddenItemScriptNoToFlagId
 	add r1, r0, #0
 	ldr r0, [sp]
-	bl FlagGet
+	bl FieldSystem_FlagGet
 	cmp r0, #0
 	bne _0224F5BE
 	add r4, r4, #1
@@ -20454,8 +20455,8 @@ ov02_0224F5D0: ; 0x0224F5D0
 	push {r4, lr}
 	ldr r0, [r0, #0xc]
 	add r4, r1, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetWeatherType
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetWeatherType
 	cmp r0, #0
 	beq _0224F5E8
 	cmp r0, #1
@@ -20573,7 +20574,7 @@ ov02_0224F698: ; 0x0224F698
 	mov r1, #0x42
 	lsl r1, r1, #2
 	ldr r0, [r0, r1]
-	bl FsysUnkSub108_GetMonMood
+	bl FieldSystemUnkSub108_GetMonMood
 	strb r0, [r4, #0x15]
 	pop {r4, pc}
 	.balign 4, 0
@@ -20585,7 +20586,7 @@ ov02_0224F6AC: ; 0x0224F6AC
 	sub sp, #0x10
 	ldr r0, [r0, #0xc]
 	add r5, r3, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	add r4, r0, #0
 	bl GetIdxOfFirstAliveMonInParty_CrashIfNone
 	add r6, r0, #0
@@ -20595,7 +20596,7 @@ ov02_0224F6AC: ; 0x0224F6AC
 	bl Party_GetUnkSubSlot
 	add r0, r4, #0
 	add r1, r6, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r0, #0
 	add r0, sp, #0
 	add r2, sp, #8
@@ -21137,7 +21138,7 @@ _0224FA50:
 	add r0, r4, #0
 	bl RemoveWindow
 	ldr r0, [r4, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0xd2
 	ldrb r1, [r0]
@@ -21171,7 +21172,7 @@ _0224FABA:
 	add r0, r4, #0
 	bl RemoveWindow
 	ldr r0, [r4, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
 	add r0, #0xd2
 	ldrb r1, [r0]
@@ -21291,7 +21292,7 @@ FollowPoke_TryPrintInteractionMessage: ; 0x0224FB9C
 	mov r0, #1
 	lsl r0, r0, #0xa
 	mov r1, #0xb
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x10]
 	ldr r0, [r5, #8]
 	add r1, r4, #0
@@ -21304,7 +21305,7 @@ FollowPoke_TryPrintInteractionMessage: ; 0x0224FB9C
 	sub r3, r3, #1
 	bl FollowPoke_ExpandInteractionMessage
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r6, r0, #0
 	add r0, r4, #0
 	add r1, r6, #0
@@ -21342,7 +21343,7 @@ ov02_0224FC08: ; 0x0224FC08
 	lsl r0, r0, #0xa
 	mov r1, #0xb
 	add r6, r2, #0
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x10]
 	ldr r0, [r5, #8]
 	add r1, r4, #0
@@ -21357,7 +21358,7 @@ ov02_0224FC08: ; 0x0224FC08
 	add r0, r5, #0
 	bl ov02_0224FCE0
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r6, r0, #0
 	add r0, r4, #0
 	add r1, r6, #0
@@ -21414,7 +21415,7 @@ FollowPoke_ExpandInteractionMessage: ; 0x0224FC8C
 	bl NewMsgDataFromNarc
 	add r5, r0, #0
 	add r0, r4, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r4, r0, #0
 	add r0, r6, #0
 	add r1, r4, #0
@@ -21428,9 +21429,9 @@ FollowPoke_ExpandInteractionMessage: ; 0x0224FC8C
 	add r2, r6, #0
 	bl StringExpandPlaceholders
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r5, #0
 	bl DestroyMsgData
 	pop {r3, r4, r5, r6, r7, pc}
@@ -21452,13 +21453,13 @@ ov02_0224FCE0: ; 0x0224FCE0
 	bl NewMsgDataFromNarc
 	add r7, r0, #0
 	add r0, r4, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	add r4, r0, #0
 	mov r0, #2
 	tst r0, r6
 	ldr r0, [r5, #0xc]
 	beq _0224FD3E
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	mov r1, #0
@@ -21482,12 +21483,12 @@ _0224FD30:
 	mov r1, #0x5f
 	b _0224FD72
 _0224FD3E:
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	bl Mon_GetBoxMon
 	str r0, [sp, #4]
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	mov r1, #0
@@ -21512,9 +21513,9 @@ _0224FD72:
 	add r2, r5, #0
 	bl StringExpandPlaceholders
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r7, #0
 	bl DestroyMsgData
 	add sp, #8
@@ -21677,7 +21678,7 @@ _0224FE9E:
 	add r5, r0, #0
 	lsl r0, r5, #0x18
 	lsr r0, r0, #0x18
-	bl sub_0205B6E8
+	bl MetatileBehavior_IsEncounterGrass
 	cmp r0, #1
 	bne _0224FEE0
 	mov r0, #1
@@ -21985,7 +21986,7 @@ _0225010C: .word 0x0000087C
 Task_FollowPokeInteract: ; 0x02250110
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -22170,7 +22171,7 @@ _02250272:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	ldr r0, [r0, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0xd2
 	ldrb r1, [r0]
@@ -22208,7 +22209,7 @@ _022502C4:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	ldr r0, [r0, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0xd2
 	ldrb r1, [r0]
@@ -22236,8 +22237,8 @@ _0225030A:
 	b _0225047E
 _02250314:
 	ldr r0, [r4, #0xc]
-	bl Save_DressupData_get
-	bl SaveDressupData_GetFashionCase
+	bl Save_FashionData_Get
+	bl Save_FashionData_GetFashionCase
 	add r7, r0, #0
 	mov r0, #0x12
 	lsl r0, r0, #4
@@ -22260,7 +22261,7 @@ _02250336:
 	add r0, r7, #0
 	add r1, r5, #0
 	mov r2, #1
-	bl sub_0202BB08
+	bl FashionCase_GiveFashionItem
 	mov r1, #0x12
 	lsl r1, r1, #4
 	ldr r1, [r4, r1]
@@ -22323,7 +22324,7 @@ _022503B2:
 	pop {r3, r4, r5, r6, r7, pc}
 _022503BA:
 	ldr r0, [r4, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	add r1, r5, #0
 	mov r2, #0
@@ -22333,7 +22334,7 @@ _022503BA:
 	lsr r0, r0, #0x18
 	bne _02250404
 	ldr r0, [r4, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	bl SetFlag99C
 	mov r1, #1
 	add r0, sp, #0
@@ -22394,7 +22395,7 @@ _02250418:
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	ldr r0, [r0, #0x10]
-	bl String_dtor
+	bl String_Delete
 	add r0, r4, #0
 	add r0, #0xd2
 	ldrb r1, [r0]
@@ -22427,7 +22428,7 @@ FollowPoke_PlaceholdersSet: ; 0x022504A0
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
 	add r4, r1, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	add r6, r0, #0
 	bl Mon_GetBoxMon
@@ -22441,7 +22442,7 @@ FollowPoke_PlaceholdersSet: ; 0x022504A0
 	add r2, r7, #0
 	bl BufferBoxMonSpeciesName
 	ldr r0, [r5, #0xc]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	mov r1, #2
@@ -22469,13 +22470,13 @@ ov02_02250504: ; 0x02250504
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	add r4, r0, #0
 	mov r0, #0x42
 	lsl r0, r0, #2
 	ldr r0, [r5, r0]
-	bl FsysUnkSub108_GetMonMood
+	bl FieldSystemUnkSub108_GetMonMood
 	mov r1, #0x12
 	str r0, [sp]
 	lsl r1, r1, #4
@@ -22502,7 +22503,7 @@ _02250542:
 	lsl r1, r1, #0x18
 	ldr r0, [r5, r0]
 	asr r1, r1, #0x18
-	bl FsysUnkSub108_SetMonMood
+	bl FieldSystemUnkSub108_SetMonMood
 	add r0, r4, #0
 	mov r1, #9
 	mov r2, #0
@@ -22836,7 +22837,7 @@ ov02_02250780: ; 0x02250780
 	push {r4, r5, r6, lr}
 	ldr r0, [r0, #0xc]
 	add r5, r1, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	add r6, r0, #0
 	mov r1, #0xb1
@@ -22890,10 +22891,10 @@ _022507E4: .word ov02_022507E8
 ov02_022507E8: ; 0x022507E8
 	push {r4, r5, r6, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 	add r0, r4, #0
 	bl TaskManager_GetStatePtr
@@ -23012,13 +23013,13 @@ ov02_022508D8: ; 0x022508D8
 	push {r4, r5, r6, lr}
 	sub sp, #0x18
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
 	bl TaskManager_GetStatePtr
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r1, [r5]
 	add r4, r0, #0
 	cmp r1, #3
@@ -23204,7 +23205,7 @@ ov02_02250A60: ; 0x02250A60
 	str r0, [r4, #0x24]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0xc
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #0xc
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -23214,7 +23215,7 @@ ov02_02250A60: ; 0x02250A60
 	str r0, [r2]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r3, sp, #0
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -23319,7 +23320,7 @@ ov02_02250B44: ; 0x02250B44
 	thumb_func_start ov02_02250B58
 ov02_02250B58: ; 0x02250B58
 	push {r4, lr}
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	ldr r0, [r0, #0x24]
@@ -24225,7 +24226,7 @@ ov02_02251280: ; 0x02251280
 ov02_022512AC: ; 0x022512AC
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -24285,7 +24286,7 @@ ov02_02251320: ; 0x02251320
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #8
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -24426,11 +24427,11 @@ _02251440:
 	add r0, r6, #0
 	ldr r1, [r5, #0x24]
 	add r0, #0xc
-	bl sub_0202365C
+	bl Camera_SetLookAtCamTarget
 	add r6, #0x18
 	ldr r1, [r5, #0x24]
 	add r0, r6, #0
-	bl sub_0202366C
+	bl Camera_SetLookAtCamPos
 	mov r0, #0x14
 	add r6, r7, #0
 	mul r6, r0
@@ -24439,41 +24440,41 @@ _02251440:
 	ldr r0, [r4, r0]
 	ldr r1, [r5, #0x24]
 	ldr r0, [r0, r6]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	mov r0, #0x4b
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	ldr r1, [r5, #0x24]
 	add r0, r0, r6
 	add r0, r0, #4
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	mov r0, #0x4b
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	ldr r1, [r5, #0x24]
 	add r0, r0, r6
 	ldrh r0, [r0, #0xe]
-	bl GF_Camera_SetPerspectiveAngle
+	bl Camera_SetPerspectiveAngle
 	ldr r0, _022514C0 ; =0x000004B4
 	ldr r1, [r4, r0]
 	mov r0, #0xc
 	mul r0, r7
 	add r0, r1, r0
 	ldr r1, [r5, #0x24]
-	bl GF_Camera_ShiftBy
+	bl Camera_OffsetLookAtPosAndTarget
 	mov r0, #0x96
 	ldr r1, _022514C4 ; =0x006A4000
 	ldr r2, [r5, #0x24]
 	lsl r0, r0, #0xc
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	ldr r1, [r5, #0x24]
 	add r0, sp, #8
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetBindTarget
+	bl Camera_GetCurrentTarget
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -24574,7 +24575,7 @@ _02251564: .word ov02_02251568
 ov02_02251568: ; 0x02251568
 	push {r3, r4, lr}
 	sub sp, #0x14
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	ldr r0, [r0, #0x24]
@@ -24584,12 +24585,12 @@ ov02_02251568: ; 0x02251568
 	beq _0225159C
 	ldr r1, [r4, #0x24]
 	add r0, sp, #8
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	ldr r0, [r4, #0x24]
-	bl GF_Camera_GetBindTarget
+	bl Camera_GetCurrentTarget
 	ldr r1, [r4, #0x24]
 	add r0, sp, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add sp, #0x14
 	mov r0, #1
 	pop {r3, r4, pc}
@@ -24627,10 +24628,10 @@ ov02_022515D0: ; 0x022515D0
 	push {r3, r4, r5, r6, r7, lr}
 	sub sp, #0x38
 	add r5, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp, #8]
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	add r0, r5, #0
 	bl TaskManager_GetStatePtr
@@ -24825,7 +24826,7 @@ _02251760:
 	bl MapObject_SetPositionVec
 	add r0, r6, #0
 	mov r1, #0
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #0
 	strh r0, [r4, #8]
 	add r4, #0xe2
@@ -25224,10 +25225,10 @@ _022519D4:
 	bl ScheduleBgTilemapBufferTransfer
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r6, #0
 	mov r1, #0
 	add r0, #0x63
@@ -25314,10 +25315,10 @@ ov02_02251B70: ; 0x02251B70
 	add r6, r0, r1
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r4, #0
 _02251B88:
 	lsl r0, r4, #2
@@ -25520,11 +25521,11 @@ ov02_02251CF0: ; 0x02251CF0
 	pop {r3, r4, r5, pc}
 _02251D1A:
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	str r0, [r4]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4, #4]
@@ -25536,7 +25537,7 @@ _02251D1A:
 	strh r0, [r4, #0xa]
 	ldr r1, [r5, #0x24]
 	add r0, sp, #8
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #8
 	ldmia r3!, {r0, r1}
 	add r2, sp, #0x14
@@ -25544,38 +25545,38 @@ _02251D1A:
 	ldr r0, [r3]
 	str r0, [r2]
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetBindTarget
+	bl Camera_GetCurrentTarget
 	add r2, r4, #0
 	add r1, r0, #0
 	add r0, sp, #0x14
 	add r2, #0xc
 	bl VEC_Subtract
 	ldr r0, [r5, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	strh r0, [r4, #0x18]
 	ldr r0, [r5, #0x24]
-	bl sub_02023654
+	bl Camera_GetPerspectiveClippingPlaneNear
 	str r0, [r4, #0x1c]
 	ldr r0, [r5, #0x24]
-	bl sub_02023650
+	bl Camera_GetPerspectiveClippingPlaneFar
 	str r0, [r4, #0x20]
 	ldr r0, _02251DB0 ; =0x0029AEC1
 	ldr r1, [r5, #0x24]
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	ldr r0, _02251DB4 ; =ov02_02253C74
 	ldr r1, [r5, #0x24]
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	ldr r0, _02251DB8 ; =0x000005C1
 	ldr r1, [r5, #0x24]
-	bl GF_Camera_SetPerspectiveAngle
+	bl Camera_SetPerspectiveAngle
 	ldr r0, _02251DBC ; =ov02_02253BC4
 	ldr r1, [r5, #0x24]
-	bl GF_Camera_ShiftBy
+	bl Camera_OffsetLookAtPosAndTarget
 	mov r0, #0x96
 	ldr r1, _02251DC0 ; =0x006A4000
 	ldr r2, [r5, #0x24]
 	lsl r0, r0, #0xc
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	add sp, #0x20
 	pop {r3, r4, r5, pc}
 	nop
@@ -25657,7 +25658,7 @@ _02251E40: .word ov02_02251E44
 	thumb_func_start ov02_02251E44
 ov02_02251E44: ; 0x02251E44
 	push {r4, r5, r6, lr}
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r4, #4]
 	ldr r5, [r0, #0x24]
@@ -25671,7 +25672,7 @@ ov02_02251E44: ; 0x02251E44
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	ldr r2, [r4, #0x24]
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	mov r0, #1
 	pop {r4, r5, r6, pc}
 _02251E70:
@@ -25693,7 +25694,7 @@ GetPhoneBookEntryName: ; 0x02251E74
 _02251E86:
 	mov r0, #8
 	add r1, r4, #0
-	bl String_ctor
+	bl String_New
 	add r5, r0, #0
 	b _02251EB2
 _02251E92:
@@ -25780,8 +25781,8 @@ ov02_02251F20: ; 0x02251F20
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r0, #0
 	ldr r0, [r5, #0x38]
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetPosition
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetCurrentPosition
 	add r4, r0, #0
 	ldr r0, [r4]
 	bl MapHeader_GetField14_1E
@@ -25874,14 +25875,14 @@ ov02_02251FDC: ; 0x02251FDC
 	ldr r0, [r0, #0x38]
 	add r6, r1, #0
 	str r2, [sp, #0xc]
-	bl SavArray_Flags_get
+	bl Save_VarsFlags_Get
 	str r0, [sp, #0x1c]
 	ldr r0, [sp, #8]
 	ldr r0, [r0, #0x38]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	ldr r0, [sp, #8]
 	ldr r0, [r0, #0x38]
-	bl Sav2_Misc_get
+	bl Save_Misc_Get
 	str r0, [sp, #0x18]
 	ldr r0, [sp, #8]
 	ldr r0, [r0, #0x30]
@@ -25981,7 +25982,7 @@ _022520B8:
 	bl MI_CpuFill8
 	ldr r0, [sp, #8]
 	ldr r0, [r0, #0x38]
-	bl Sav2_SysInfo_RTC_get
+	bl Save_SysInfo_RTC_Get
 	ldr r0, [r0, #0x14]
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
@@ -26028,7 +26029,7 @@ _022520FC:
 	cmp r0, #0
 	bne _0225215A
 	ldr r0, [sp, #0x1c]
-	bl ScriptState_IsInRocketTakeover
+	bl Save_VarsFlags_IsInRocketTakeover
 	cmp r0, #0
 	bne _0225215A
 _02252134:
@@ -26326,7 +26327,7 @@ _0225234A:
 	cmp r1, r0
 	bne _022523B0
 	ldr r0, [r5, #0xc]
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	bl GetFirstAliveMonInParty_CrashIfNone
 	add r6, r0, #0
 	mov r1, #5
@@ -26390,10 +26391,10 @@ ov02_022523D0: ; 0x022523D0
 	bl TaskManager_GetStatePtr
 	add r5, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r4, r0, #0
 	add r0, r6, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r6, r0, #0
 	ldr r0, [r5]
 	cmp r0, #4
@@ -26581,9 +26582,9 @@ ov02_0225255C: ; 0x0225255C
 	bl TaskManager_GetStatePtr
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r1, [r5]
 	add r4, r0, #0
 	cmp r1, #5
@@ -26804,7 +26805,7 @@ _02252716:
 	str r0, [r2]
 	ldr r0, [r4, #8]
 	ldr r0, [r0, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	add r1, sp, #0
 	strh r0, [r1, #8]
 	add r0, r4, #0
@@ -26853,7 +26854,7 @@ ov02_02252764: ; 0x02252764
 	strh r1, [r0]
 	ldr r0, [r5, #8]
 	ldr r0, [r0, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	add r1, r5, #0
 	add r1, #0xea
 	strh r0, [r1]
@@ -26942,11 +26943,11 @@ ov02_022527B0: ; 0x022527B0
 	bl MTX_MultVec33
 	ldr r1, [sp]
 	add r0, sp, #0x34
-	bl GF_Camera_SetBindTarget
+	bl Camera_SetLookAtCamUp
 	lsl r0, r4, #0x10
 	ldr r1, [sp]
 	lsr r0, r0, #0x10
-	bl GF_Camera_SetPerspectiveAngle
+	bl Camera_SetPerspectiveAngle
 	add r0, r5, #0
 	add r0, #0xe6
 	add r5, #0xe8
@@ -27213,9 +27214,9 @@ ov02_02252A28: ; 0x02252A28
 	bl TaskManager_GetStatePtr
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r0, [r5]
 	cmp r0, #5
@@ -27845,9 +27846,9 @@ ov02_02252F14: ; 0x02252F14
 	bl TaskManager_GetStatePtr
 	add r4, r0, #0
 	add r0, r5, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r0, r5, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	ldr r1, [r4]
 	add r5, r0, #0
 	cmp r1, #4
@@ -28110,8 +28111,8 @@ _02253114:
 	thumb_func_start ov02_02253134
 ov02_02253134: ; 0x02253134
 	push {r3, r4, r5, r6, r7, lr}
-	bl Save_DressupData_get
-	bl SaveDressupData_GetFashionCase
+	bl Save_FashionData_Get
+	bl Save_FashionData_GetFashionCase
 	ldr r6, _02253168 ; =ov02_02253D54
 	add r5, r0, #0
 	mov r4, #0
@@ -28155,8 +28156,8 @@ _02253184: .word ov02_02253D54
 	thumb_func_start ov02_02253188
 ov02_02253188: ; 0x02253188
 	push {r3, r4, r5, lr}
-	bl Save_DressupData_get
-	bl SaveDressupData_GetFashionCase
+	bl Save_FashionData_Get
+	bl Save_FashionData_GetFashionCase
 	add r4, r0, #0
 	mov r5, #0
 _02253196:
@@ -28192,8 +28193,8 @@ _022531C0:
 	lsr r1, r1, #0x18
 	cmp r1, #0xe
 	blo _022531C0
-	bl Save_DressupData_get
-	bl SaveDressupData_GetFashionCase
+	bl Save_FashionData_Get
+	bl Save_FashionData_GetFashionCase
 	add r6, r0, #0
 	mov r5, #0
 	add r7, sp, #0

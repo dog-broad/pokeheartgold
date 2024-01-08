@@ -12,12 +12,12 @@ typedef struct {
     u8 unk5[0x63];
     u8 signature[0x600];
     u8 unk668[6];
-    SAVEDATA *saveData;
+    SaveData *saveData;
     u32 reqUpdateSignature;
 } Ov50_021E5A3C;
 
 typedef struct {
-    HeapID heap_id;
+    HeapID heapId;
     u8 unk4[4];
     OVY_MANAGER *ov_mgr;
     Ov50_021E5A3C *parentData;

@@ -3,8 +3,7 @@
 
 #include "pm_string.h"
 #include "filesystem.h"
-#include "msgfmt.h"
-#include "msgdata/msg.naix"
+#include "message_format.h"
 
 typedef enum MsgDataLoadType {
     MSGDATA_LOAD_DIRECT,
@@ -22,28 +21,28 @@ typedef struct _MAT {
     MAT_ENTRY alloc[1];
 } MAT;
 
-typedef struct MSGDATA {
+typedef struct MsgData {
     u16 type;
-    u16 heap_id;
+    u16 heapId;
     u16 narc_id;
     u16 file_id;
     union {
         MAT * direct;
         NARC * lazy;
     };
-} MSGDATA;
+} MsgData;
 
-MSGDATA *NewMsgDataFromNarc(MsgDataLoadType type, NarcId narc, s32 fileId, HeapID heap_id);
-void DestroyMsgData(MSGDATA *msgData);
-STRING *NewString_ReadMsgData(MSGDATA *msgData, s32 strno);
-void ReadMsgDataIntoString(MSGDATA *msgData, s32 strno, STRING *dest);
-void GetSpeciesNameIntoArray(u16 species, HeapID heap_id, u16 *dest);
-STRING *GetSpeciesName(u16 species, HeapID heap_id);
-void ReadMsgData_NewNarc_ExistingString(NarcId narcId, s32 fileId, u32 msgId, HeapID heapId, STRING *dest);
-STRING * ReadMsgData_ExpandPlaceholders(MSGFMT * a0, MSGDATA * msgData, u32 msgno, HeapID heap_id);
-STRING * ReadMsgData_NewNarc_NewString(NarcId narc_id, u32 group, u32 num, u32 heap_id);
-u32 MsgDataGetCount(MSGDATA *msgData);
-void ReadMsgDataIntoU16Array(MSGDATA *msgData, u32 msgno, u16 *dest);
-STRING * GetMoveName(u32 move, HeapID heapno);
+MsgData *NewMsgDataFromNarc(MsgDataLoadType type, NarcId narc, s32 fileId, HeapID heapId);
+void DestroyMsgData(MsgData *msgData);
+String *NewString_ReadMsgData(MsgData *msgData, s32 strno);
+void ReadMsgDataIntoString(MsgData *msgData, s32 strno, String *dest);
+void GetSpeciesNameIntoArray(u16 species, HeapID heapId, u16 *dest);
+String *GetSpeciesName(u16 species, HeapID heapId);
+void ReadMsgData_NewNarc_ExistingString(NarcId narcId, s32 fileId, u32 msgId, HeapID heapId, String *dest);
+String * ReadMsgData_ExpandPlaceholders(MessageFormat *messageFormat, MsgData * msgData, u32 msgno, HeapID heapId);
+String * ReadMsgData_NewNarc_NewString(NarcId narc_id, u32 group, u32 num, HeapID heapId);
+u32 MsgDataGetCount(MsgData *msgData);
+void ReadMsgDataIntoU16Array(MsgData *msgData, u32 msgno, u16 *dest);
+String * GetMoveName(u32 move, HeapID heapno);
 
 #endif //POKEHEARTGOLD_MSGDATA_H

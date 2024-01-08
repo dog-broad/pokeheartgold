@@ -1,5 +1,6 @@
 #include "constants/pokemon.h"
 	.include "asm/macros.inc"
+	.include "unk_0202B614.inc"
 	.include "global.inc"
 
 	.text
@@ -95,7 +96,7 @@ sub_0202B684: ; 0x0202B684
 	bl GetMonData
 	str r0, [r5, #4]
 	add r0, r4, #0
-	mov r1, #MON_DATA_FORME
+	mov r1, #MON_DATA_FORM
 	mov r2, #0
 	bl GetMonData
 	add r1, r5, #0
@@ -456,8 +457,8 @@ _0202B91A:
 	.balign 4, 0
 	thumb_func_end sub_0202B908
 
-	thumb_func_start Sav2_DressupData_init
-Sav2_DressupData_init: ; 0x0202B930
+	thumb_func_start Save_FashionData_Init
+Save_FashionData_Init: ; 0x0202B930
 	push {r3, r4, r5, r6, r7, lr}
 	mov r4, #0
 	ldr r6, _0202B980 ; =0x00001234
@@ -501,15 +502,15 @@ _0202B95C:
 _0202B980: .word 0x00001234
 _0202B984: .word 0x000004FC
 _0202B988: .word 0x000007F4
-	thumb_func_end Sav2_DressupData_init
+	thumb_func_end Save_FashionData_Init
 
-	thumb_func_start Sav2_DressupData_sizeof
-Sav2_DressupData_sizeof: ; 0x0202B98C
+	thumb_func_start Save_FashionData_sizeof
+Save_FashionData_sizeof: ; 0x0202B98C
 	ldr r0, _0202B990 ; =0x00000834
 	bx lr
 	.balign 4, 0
 _0202B990: .word 0x00000834
-	thumb_func_end Sav2_DressupData_sizeof
+	thumb_func_end Save_FashionData_sizeof
 
 	thumb_func_start sub_0202B994
 sub_0202B994: ; 0x0202B994
@@ -557,14 +558,14 @@ _0202B9DA:
 	.balign 4, 0
 	thumb_func_end sub_0202B9B8
 
-	thumb_func_start SaveDressupData_GetFashionCase
-SaveDressupData_GetFashionCase: ; 0x0202B9E0
+	thumb_func_start Save_FashionData_GetFashionCase
+Save_FashionData_GetFashionCase: ; 0x0202B9E0
 	ldr r1, _0202B9E8 ; =0x000007F4
 	add r0, r0, r1
 	bx lr
 	nop
 _0202B9E8: .word 0x000007F4
-	thumb_func_end SaveDressupData_GetFashionCase
+	thumb_func_end Save_FashionData_GetFashionCase
 
 	thumb_func_start sub_0202B9EC
 sub_0202B9EC: ; 0x0202B9EC
@@ -735,8 +736,8 @@ _0202BAFE:
 	pop {r4, r5, r6, pc}
 	thumb_func_end FashionCase_CountWallpapers
 
-	thumb_func_start sub_0202BB08
-sub_0202BB08: ; 0x0202BB08
+	thumb_func_start FashionCase_GiveFashionItem
+FashionCase_GiveFashionItem: ; 0x0202BB08
 	push {r4, r5, r6, lr}
 	add r4, r1, #0
 	add r5, r0, #0
@@ -793,7 +794,7 @@ _0202BB64:
 	bl sub_0202B808
 	pop {r4, r5, r6, pc}
 	.balign 4, 0
-	thumb_func_end sub_0202BB08
+	thumb_func_end FashionCase_GiveFashionItem
 
 	thumb_func_start sub_0202BB7C
 sub_0202BB7C: ; 0x0202BB7C
@@ -844,8 +845,8 @@ _0202BBC2:
 	pop {r4, r5, r6, pc}
 	thumb_func_end sub_0202BB7C
 
-	thumb_func_start sub_0202BBD8
-sub_0202BBD8: ; 0x0202BBD8
+	thumb_func_start FashionCase_GiveContestBackground
+FashionCase_GiveContestBackground: ; 0x0202BBD8
 	push {r3, r4, r5, lr}
 	add r4, r1, #0
 	add r5, r0, #0
@@ -872,7 +873,7 @@ _0202BBE6:
 _0202BC0C:
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
-	thumb_func_end sub_0202BBD8
+	thumb_func_end FashionCase_GiveContestBackground
 
 	thumb_func_start sub_0202BC10
 sub_0202BC10: ; 0x0202BC10
@@ -1080,7 +1081,7 @@ sub_0202BD7C: ; 0x0202BD7C
 _0202BD90:
 	add r0, r5, #0
 	add r0, #0x40
-	bl MailMsg_init
+	bl MailMsg_Init
 	add r5, #0x40
 	add r0, r5, #0
 	mov r1, #0
@@ -1478,11 +1479,11 @@ _0202C022:
 	.balign 4, 0
 	thumb_func_end sub_0202BF80
 
-	thumb_func_start Save_DressupData_get
-Save_DressupData_get: ; 0x0202C028
-	ldr r3, _0202C030 ; =SavArray_get
+	thumb_func_start Save_FashionData_Get
+Save_FashionData_Get: ; 0x0202C028
+	ldr r3, _0202C030 ; =SaveArray_Get
 	mov r1, #0xc
 	bx r3
 	nop
-_0202C030: .word SavArray_get
-	thumb_func_end Save_DressupData_get
+_0202C030: .word SaveArray_Get
+	thumb_func_end Save_FashionData_Get

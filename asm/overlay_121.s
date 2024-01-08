@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_121.inc"
 	.include "global.inc"
 
 	.text
@@ -111,7 +112,7 @@ ov121_021E59BC: ; 0x021E59BC
 	ldr r0, _021E5AE0 ; =gSystem + 0x60
 	mov r1, #0
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	mov r0, #0
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
@@ -176,7 +177,7 @@ _021E5A5A:
 	add r0, r4, #0
 	add r0, #0x98
 	ldr r0, [r0]
-	bl sub_02024504
+	bl SpriteList_Delete
 	mov r0, #4
 	bl FontID_Release
 	bl OamManager_Free
@@ -185,7 +186,7 @@ _021E5A5A:
 	add r0, r4, #0
 	add r0, #0x94
 	ldr r0, [r0]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0x8b
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -263,12 +264,12 @@ ov121_021E5AEC: ; 0x021E5AEC
 	add r0, r5, #0
 	bl ov121_021E60D4
 	mov r0, #0x9e
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	add r1, r5, #0
 	add r1, #0x94
 	str r0, [r1]
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	mov r1, #0x9a
 	lsl r1, r1, #2
@@ -298,7 +299,7 @@ ov121_021E5AEC: ; 0x021E5AEC
 	bl ov121_021E6194
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r5, #0
 	mov r1, #0x9e
 	bl ov121_021E62A0
@@ -483,7 +484,7 @@ ov121_021E5D08: ; 0x021E5D08
 	add r4, r0, #0
 	add r0, #0x94
 	ldr r0, [r0]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _021E5D1E
 	cmp r0, #2
@@ -553,7 +554,7 @@ _021E5D8E:
 	sub r2, r2, #1
 	bne _021E5D8E
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -568,7 +569,7 @@ ov121_021E5DA4: ; 0x021E5DA4
 	ldr r0, _021E5EC0 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
+	bl GfGfx_SwapDisplay
 	ldr r5, _021E5EC4 ; =ov121_021E701C
 	add r3, sp, #0x90
 	add r2, r3, #0
@@ -748,7 +749,7 @@ ov121_021E5F30: ; 0x021E5F30
 	add r4, r0, #0
 	bl OamManager_ApplyAndResetBuffers
 	add r0, r4, #0
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	bl GF_RunVramTransferTasks
 	ldr r3, _021E5F50 ; =0x027E0000
 	ldr r1, _021E5F54 ; =0x00003FF8
@@ -993,35 +994,35 @@ ov121_021E611C: ; 0x021E611C
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _021E612E
-	bl sub_02024758
+	bl Sprite_Delete
 _021E612E:
 	mov r0, #0x87
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _021E613C
-	bl sub_02024758
+	bl Sprite_Delete
 _021E613C:
 	mov r0, #0x22
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _021E614A
-	bl sub_02024758
+	bl Sprite_Delete
 _021E614A:
 	mov r0, #0x89
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _021E6158
-	bl sub_02024758
+	bl Sprite_Delete
 _021E6158:
 	mov r0, #0x8a
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
 	cmp r0, #0
 	beq _021E6166
-	bl sub_02024758
+	bl Sprite_Delete
 _021E6166:
 	pop {r4, pc}
 	thumb_func_end ov121_021E611C
@@ -1076,7 +1077,7 @@ ov121_021E6194: ; 0x021E6194
 	bl Set2dSpriteAnimSeqNo
 	add r0, r5, #0
 	mov r1, #1
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	add r0, r5, #0
 	mov r1, #1
 	bl Set2dSpriteVisibleFlag
@@ -1321,7 +1322,7 @@ _021E63A2:
 	mov r0, #0x8b
 	lsl r0, r0, #2
 	ldr r0, [r6, r0]
-	bl sub_0202529C
+	bl TouchscreenHitbox_FindHitboxAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -1636,7 +1637,7 @@ ov121_021E65D8: ; 0x021E65D8
 	lsl r0, r0, #0xc
 	str r0, [sp, #4]
 	ldr r0, [r5, r2]
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	mov r0, #0x86
 	ldr r1, _021E6628 ; =ov121_021E7148
 	lsl r0, r0, #2
@@ -2156,11 +2157,11 @@ ov121_021E69F0: ; 0x021E69F0
 	mov r0, #2
 	mov r1, #0x4c
 	mov r2, #0x9e
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r6, #0x68]
 	mov r0, #0x4c
 	mov r1, #0x9e
-	bl String_ctor
+	bl String_New
 	str r0, [r6, #0x6c]
 	ldr r0, [r6, #0x64]
 	mov r1, #0x2b
@@ -2195,19 +2196,19 @@ ov121_021E6A4C: ; 0x021E6A4C
 	add r5, r6, #0
 _021E6A54:
 	ldr r0, [r5, #0x78]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #7
 	blt _021E6A54
 	ldr r0, [r6, #0x70]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x74]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x6c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x68]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r6, #0x64]
 	bl DestroyMsgData
 	pop {r4, r5, r6, pc}
@@ -2310,7 +2311,7 @@ _021E6B0E:
 	str r0, [sp, #0xc]
 	ldr r2, [r4, #0x6c]
 	add r0, r4, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #1
 	str r0, [sp]
 	mov r0, #2
@@ -2337,7 +2338,7 @@ _021E6B0E:
 	str r0, [sp, #0xc]
 	ldr r0, [sp, #0x28]
 	ldr r2, [r4, #0x6c]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #1
 	str r0, [sp]
 	str r0, [sp, #4]
@@ -2374,7 +2375,7 @@ _021E6B0E:
 	ldr r2, [r4, #0x6c]
 	mov r1, #0
 	sub r3, r3, r6
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	ldr r0, [sp, #0x14]
 	ldr r1, [sp, #0x1c]
 	add r2, r4, r0
@@ -2465,9 +2466,9 @@ ov121_021E6C5C: ; 0x021E6C5C
 	add r0, #0x44
 	add r2, r4, #0
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r5, #0x44
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -2500,9 +2501,9 @@ ov121_021E6CA4: ; 0x021E6CA4
 	add r0, #0x34
 	add r2, r4, #0
 	str r3, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r5, #0x34
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -2569,9 +2570,9 @@ ov121_021E6CEC: ; 0x021E6CEC
 	add r0, #0x54
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r5, #0x54
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -2611,9 +2612,9 @@ ov121_021E6D80: ; 0x021E6D80
 	add r0, #0x54
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r5, #0x54
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -2665,7 +2666,7 @@ _021E6DF6:
 	add r0, #0x24
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	mov r0, #0x10
 	str r0, [sp]
 	mov r0, #0xff
@@ -2678,11 +2679,11 @@ _021E6DF6:
 	add r2, r5, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r5, #0
-	bl String_dtor
+	bl String_Delete
 	add r4, #0x24
 	add r0, r4, #0
 	bl CopyWindowToVram
@@ -2721,9 +2722,9 @@ ov121_021E6E68: ; 0x021E6E68
 	add r0, #0x54
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add r5, #0x54
 	add r0, r5, #0
 	bl CopyWindowToVram
@@ -2793,7 +2794,7 @@ _021E6F0C:
 	add r0, #0x94
 	ldr r0, [r0]
 	add r1, sp, #0
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r4, #0
 	bl ov121_021E6CEC
 	bl ov121_021E6F58

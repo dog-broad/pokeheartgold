@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "unk_0202FBCC.inc"
 	.include "global.inc"
 
 	.bss
@@ -364,7 +365,7 @@ _0202FE36:
 	add r0, r7, #0
 	add r1, r5, #0
 	mov r2, #0x58
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	add r5, #0x60
 	strh r0, [r5]
 	ldr r0, _0202FEA8 ; =0x0000E281
@@ -373,7 +374,7 @@ _0202FE36:
 	strh r0, [r4, r2]
 	add r0, r7, #0
 	add r2, r2, #2
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	ldr r1, _0202FEB0 ; =0x00001C64
 	ldr r3, _0202FEB4 ; =0x0000FFFF
 	strh r0, [r4, r1]
@@ -830,7 +831,7 @@ _020301AC:
 _020301B0:
 	add r1, r5, #0
 	mov r2, #0x58
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	add r5, #0x60
 	ldrh r1, [r5]
 	cmp r0, r1
@@ -841,7 +842,7 @@ _020301C4:
 	ldr r2, _02030244 ; =0x00001C64
 	add r0, r6, #0
 	add r1, r4, #0
-	bl SavArray_CalcCRC16
+	bl SaveArray_CalcCRC16
 	ldr r1, _02030244 ; =0x00001C64
 	ldrh r1, [r4, r1]
 	cmp r0, r1
@@ -1190,7 +1191,7 @@ _0203043E:
 	add r0, #0xf8
 	ldr r0, [r0]
 	add r1, r6, #0
-	bl PlayerProfile_copy
+	bl PlayerProfile_Copy
 	mov r0, #0x46
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
@@ -1215,7 +1216,7 @@ _0203043E:
 	ldr r0, [r0, r1]
 	ldr r1, _02030498 ; =0x00001C60
 	add r1, r7, r1
-	bl Options_copy
+	bl Options_Copy
 _02030488:
 	add sp, #0x10
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1399,11 +1400,11 @@ sub_020304F0: ; 0x020304F0
 	add r0, #0x2c
 	str r1, [r6, r0]
 	ldr r0, [sp]
-	bl Sav2_Pokedex_get
+	bl Save_Pokedex_Get
 	mov r1, #0x11
 	lsl r1, r1, #4
 	ldr r1, [r6, r1]
-	bl Pokedex_copy
+	bl Pokedex_Copy
 	ldr r5, [sp, #0x14]
 	ldr r1, _020306CC ; =0x00001150
 	add r0, r5, #0
@@ -1453,7 +1454,7 @@ _02030614:
 	add r1, #0xf8
 	ldr r0, [sp, #4]
 	ldr r1, [r1]
-	bl PlayerProfile_copy
+	bl PlayerProfile_Copy
 	ldr r0, [sp, #0x14]
 	add r5, r5, #4
 	add r1, r0, r7
@@ -1482,11 +1483,11 @@ _02030614:
 	cmp r7, #4
 	blt _02030604
 	ldr r0, [sp]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	mov r1, #0x13
 	lsl r1, r1, #4
 	ldr r1, [r6, r1]
-	bl Options_copy
+	bl Options_Copy
 	mov r5, #0x13
 	lsl r5, r5, #4
 	ldr r1, [r6, r5]
@@ -1532,10 +1533,10 @@ sub_020306DC: ; 0x020306DC
 	lsl r2, r2, #2
 	bl MI_CpuFill8
 	add r0, r7, #0
-	bl GetPartyMaxCount
+	bl Party_GetMaxCount
 	strh r0, [r6]
 	add r0, r7, #0
-	bl GetPartyCount
+	bl Party_GetCount
 	strh r0, [r6, #2]
 	ldrh r0, [r6, #2]
 	mov r4, #0
@@ -1545,7 +1546,7 @@ sub_020306DC: ; 0x020306DC
 _02030708:
 	add r0, r7, #0
 	add r1, r4, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	add r1, r5, #0
 	bl sub_02072A98
 	ldrh r0, [r6, #2]
@@ -1572,7 +1573,7 @@ sub_02030724: ; 0x02030724
 	add r4, r0, #0
 	ldrh r1, [r7]
 	ldr r0, [sp]
-	bl InitPartyWithMaxSize
+	bl Party_InitWithMaxSize
 	ldrh r0, [r7, #2]
 	mov r6, #0
 	cmp r0, #0
@@ -1588,7 +1589,7 @@ _0203074C:
 	bl SetMonData
 	ldr r0, [sp]
 	add r1, r4, #0
-	bl AddMonToParty
+	bl Party_AddMon
 	ldrh r0, [r7, #2]
 	add r6, r6, #1
 	add r5, #0x70

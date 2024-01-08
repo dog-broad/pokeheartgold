@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_022031C0.inc"
 	.include "global.inc"
 
 	.text
@@ -754,7 +755,7 @@ _022037A2:
 	bl ov01_021FC004
 	ldr r0, [sp]
 	mov r1, #1
-	bl MapObject_SetFlag9
+	bl MapObject_SetVisible
 	mov r0, #0
 	add sp, #0x28
 	str r0, [r5, #0x10]

@@ -13,11 +13,24 @@ typedef struct APRICORN_TREE {
     u16 unk_2;
 } APRICORN_TREE;
 
-typedef struct BERRY_POT {
-    u8 unk_0;
-    u8 unk_1;
-    u8 filler_2[10];
-} BERRY_POT;
+#define BERRY_POT_GROWTH_STAGE_NONE     0
+#define BERRY_POT_GROWTH_STAGE_PLANTED  1
+#define BERRY_POT_GROWTH_STAGE_SPROUTED 2
+#define BERRY_POT_GROWTH_STAGE_GROWING  3
+#define BERRY_POT_GROWTH_STAGE_BLOOM    4
+#define BERRY_POT_GROWTH_STAGE_BERRIES  5
+
+typedef struct BerryPot {
+    u8 berryId;
+    u8 growthStage;
+    u16 unk_2;
+    u16 unk_4;
+    u16 unk_6;
+    u8 unk_8;
+    u8 moisture;
+    u8 unk_A;
+    u8 mulch;
+} BerryPot;
 
 #define MAX_APRICORN_TREE 128
 #define NUM_APRICORN_TREE 31
@@ -26,14 +39,14 @@ typedef struct BERRY_POT {
 
 typedef struct SAVE_MISC_DATA {
     APRICORN_TREE apricorn_trees[MAX_APRICORN_TREE];
-    BERRY_POT berry_pots[MAX_BERRY_POT];
+    BerryPot berry_pots[MAX_BERRY_POT];
     struct GF_RTC_DateTime berry_datetime;
-    struct Gymmick gymmick;
-    u16 rivalName[OT_NAME_LENGTH + 1];
+    Gymmick gymmick;
+    u16 rivalName[PLAYER_NAME_LENGTH + 1];
     u8 unk_0280[8]; // 3 chunks of size (4, 2, 2)
     u8 filler_0288[0x10];
     u16 favoriteMonSpecies;
-    u8 favoriteMonForme:7;
+    u8 favoriteMonForm:7;
     u8 favoriteMonIsEgg:1;
     u8 extraChunksExist:1;
     u8 unk_029B_1:4;
@@ -47,22 +60,22 @@ typedef struct SAVE_MISC_DATA {
     u8 dummy_02DD[3];
 } SAVE_MISC_DATA;
 
-void Sav2_BerryPots_init(BERRY_POT *berryPot);
-void Sav2_BerryPotRTC_init(struct GF_RTC_DateTime *dateTime);
-u32 Sav2_Misc_sizeof(void);
-void Sav2_Misc_init(SAVE_MISC_DATA *saveMiscData);
-SAVE_MISC_DATA *Sav2_Misc_get(SAVEDATA *saveData);
-const SAVE_MISC_DATA *Sav2_Misc_const_get(const SAVEDATA *saveData);
-APRICORN_TREE *Sav2_FieldApricornTrees_get(SAVEDATA *saveData);
-BERRY_POT *Sav2_BerryPots_get(SAVEDATA *saveData);
-struct GF_RTC_DateTime *Sav2_BerryPotRTC_get(SAVEDATA *saveData);
-struct Gymmick *Sav2_GetGymmickPtr(SAVEDATA *saveData);
-const u16 *Sav2_Misc_RivalName_const_get(const SAVE_MISC_DATA *saveMiscData);
-void Sav2_Misc_RivalName_set(SAVE_MISC_DATA *saveMiscData, const STRING *name);
+void Save_BerryPots_Init(BerryPot *berryPot);
+void Save_BerryPotRTC_Init(struct GF_RTC_DateTime *dateTime);
+u32 Save_Misc_sizeof(void);
+void Save_Misc_Init(SAVE_MISC_DATA *saveMiscData);
+SAVE_MISC_DATA *Save_Misc_Get(SaveData *saveData);
+const SAVE_MISC_DATA *Save_Misc_Const_Get(const SaveData *saveData);
+APRICORN_TREE *Save_FieldApricornTrees_Get(SaveData *saveData);
+BerryPot *Save_BerryPots_Get(SaveData *saveData);
+struct GF_RTC_DateTime *Save_BerryPotRTC_Get(SaveData *saveData);
+Gymmick *Save_GetGymmickPtr(SaveData *saveData);
+const u16 *Save_Misc_RivalName_Const_Get(const SAVE_MISC_DATA *saveMiscData);
+void Save_Misc_RivalName_Set(SAVE_MISC_DATA *saveMiscData, const String *name);
 void SaveMisc_SetExtraChunksExist(SAVE_MISC_DATA *saveMiscData);
 BOOL SaveMisc_CheckExtraChunksExist(SAVE_MISC_DATA *saveMiscData);
-void SaveMisc_SetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int species, int forme, int isEgg);
-void SaveMisc_GetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int *species, int *forme, int *isEgg);
+void SaveMisc_SetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int species, int form, int isEgg);
+void SaveMisc_GetFavoriteMon(SAVE_MISC_DATA *saveMiscData, int *species, int *form, int *isEgg);
 BOOL sub_0202AA44(SAVE_MISC_DATA *saveMiscData, int a1, int a2);
 void sub_0202AA9C(SAVE_MISC_DATA *saveMiscData, int a1);
 u8 sub_0202AAD4(SAVE_MISC_DATA *saveMiscData, int a1);

@@ -1,3 +1,4 @@
+#include "global.h"
 #include "system.h"
 #include "unk_02027010.h"
 #include "heap.h"
@@ -143,7 +144,7 @@ void InitSystemForTheGame(void) {
     gSystem.vblankCounter = 0;
     gSystem.screensFlipped = 0;
     CARD_SetCacheFlushThreshold(0x500, 0x2400);
-    GF_CRC16Init(0);
+    GF_CRC16Init(HEAP_ID_DEFAULT);
 }
 
 void InitGraphicMemory(void) {
@@ -241,7 +242,6 @@ void Sys_ClearSleepDisableFlag(int a0) {
 
 void ReadKeypadAndTouchpad(void) {
     TPData rawTpData, calibTpData;
-    u32 tpSamplingResult;
     int raw;
     if (PAD_DetectFold()) {
         gSystem.newKeys = 0;
@@ -251,7 +251,7 @@ void ReadKeypadAndTouchpad(void) {
         gSystem.touchHeld = 0;
         return;
     }
-    
+
     raw = PAD_Read() | gSystem.simulatedInputs;
     gSystem.simulatedInputs = 0;
     gSystem.newKeysRaw = raw & (raw ^ gSystem.heldKeysRaw);

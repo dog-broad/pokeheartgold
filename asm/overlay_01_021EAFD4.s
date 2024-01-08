@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021EAFD4.inc"
 	.include "global.inc"
 
 	.text
@@ -53,7 +54,7 @@ ov01_021EB00C: ; 0x021EB00C
 	mov r6, #0
 	mov r0, #0x8b
 	mov r1, #4
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r6, #0
 	mov r2, #4
 	add r7, r0, #0
@@ -81,7 +82,7 @@ _021EB044:
 	blo _021EB032
 _021EB04E:
 	add r0, r7, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r6, #0
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov01_021EB00C

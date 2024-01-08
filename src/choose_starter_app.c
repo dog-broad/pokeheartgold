@@ -1,5 +1,6 @@
+#include "global.h"
 #include "unk_0203E348.h"
-#include "unk_02022D74.h"
+#include "camera.h"
 #include "camera_translation.h"
 #include "unk_0200FA24.h"
 #include "system.h"
@@ -19,14 +20,13 @@
 #include "unk_02026E30.h"
 #include "unk_0201F4C4.h"
 #include "unk_02009D48.h"
-#include "unk_0200E398.h"
-#include "unk_02025154.h"
+#include "render_window.h"
+#include "touchscreen.h"
 #include "unk_02020B8C.h"
 #include "unk_02013FDC.h"
 #include "gf_gfx_loader.h"
 #include "choose_starter_app.h"
-
-#define HEAPID_STARTERCHOOSE       46
+#include "msgdata/msg.naix"
 
 enum ChooseStarterInput {
     CHOOSE_STARTER_INPUT_NONE                    = 0,
@@ -168,9 +168,9 @@ struct ChooseStarter3dRes {
 struct ChooseStarterAppWork {
     u8 filler_000[0x4];
     HeapID heapId;
-    BGCONFIG *bgConfig;
+    BgConfig *bgConfig;
     struct GF3DVramMan *_3dMan;
-    GF_Camera *camera;
+    Camera *camera;
     VecFx32 cameraTarget;
     NNSFndAllocator allocator; // 020
     struct ChooseStarter3dRes _3dObjRes[CS_3DRES_MAX];
@@ -180,18 +180,18 @@ struct ChooseStarterAppWork {
     u32 curSelection;
     fx16 rotationAngle;
     fx16 rotationSpeed;
-    WINDOW *winTop;
-    WINDOW *winBottom;
+    Window *winTop;
+    Window *winBottom;
     u8 frame; // 3A4
     u8 textSpeed;
     u8 subPrinterId;
     u8 ballTransStep;
     int state;
     int ballWobbleState;
-    STRING *strbuf;
+    String *strbuf;
     struct StarterChooseMonSpriteData monSpriteData;
     GFCameraTranslationWrapper *cameraTranslation;
-    POKEMON *choices[3]; // 578
+    Pokemon *choices[3]; // 578
     int modelAnimState;
     GXRgb edgeColorTable[8];
 }; // size=0x598
@@ -204,7 +204,7 @@ static void init3dEngine(struct ChooseStarterAppWork *work);
 static void update3dObjectsMain(struct ChooseStarterAppWork *work);
 static inline void id_roty_mtx33(MtxFx33 *mtx, u16 index);
 static void updateBaseAndBallsRotation(struct ChooseStarterAppWork *work);
-static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId);
+static void initBgLayers(BgConfig *bgConfig, HeapID heapId);
 static void initCameraPosition(struct ChooseStarterAppWork *work);
 static void createObjResMans(struct ChooseStarterAppWork *work);
 static void initObjRenderers(struct ChooseStarterAppWork *work);
@@ -230,10 +230,10 @@ static void calculateModelPositionAndRotation(struct ChooseStarterRnd *render, M
 static BOOL updateBaseRotation(struct ChooseStarterAppWork *work, fx16 speed);
 static void reinitBallModelPosInDirection(struct ChooseStarterAppWork *work, int direction);
 static void makeAndDrawWindows(struct ChooseStarterAppWork *work);
-static void loadBgGraphics(BGCONFIG *bgConfig, HeapID heapId);
-static u8 printMsgOnWinEx(WINDOW *window, HeapID heapId, BOOL makeFrame, s32 msgBank, int msgno, u32 color, u32 speed, STRING **out);
+static void loadBgGraphics(BgConfig *bgConfig, HeapID heapId);
+static u8 printMsgOnWinEx(Window *window, HeapID heapId, BOOL makeFrame, s32 msgBank, int msgno, u32 color, u32 speed, String **out);
 static void printMsgOnBottom(struct ChooseStarterAppWork *work, int msgId);
-static void freeWindow(WINDOW *window);
+static void freeWindow(Window *window);
 static int getInput(struct ChooseStarterAppWork *work);
 static int getRotateDirection(int a0, u8 a1, int a2);
 static int getTappedBallId(VecFx32 *vecs, VecFx32 *near, VecFx32 *far, fx32 radius);
@@ -250,11 +250,11 @@ BOOL ChooseStarterApplication_OvyInit(OVY_MANAGER *ovy, int *state_p) {
     struct ChooseStarterAppArgs *args;
     int i;
 
-    CreateHeap(3, HEAPID_STARTERCHOOSE, 0x40000);
-    work = OverlayManager_CreateAndGetData(ovy, sizeof(struct ChooseStarterAppWork), HEAPID_STARTERCHOOSE);
+    CreateHeap(HEAP_ID_3, HEAP_ID_CHOOSE_STARTER, 0x40000);
+    work = OverlayManager_CreateAndGetData(ovy, sizeof(struct ChooseStarterAppWork), HEAP_ID_CHOOSE_STARTER);
     MI_CpuClear8(work, sizeof(struct ChooseStarterAppWork));
-    work->heapId = HEAPID_STARTERCHOOSE;
-    GF_ExpHeap_FndInitAllocator(&work->allocator, HEAPID_STARTERCHOOSE, 0x20);
+    work->heapId = HEAP_ID_CHOOSE_STARTER;
+    GF_ExpHeap_FndInitAllocator(&work->allocator, HEAP_ID_CHOOSE_STARTER, 0x20);
     args = OverlayManager_GetArgs(ovy);
     work->frame = Options_GetFrame(args->options);
     for (i = 0; i < 3; i++) {
@@ -269,28 +269,28 @@ BOOL ChooseStarterApplication_OvyInit(OVY_MANAGER *ovy, int *state_p) {
     work->bgConfig = BgConfig_Alloc(work->heapId);
 
     {
-        struct GFBgModeSet bgModeSet;
+        struct GraphicsModes bgModeSet;
 
         bgModeSet.dispMode = GX_DISPMODE_GRAPHICS;
-        bgModeSet.bgModeMain = GX_BGMODE_0;
-        bgModeSet.bgModeSub = GX_BGMODE_1;
-        bgModeSet._2d3dSwitch = GX_BG0_AS_3D;
+        bgModeSet.bgMode = GX_BGMODE_0;
+        bgModeSet.subMode = GX_BGMODE_1;
+        bgModeSet._2d3dMode = GX_BG0_AS_3D;
 
         SetBothScreensModesAndDisable(&bgModeSet);
     }
 
     initBgLayers(work->bgConfig, work->heapId);
-    GX_EngineAToggleLayers(1, GX_LAYER_TOGGLE_ON);
-    GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_OFF);
-    GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_OFF);
+    GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG0, GF_PLANE_TOGGLE_ON);
+    GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
+    GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
     gSystem.screensFlipped = TRUE;
-    GX_SwapDisplay();
+    GfGfx_SwapDisplay();
     ResetAllTextPrinters();
     makeAndDrawWindows(work);
     loadBgGraphics(work->bgConfig, work->heapId);
     createObjResMans(work);
     initObjRenderers(work);
-    work->camera = GF_Camera_Create(work->heapId);
+    work->camera = Camera_New(work->heapId);
     work->cameraTranslation = CreateCameraTranslationWrapper(work->heapId, work->camera);
     initCameraPosition(work);
     initBallModelPositions(work);
@@ -314,8 +314,8 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
     switch (*state) {
     case CHOOSE_STARTER_STATE_INIT:
         printMsgOnBottom(work, msg_0190_00007);
-        GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_OFF);
-        GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_OFF);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         BeginNormalPaletteFade(0, 1, 1, RGB_BLACK, 6, 1, work->heapId);
         *state = CHOOSE_STARTER_STATE_WAIT_FADE_IN;
         break;
@@ -329,23 +329,23 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
         if (!IsCameraTranslationFinished(work->cameraTranslation)) {
             break;
         }
-        work->subPrinterId = printMsgOnWinEx(work->winTop, work->heapId, TRUE, NARC_msg_msg_0190_bin, msg_0190_00000, MakeTextColor(1, 2, 15), work->textSpeed, &work->strbuf);
-        GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_OFF);
-        GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_OFF);
+        work->subPrinterId = printMsgOnWinEx(work->winTop, work->heapId, TRUE, NARC_msg_msg_0190_bin, msg_0190_00000, MAKE_TEXT_COLOR(1, 2, 15), work->textSpeed, &work->strbuf);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
         *state = CHOOSE_STARTER_STATE_WAIT_INIT_MSG;
         break;
     case CHOOSE_STARTER_STATE_CONFIRM_MSG:
-        work->subPrinterId = printMsgOnWinEx(work->winTop, work->heapId, TRUE, NARC_msg_msg_0190_bin, msg_0190_00001 + work->curSelection, MakeTextColor(1, 2, 15), work->textSpeed, &work->strbuf);
+        work->subPrinterId = printMsgOnWinEx(work->winTop, work->heapId, TRUE, NARC_msg_msg_0190_bin, msg_0190_00001 + work->curSelection, MAKE_TEXT_COLOR(1, 2, 15), work->textSpeed, &work->strbuf);
         printMsgOnBottom(work, msg_0190_00008);
-        GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_ON);
-        GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_ON);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
+        GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
         *state = CHOOSE_STARTER_STATE_WAIT_INIT_MSG;
         break;
     case CHOOSE_STARTER_STATE_WAIT_INIT_MSG:
         if (TextPrinterCheckActive(work->subPrinterId)) {
             break;
         }
-        String_dtor(work->strbuf);
+        String_Delete(work->strbuf);
         work->strbuf = NULL;
         *state = CHOOSE_STARTER_STATE_HANDLE_INPUT;
         break;
@@ -366,15 +366,15 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
         case CHOOSE_STARTER_INPUT_SELECT_BALL_INIT:
             work->modelAnimState = MODEL_ANM_STATE_BALL_ROCK;
             {
-                STRING *baseTrans = NULL;
+                String *baseTrans = NULL;
                 printMsgOnWinEx(work->winTop, work->heapId, FALSE, NARC_msg_msg_0190_bin, msg_0190_00004 + work->curSelection,
-                              MakeTextColor(1, 2, 15), 0, &baseTrans);
-                String_dtor(baseTrans);
+                              MAKE_TEXT_COLOR(1, 2, 15), 0, &baseTrans);
+                String_Delete(baseTrans);
             }
             PlayCry(sSpecies[work->curSelection], FALSE);
             printMsgOnBottom(work, msg_0190_00007);
-            GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_ON);
-            GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_ON);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
             setAllButSelectedMonSpritesInvisible(work);
             *state = CHOOSE_STARTER_STATE_HANDLE_INPUT;
             break;
@@ -391,8 +391,8 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
             PlaySE_SetPitch(0x607, -0x200);
             break;
         case CHOOSE_STARTER_INPUT_CONFIRM_CHOICE:
-            GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_OFF);
-            GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_OFF);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
             *state = CHOOSE_STARTER_STATE_ZOOM_IN;
             break;
         case CHOOSE_STARTER_INPUT_CHOSE_STARTER:
@@ -406,8 +406,8 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
             if (work->state == SELECT_STATE_CONFIRM) {
                 work->modelAnimState = MODEL_ANM_STATE_IDLE;
                 printMsgOnBottom(work, msg_0190_00007);
-                GX_EngineAToggleLayers(2, 0);
-                GX_EngineAToggleLayers(4, 0);
+                GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_OFF);
+                GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_OFF);
                 setAllMonSpritesInvisible(&work->monSpriteData);
                 work->state = SELECT_STATE_NULL;
                 *state = CHOOSE_STARTER_STATE_BACK_OUT;
@@ -421,14 +421,14 @@ BOOL ChooseStarterApplication_OvyExec(OVY_MANAGER *ovy, int *state) {
         }
         work->modelAnimState = MODEL_ANM_STATE_BALL_ROCK;
         {
-            STRING *sp10 = NULL;
-            printMsgOnWinEx(work->winTop, work->heapId, FALSE, NARC_msg_msg_0190_bin, msg_0190_00004 + work->curSelection, MakeTextColor(1, 2, 15), 0, &sp10);
-            String_dtor(sp10);
+            String *sp10 = NULL;
+            printMsgOnWinEx(work->winTop, work->heapId, FALSE, NARC_msg_msg_0190_bin, msg_0190_00004 + work->curSelection, MAKE_TEXT_COLOR(1, 2, 15), 0, &sp10);
+            String_Delete(sp10);
         }
         PlayCry(sSpecies[work->curSelection], 0);
         if (work->state != SELECT_STATE_INSPECT) {
-            GX_EngineAToggleLayers(2, GX_LAYER_TOGGLE_ON);
-            GX_EngineAToggleLayers(4, GX_LAYER_TOGGLE_ON);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG1, GF_PLANE_TOGGLE_ON);
+            GfGfx_EngineATogglePlanes(GX_PLANEMASK_BG2, GF_PLANE_TOGGLE_ON);
         }
         setAllButSelectedMonSpritesInvisible(work);
         work->state = SELECT_STATE_INSPECT;
@@ -543,11 +543,11 @@ BOOL ChooseStarterApplication_OvyExit(OVY_MANAGER *ovy, int *state) {
     args->cursorPos = work->curSelection;
     Main_SetVBlankIntrCB(NULL, NULL);
     DeleteCameraTranslationWrapper(work->cameraTranslation);
-    sub_02023120(work->camera);
+    Camera_Delete(work->camera);
     freeAll3dAnmObj(work);
     freeAll3dResHeader(work);
     freeAllMonSprite2dResObj(&work->monSpriteData);
-    sub_02024504(work->monSpriteData.spriteList);
+    SpriteList_Delete(work->monSpriteData.spriteList);
     Destroy2DGfxResObjMan(work->monSpriteData.charResMan);
     Destroy2DGfxResObjMan(work->monSpriteData.plttResMan);
     Destroy2DGfxResObjMan(work->monSpriteData.cellResMan);
@@ -565,7 +565,7 @@ BOOL ChooseStarterApplication_OvyExit(OVY_MANAGER *ovy, int *state) {
     FreeToHeap(work->bgConfig);
     GF_3DVramMan_Delete(work->_3dMan);
     OverlayManager_FreeData(ovy);
-    DestroyHeap(HEAPID_STARTERCHOOSE);
+    DestroyHeap(HEAP_ID_CHOOSE_STARTER);
     return TRUE;
 }
 
@@ -586,11 +586,11 @@ static void freeAllMonSprite2dResObj(struct StarterChooseMonSpriteData *a0) {
 
 static void vBlankCB(struct ChooseStarterAppWork *work) {
     OamManager_ApplyAndResetBuffers();
-    BgConfig_HandleScheduledScrollAndTransferOps(work->bgConfig);
+    DoScheduledBgGpuUpdates(work->bgConfig);
 }
 
 static void setGxBanks(void) {
-    const struct GXBanksConfig cfg = {
+    const struct GraphicsBanks cfg = {
         GX_VRAM_BG_80_EF,
         GX_VRAM_BGEXTPLTT_NONE,
         GX_VRAM_SUB_BG_128_C,
@@ -602,7 +602,7 @@ static void setGxBanks(void) {
         GX_VRAM_TEX_01_AB,
         GX_VRAM_TEXPLTT_0_G,
     };
-    GX_SetBanks(&cfg);
+    GfGfx_SetBanks(&cfg);
 }
 
 static void createOamManager(HeapID heapId) {
@@ -613,7 +613,7 @@ static void createOamManager(HeapID heapId) {
             3,
             0,
             0x2800,
-            0
+            HEAP_ID_DEFAULT
         };
         baseTrans.heapId = heapId;
         sub_020215C0(&baseTrans, 0x200010, 0x10);
@@ -645,7 +645,7 @@ static void update3dObjectsMain(struct ChooseStarterAppWork *work) {
     sub_0202457C(work->monSpriteData.spriteList);
     Thunk_G3X_Reset();
     NNS_G3dGePushMtx();
-    sub_02023154();
+    Camera_PushLookAtToNNSGlb();
     updateBaseAndBallsRotation(work);
     NNS_G3dGePopMtx(1);
     sub_02026E50(0, 0);
@@ -695,10 +695,10 @@ static void updateBaseAndBallsRotation(struct ChooseStarterAppWork *work) {
     }
 }
 
-static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
+static void initBgLayers(BgConfig *bgConfig, HeapID heapId) {
     G2_SetBG0Priority(2);
     {
-        const BGTEMPLATE sp70 = {
+        const BgTemplate sp70 = {
             0, 0, 0x800, 0,
             GF_BG_SCR_SIZE_256x256, GF_BG_CLR_4BPP, 0, 1, 0, 0, 0, 0,
             0
@@ -708,7 +708,7 @@ static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
         BgClearTilemapBufferAndCommit(bgConfig, 1);
     }
     {
-        const BGTEMPLATE sp54 = {
+        const BgTemplate sp54 = {
             0, 0, 0x800, 0,
             GF_BG_SCR_SIZE_256x256, GF_BG_CLR_4BPP, 1, 3, 0, 1, 0, 0,
             0
@@ -718,7 +718,7 @@ static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
         BgClearTilemapBufferAndCommit(bgConfig, 2);
     }
     {
-        const BGTEMPLATE sp38 = {
+        const BgTemplate sp38 = {
             0, 0, 0x800, 0,
             GF_BG_SCR_SIZE_256x256, GF_BG_CLR_4BPP, 2, 5, 0, 0, 0, 0,
             0
@@ -728,7 +728,7 @@ static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
         BgClearTilemapBufferAndCommit(bgConfig, 4);
     }
     {
-        const BGTEMPLATE sp1C = {
+        const BgTemplate sp1C = {
             0, 0, 0x800, 0,
             GF_BG_SCR_SIZE_256x256, GF_BG_CLR_4BPP, 0, 4, 0, 2, 0, 0,
             0
@@ -738,7 +738,7 @@ static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
         BgClearTilemapBufferAndCommit(bgConfig, 5);
     }
     {
-        const BGTEMPLATE sp00 = {
+        const BgTemplate sp00 = {
             0, 0, 0x800, 0,
             GF_BG_SCR_SIZE_256x256, GF_BG_CLR_4BPP, 1, 3, 0, 1, 0 ,0,
             0
@@ -752,7 +752,7 @@ static void initBgLayers(BGCONFIG *bgConfig, HeapID heapId) {
 static void initCameraPosition(struct ChooseStarterAppWork *work) {
     VecFx32 bindTarget;
     const VecFx32 shiftVec = {0, 0, 14 * FX32_ONE};
-    GF_CameraAngle cameraAngle;
+    CameraAngle cameraAngle;
 
     work->cameraTarget.x = 0;
     work->cameraTarget.y = FX32_ONE * 15;
@@ -761,24 +761,24 @@ static void initCameraPosition(struct ChooseStarterAppWork *work) {
     cameraAngle.x = 0xDCC0;
     cameraAngle.y = 0;
     cameraAngle.z = 0;
-    GF_Camera_InitFromTargetDistanceAndAngle(&work->cameraTarget, 100 * FX32_ONE, &cameraAngle, 0x11A4, 0, 1, work->camera);
-    GF_Camera_ShiftBy(&shiftVec, work->camera);
-    GF_Camera_SetClipBounds(FX32_ONE * 4, FX32_ONE * 256, work->camera);
+    Camera_Init_FromTargetDistanceAndAngle(&work->cameraTarget, 100 * FX32_ONE, &cameraAngle, 0x11A4, 0, 1, work->camera);
+    Camera_OffsetLookAtPosAndTarget(&shiftVec, work->camera);
+    Camera_SetPerspectiveClippingPlane(FX32_ONE * 4, FX32_ONE * 256, work->camera);
     bindTarget.x = 0;
     bindTarget.y = FX32_ONE;
     bindTarget.z = 0;
-    GF_Camera_SetBindTarget(&bindTarget, work->camera);
-    GF_Camera_RegisterToStaticPtr(work->camera);
+    Camera_SetLookAtCamUp(&bindTarget, work->camera);
+    Camera_SetStaticPtr(work->camera);
 }
 
 static void createObjResMans(struct ChooseStarterAppWork *work) {
     struct StarterChooseMonSpriteData *pMonSpriteData = &work->monSpriteData;
     pMonSpriteData->spriteList = G2dRenderer_Init(3, &pMonSpriteData->g2dRender, work->heapId);
-    pMonSpriteData->charResMan = Create2DGfxResObjMan(3, 0, work->heapId);
-    pMonSpriteData->plttResMan = Create2DGfxResObjMan(3, 1, work->heapId);
-    pMonSpriteData->cellResMan = Create2DGfxResObjMan(3, 2, work->heapId);
-    pMonSpriteData->animResMan = Create2DGfxResObjMan(3, 3, work->heapId);
-    GX_EngineBToggleLayers(0x10, GX_LAYER_TOGGLE_ON);
+    pMonSpriteData->charResMan = Create2DGfxResObjMan(3, GF_GFX_RES_TYPE_CHAR, work->heapId);
+    pMonSpriteData->plttResMan = Create2DGfxResObjMan(3, GF_GFX_RES_TYPE_PLTT, work->heapId);
+    pMonSpriteData->cellResMan = Create2DGfxResObjMan(3, GF_GFX_RES_TYPE_CELL, work->heapId);
+    pMonSpriteData->animResMan = Create2DGfxResObjMan(3, GF_GFX_RES_TYPE_ANIM, work->heapId);
+    GfGfx_EngineBTogglePlanes(GX_PLANEMASK_OBJ, GF_PLANE_TOGGLE_ON);
 }
 
 static void initObjRenderers(struct ChooseStarterAppWork *work) {
@@ -1022,22 +1022,22 @@ static void makeAndDrawWindows(struct ChooseStarterAppWork *work) {
     AddWindowParameterized(work->bgConfig, work->winBottom, 1, 1, 19, 29, 4, 2, 0x01F);
     FillWindowPixelBuffer(work->winTop, 15);
     FillWindowPixelBuffer(work->winBottom, 0);
-    LoadUserFrameGfx2(work->bgConfig, 4, 0x200, 0, work->frame, work->heapId);
-    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_08_window_NCLR, 4, 0x040, 0x20, work->heapId);
-    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_08_window_NCLR, 0, 0x040, 0x20, work->heapId);
+    LoadUserFrameGfx2(work->bgConfig, GF_BG_LYR_SUB_0, 0x200, 0, work->frame, work->heapId);
+    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_08_window_NCLR, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_2_OFFSET, 0x20, work->heapId);
+    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_08_window_NCLR, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_2_OFFSET, 0x20, work->heapId);
     DrawFrameAndWindow2(work->winTop, FALSE, 0x200, 0);
 }
 
-static void loadBgGraphics(BGCONFIG *bgConfig, HeapID heapId) {
-    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_13_bgl2_NCGR, bgConfig, 2, 0, 0, FALSE, heapId);
-    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_10_bgl5_NCGR, bgConfig, 5, 0, 0, FALSE, heapId);
-    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_16_bgl6_NCGR, bgConfig, 6, 0, 0, FALSE, heapId);
-    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_14_bgl2_NSCR, bgConfig, 2, 0, 0, FALSE, heapId);
-    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_11_bgl5_NSCR, bgConfig, 5, 0, 0, FALSE, heapId);
-    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_17_bgl6_NSCR, bgConfig, 6, 0, 0, FALSE, heapId);
-    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_12_bgl2_NCLR, 0, 0x60, 0x20, heapId);
-    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_09_bgl5_NCLR, 4, 0x60, 0x20, heapId);
-    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_15_bgl6_NCLR, 4, 0x80, 0x20, heapId);
+static void loadBgGraphics(BgConfig *bgConfig, HeapID heapId) {
+    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_13_bgl2_NCGR, bgConfig, GF_BG_LYR_MAIN_2, 0, 0, FALSE, heapId);
+    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_10_bgl5_NCGR, bgConfig, GF_BG_LYR_SUB_1, 0, 0, FALSE, heapId);
+    GfGfxLoader_LoadCharData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_16_bgl6_NCGR, bgConfig, GF_BG_LYR_SUB_2, 0, 0, FALSE, heapId);
+    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_14_bgl2_NSCR, bgConfig, GF_BG_LYR_MAIN_2, 0, 0, FALSE, heapId);
+    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_11_bgl5_NSCR, bgConfig, GF_BG_LYR_SUB_1, 0, 0, FALSE, heapId);
+    GfGfxLoader_LoadScrnData(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_17_bgl6_NSCR, bgConfig, GF_BG_LYR_SUB_2, 0, 0, FALSE, heapId);
+    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_12_bgl2_NCLR, GF_PAL_LOCATION_MAIN_BG, GF_PAL_SLOT_3_OFFSET, 0x20, heapId);
+    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_09_bgl5_NCLR, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_3_OFFSET, 0x20, heapId);
+    GfGfxLoader_GXLoadPal(NARC_application_choose_starter_choose_starter_main_res, NARC_choose_starter_main_res_15_bgl6_NCLR, GF_PAL_LOCATION_SUB_BG, GF_PAL_SLOT_4_OFFSET, 0x20, heapId);
     BgTilemapRectChangePalette(bgConfig, 2, 0, 0, 0x20, 0x18, 3);
     BgTilemapRectChangePalette(bgConfig, 5, 0, 0, 0x20, 0x18, 3);
     BgTilemapRectChangePalette(bgConfig, 6, 0, 0, 0x20, 0x18, 4);
@@ -1047,15 +1047,15 @@ static void loadBgGraphics(BGCONFIG *bgConfig, HeapID heapId) {
     G2S_SetBlendAlpha(4, 34, 5, 11);
 }
 
-static u8 printMsgOnWinEx(WINDOW *window, HeapID heapId, BOOL makeFrame, s32 msgBank, int msgno, u32 color, u32 speed, STRING **out) {
-    MSGDATA *msgData;
+static u8 printMsgOnWinEx(Window *window, HeapID heapId, BOOL makeFrame, s32 msgBank, int msgno, u32 color, u32 speed, String **out) {
+    MsgData *msgData;
     u8 ret;
     GF_ASSERT(*out == NULL);
     msgData = NewMsgDataFromNarc(MSGDATA_LOAD_DIRECT, NARC_msgdata_msg, msgBank, heapId);
     GF_ASSERT(msgData != NULL);
     *out = NewString_ReadMsgData(msgData, msgno);
     FillWindowPixelBuffer(window, color);
-    ret = AddTextPrinterParameterized2(window, 1, *out, 0, 0, speed, color, NULL);
+    ret = AddTextPrinterParameterizedWithColor(window, 1, *out, 0, 0, speed, color, NULL);
     if (makeFrame) {
         DrawFrameAndWindow2(window, FALSE, 0x200, 0);
     } else {
@@ -1066,12 +1066,12 @@ static u8 printMsgOnWinEx(WINDOW *window, HeapID heapId, BOOL makeFrame, s32 msg
 }
 
 static void printMsgOnBottom(struct ChooseStarterAppWork *work, int msgId) {
-    STRING *string = NULL;
-    printMsgOnWinEx(work->winBottom, work->heapId, FALSE, NARC_msg_msg_0190_bin, msgId, MakeTextColor(1, 2, 0), 0, &string);
-    String_dtor(string);
+    String *string = NULL;
+    printMsgOnWinEx(work->winBottom, work->heapId, FALSE, NARC_msg_msg_0190_bin, msgId, MAKE_TEXT_COLOR(1, 2, 0), 0, &string);
+    String_Delete(string);
 }
 
-static void freeWindow(WINDOW *window) {
+static void freeWindow(Window *window) {
     RemoveWindow(window);
     FreeToHeap(window);
 }
@@ -1172,7 +1172,7 @@ static int getTappedBallId(VecFx32 *vecs, VecFx32 *near, VecFx32 *far, fx32 radi
 }
 
 static void createMonSprites(struct ChooseStarterAppWork *work) {
-    NARC *narc = NARC_ctor(NARC_application_choose_starter_choose_starter_sub_res, work->heapId);
+    NARC *narc = NARC_New(NARC_application_choose_starter_choose_starter_sub_res, work->heapId);
     int i;
     struct StarterChooseMonSpriteData *spriteData = &work->monSpriteData;
 
@@ -1190,13 +1190,13 @@ static void createMonSprites(struct ChooseStarterAppWork *work) {
             0,
             0
         );
-        spriteData->charDatas[i] = sub_0201442C(spriteData->param.narcID, spriteData->param.charDataID, work->heapId);
-        spriteData->plttDatas[i] = sub_02014450(spriteData->param.narcID, spriteData->param.palDataID, work->heapId);
+        spriteData->charDatas[i] = sub_0201442C((NarcId)spriteData->param.narcID, spriteData->param.charDataID, work->heapId);
+        spriteData->plttDatas[i] = sub_02014450((NarcId)spriteData->param.narcID, spriteData->param.palDataID, work->heapId);
         loadOneMonObj(spriteData->charResMan, spriteData->plttResMan, spriteData->charDatas[i], spriteData->plttDatas[i], i);
         createOneMonRender(spriteData, i, work->heapId);
     }
 
-    NARC_dtor(narc);
+    NARC_Delete(narc);
 }
 
 static void loadOneMonObj(struct _2DGfxResMan *charResMan, struct _2DGfxResMan *plttResMan, void *charData, void *plttData, u8 idx) {

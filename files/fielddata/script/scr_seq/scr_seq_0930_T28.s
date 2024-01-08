@@ -98,9 +98,9 @@ scr_seq_T28_001:
 	lockall
 	apply_movement obj_T28_gsmiddleman1, _0278
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 56
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 56
 	get_player_coords VAR_TEMP_x4000, VAR_TEMP_x4001
 	compare VAR_TEMP_x4001, 176
 	goto_if_ne _0193
@@ -113,9 +113,9 @@ _0193:
 	apply_movement obj_player, _02B4
 _01A3:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	goto_if_set FLAG_GOT_RAGECANDYBAR, _026D
 	npc_msg msg_0620_T28_00000
 	touchscreen_menu_hide
@@ -164,45 +164,52 @@ _026D:
 	closemsg
 	goto _0228
 
-
+	.balign 4, 0
 _0278:
 	step 1, 1
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _0284:
 	step 19, 1
 	step 17, 1
 	step 18, 1
 	step_end
 
+	.balign 4, 0
 _0294:
 	step 62, 2
 	step 18, 1
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _02A4:
 	step 19, 1
 	step 17, 2
 	step 18, 1
 	step_end
 
+	.balign 4, 0
 _02B4:
 	step 62, 3
 	step 18, 1
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _02C4:
 	step 12, 1
 	step 1, 1
 	step_end
 
+	.balign 4, 0
 _02D0:
 	step 12, 2
 	step 1, 1
 	step_end
+
 scr_seq_T28_002:
 	play_se SEQ_SE_DP_SELECT
 	lockall

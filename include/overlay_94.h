@@ -6,18 +6,17 @@
 #include "script.h"
 #include "unk_02014DA0.h"
 
-#define HEAPID_PARTY_MENU         ((HeapID)12)
 #define PARTICLE_HEAP_SIZE        (0x4800)
 
 typedef struct UnkStruct_Overlay_94_B {
-    PARTY* party;
+    Party* party;
     u8 unk4[0x17];
-    FieldSystem* fsys;
+    FieldSystem* fieldSystem;
     u8 unk2[0x7];
     u8 unk27;
 } UnkStruct_Overlay_94_B;
 
-typedef struct IconFormeChangeWork  {
+typedef struct IconFormChangeData  {
     int state;
     int effectTimer;
     int duration;
@@ -25,25 +24,25 @@ typedef struct IconFormeChangeWork  {
     int fileId;
     int partyMonIndex; //same information as B's unkc65
     ParticleSystem* particleSystem;
-} IconFormeChangeWork;
+} IconFormChangeData;
 
 typedef struct PartyMenuStruct {
     BOOL unk0;
     u8 unk4[0x650];
     UnkStruct_Overlay_94_B* unk654; //0x654
     u8 unk658[0x167];
-    MSGDATA* msgData; //0x7c0
-    MSGFMT* unk7c4; 
-    STRING* unk7c8;
+    MsgData* msgData; //0x7c0
+    MessageFormat* unk7c4;
+    String* unk7c8;
     u8 unk7cc[0x498];
     u8 unkc64;
     u8 partyMonIndex; //selected index..?
     u8 unkc66[0x1a];
-    IconFormeChangeWork* iconFormeChange;
+    IconFormChangeData* iconFormChange;
 } PartyMenuStruct;
 
-void PartyMenu_InitIconFormeChangeWork(PartyMenuStruct* unkPtr);
-BOOL PartyMenu_AnimateIconFormeChange(PartyMenuStruct* unkPtr);
+void PartyMenu_InitIconFormChangeData(PartyMenuStruct* unkPtr);
+BOOL PartyMenu_AnimateIconFormChange(PartyMenuStruct* unkPtr);
 
 #endif //POKEHEARTGOLD_OVY_94_H
 

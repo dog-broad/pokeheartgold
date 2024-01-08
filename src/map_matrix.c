@@ -6,7 +6,7 @@
 #include "map_header.h"
 #include "map_matrix.h"
 #include "safari_zone.h"
-#include "event_data.h"
+#include "save_vars_flags.h"
 #include "sys_vars.h"
 
 static void MapMatrix_MapMatrixData_Load(MAPMATRIXDATA* map_matrix_data, u16 matrix_id, u32 map_no) {
@@ -25,7 +25,7 @@ static void MapMatrix_MapMatrixData_Load(MAPMATRIXDATA* map_matrix_data, u16 mat
         map_matrix_data->name[i] = 0;
     }
 
-    void* buffer = AllocAtEndAndReadWholeNarcMemberByIdPair(NARC_fielddata_mapmatrix_map_matrix, matrix_id, 11);
+    void* buffer = AllocAtEndAndReadWholeNarcMemberByIdPair(NARC_fielddata_mapmatrix_map_matrix, matrix_id, HEAP_ID_FIELD);
     u8* cursor = (u8*)buffer;
 
     map_matrix_data->width = *(cursor++);
@@ -57,7 +57,7 @@ static void MapMatrix_MapMatrixData_Load(MAPMATRIXDATA* map_matrix_data, u16 mat
 }
 
 MAPMATRIX* MapMatrix_New(void) {
-    MAPMATRIX* map_matrix = AllocFromHeap(11, sizeof(MAPMATRIX));
+    MAPMATRIX* map_matrix = AllocFromHeap(HEAP_ID_FIELD, sizeof(MAPMATRIX));
     map_matrix->width = 0;
     map_matrix->height = 0;
     map_matrix->matrix_id = 0;
@@ -116,10 +116,10 @@ u8 MapMatrix_GetMapAltitude(MAPMATRIX* map_matrix, u8 matrix_id, u16 x, u16 y, i
     return map_matrix->data.altitudes[y * matrix_width + x];
 }
 
-MAPDATA* MapMatrix_MapData_New(HeapID heap_id) {
-    MAPDATA* map_data = AllocFromHeap(heap_id, sizeof(MAPDATA));
+MAPDATA* MapMatrix_MapData_New(HeapID heapId) {
+    MAPDATA* map_data = AllocFromHeap(heapId, sizeof(MAPDATA));
 
-    void* buffer = AllocAtEndAndReadWholeNarcMemberByIdPair(NARC_fielddata_mapmatrix_map_matrix, 0, heap_id);
+    void* buffer = AllocAtEndAndReadWholeNarcMemberByIdPair(NARC_fielddata_mapmatrix_map_matrix, 0, heapId);
     u8* cursor = (u8*)buffer;
     cursor += 4;
     u8 name_length = *cursor;
@@ -157,13 +157,13 @@ static inline BOOL MapAndDayCheck(u32 map_no, RTCDate* date) {
     return (map_no == MAP_T29 || map_no == MAP_R43) && date->week == RTC_WEEK_WEDNESDAY;
 }
 
-BOOL ShouldUseAlternateLakeOfRage(SAVEDATA* savedata, u32 map_no) {
+BOOL ShouldUseAlternateLakeOfRage(SaveData* saveData, u32 map_no) {
     RTCDate date;
-    SCRIPT_STATE *state = SavArray_Flags_get(savedata);
+    SaveVarsFlags *state = Save_VarsFlags_Get(saveData);
 
     GF_RTC_CopyDate(&date);
 
-    if (CheckFlagInArray(state, FLAG_RED_GYARADOS_MEET) == FALSE) {
+    if (Save_VarsFlags_CheckFlagInArray(state, FLAG_RED_GYARADOS_MEET) == FALSE) {
         // The player hasn't battled the Red Gyarados yet.
         sub_02066C4C(state, 1);
         return FALSE;
@@ -203,7 +203,7 @@ void SetLakeOfRageWaterLevel(MAPMATRIX* map_matrix, BOOL lower_water_level) {
     }
 }
 
-void PlaceSafariZoneAreas(MAPMATRIX* map_matrix, SAVEDATA* save) {
+void PlaceSafariZoneAreas(MAPMATRIX* map_matrix, SaveData* save) {
     u16* models = map_matrix->data.maps.models;
     s32 width = map_matrix->width;
 
@@ -211,7 +211,7 @@ void PlaceSafariZoneAreas(MAPMATRIX* map_matrix, SAVEDATA* save) {
         return;
     }
 
-    SAFARIZONE* safari_zone = Save_SafariZone_get(save);
+    SafariZone* safari_zone = Save_SafariZone_Get(save);
     SAFARIZONE_AREASET* sz_area_set = SafariZone_GetAreaSet(safari_zone, 3);
 
     for (s32 y = 0; y < SAFARI_ZONE_AREA_SET_ROWS; y++) {

@@ -16,7 +16,7 @@ typedef struct {
     u8 unk2;
     u8 unk3;
     u32 otId;
-    u16 name[OT_NAME_LENGTH + 1];
+    u16 name[PLAYER_NAME_LENGTH + 1];
     u32 unk18;
     u8 unk1c[0x8];
     char unk24[0x33];
@@ -28,13 +28,13 @@ typedef struct {
 
 u32 sub_0203170C(void);
 void sub_02031710(Unk0203170C *a0);
-void sub_02031734(SAVEDATA *saveData);
-BOOL sub_02031744(SAVEDATA *saveData);
-void sub_0203175C(SAVEDATA *saveData, char *a1);
-Unk0203170C *sub_02031774(SAVEDATA *saveData);
-void sub_02031780(SAVEDATA *saveData, u32 a1, u32 a2);
-u32 sub_020317BC(SAVEDATA *saveData, u32 a1);
-s32 sub_0203186C(SAVEDATA *saveData, Unk020317F4 *a1);
-void sub_0203189C(SAVEDATA *saveData, Unk020317F4 *a1);
+void sub_02031734(SaveData *saveData);
+BOOL sub_02031744(SaveData *saveData);
+void sub_0203175C(SaveData *saveData, char *a1);
+Unk0203170C *sub_02031774(SaveData *saveData);
+void sub_02031780(SaveData *saveData, u32 a1, u32 a2);
+u32 sub_020317BC(SaveData *saveData, u32 a1);
+s32 sub_0203186C(SaveData *saveData, Unk020317F4 *a1);
+void sub_0203189C(SaveData *saveData, Unk020317F4 *a1);
 
 #endif //POKEHEARTGOLD_UNK_0203170C_H

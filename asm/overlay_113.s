@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_113.inc"
 	.include "global.inc"
 
 	.text
@@ -136,8 +137,8 @@ ov113_021E59F8: ; 0x021E59F8
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r2, #1
 	lsl r2, r2, #0x1a
 	ldr r1, [r2]
@@ -175,7 +176,7 @@ _021E5A52:
 	add r0, r7, #0
 	add r1, r4, #0
 	mov r2, #1
-	bl Pokedex_GetSeenFormeByIdx_Unown
+	bl Pokedex_GetSeenFormByIdx_Unown
 	lsl r0, r0, #0x18
 	lsr r0, r0, #0x18
 	add r1, r0, #0
@@ -206,7 +207,7 @@ ov113_021E5A7C: ; 0x021E5A7C
 	str r0, [r5, #0x14]
 	ldr r0, [r5, #4]
 	ldr r0, [r0, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	add r4, r0, #0
 	bl Options_GetTextFrameDelay
 	strb r0, [r5, #0x18]
@@ -215,12 +216,12 @@ ov113_021E5A7C: ; 0x021E5A7C
 	strb r0, [r5, #0x19]
 	ldr r0, [r5, #4]
 	ldr r0, [r0, #4]
-	bl Sav2_Pokedex_get
+	bl Save_Pokedex_Get
 	str r0, [r5, #0xc]
 	ldr r0, [r5, #4]
 	ldr r0, [r0, #4]
-	bl SavArray_Flags_get
-	bl ScriptState_GetUnownReportLevel
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_GetUnownReportLevel
 	add r1, r5, #0
 	add r1, #0x3c
 	strb r0, [r1]
@@ -229,7 +230,7 @@ ov113_021E5A7C: ; 0x021E5A7C
 	strb r0, [r5, #0x1d]
 	ldr r0, [r5, #0xc]
 	mov r1, #1
-	bl Pokedex_GetSeenFormeNum_Unown
+	bl Pokedex_GetSeenFormNum_Unown
 	strb r0, [r5, #0x1f]
 	add r0, r5, #0
 	add r0, #0x3c
@@ -273,7 +274,7 @@ _021E5B1A:
 	ldr r0, [r5, #0xc]
 	add r1, r4, #0
 	add r2, r6, #0
-	bl Pokedex_GetSeenFormeByIdx_Unown
+	bl Pokedex_GetSeenFormByIdx_Unown
 	add r1, r5, r4
 	add r1, #0x20
 	strb r0, [r1]
@@ -700,7 +701,7 @@ _021E5DF6:
 	add r0, r4, #0
 	ldr r2, [r4, #0x50]
 	add r0, #0x98
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	add r0, #0x78
 	bl ScheduleWindowCopyToVram
@@ -729,7 +730,7 @@ ov113_021E5E64: ; 0x021E5E64
 	add r0, r4, #0
 	add r0, #0xb8
 	ldr r0, [r0]
-	bl sub_02024964
+	bl Sprite_ResetAnimCtrlState
 	add r0, r4, #0
 	add r0, #0x68
 	mov r1, #0
@@ -753,7 +754,7 @@ ov113_021E5E64: ; 0x021E5E64
 	ldr r2, [r4, #0x54]
 	add r0, #0x68
 	mov r1, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r4, #0x68
 	add r0, r4, #0
 	bl ScheduleWindowCopyToVram
@@ -765,12 +766,12 @@ _021E5EC0: .word 0x00070F00
 
 	thumb_func_start ov113_021E5EC4
 ov113_021E5EC4: ; 0x021E5EC4
-	ldr r3, _021E5ECC ; =sub_02024B68
+	ldr r3, _021E5ECC ; =Sprite_IsCellAnimationFinished
 	add r0, #0xb8
 	ldr r0, [r0]
 	bx r3
 	.balign 4, 0
-_021E5ECC: .word sub_02024B68
+_021E5ECC: .word Sprite_IsCellAnimationFinished
 	thumb_func_end ov113_021E5EC4
 
 	thumb_func_start ov113_021E5ED0
@@ -883,7 +884,7 @@ ov113_021E5F94: ; 0x021E5F94
 	add r5, r0, #0
 	ldr r0, _021E5FBC ; =ov113_021E6B82
 	add r4, r1, #0
-	bl sub_0202529C
+	bl TouchscreenHitbox_FindHitboxAtTouchNew
 	add r1, r0, #0
 	mov r0, #0
 	mvn r0, r0
@@ -926,7 +927,7 @@ _021E5FE6:
 	add r0, #0xc4
 	ldr r0, [r0]
 	add r1, r7, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #0xe
@@ -1033,14 +1034,14 @@ _021E60C2:
 	mov r1, #0
 	add r0, #0xc4
 	ldr r0, [r0]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	b _021E612A
 _021E60DA:
 	ldr r0, [sp]
 	mov r1, #1
 	add r0, #0xc4
 	ldr r0, [r0]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r2, r5, r7
 	add r2, #0x20
 	ldrb r2, [r2]
@@ -1111,7 +1112,7 @@ _021E6168:
 	add r0, #0xc4
 	ldr r0, [r0]
 	add r1, r7, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r6, r6, #1
 	add r4, r4, #4
 	cmp r6, #0xe
@@ -1261,7 +1262,7 @@ ov113_021E6274: ; 0x021E6274
 	str r1, [sp, #0xc]
 	add r1, r2, #0
 	add r2, r4, #0
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add sp, #0x10
 	pop {r4, pc}
 	.balign 4, 0
@@ -1289,11 +1290,11 @@ ov113_021E62B0: ; 0x021E62B0
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _021E62C0
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 _021E62C0:
 	bl GF_RunVramTransferTasks
 	ldr r0, [r4, #0x40]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _021E62D8 ; =0x027E0000
 	ldr r1, _021E62DC ; =0x00003FF8
 	mov r0, #1
@@ -1319,7 +1320,7 @@ _021E62EA:
 	sub r2, r2, #1
 	bne _021E62EA
 	add r0, sp, #0
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	add sp, #0x28
 	pop {r4, pc}
 	.balign 4, 0
@@ -1569,7 +1570,7 @@ ov113_021E650C: ; 0x021E650C
 	add r5, r0, #0
 	ldr r1, [r5]
 	mov r0, #0xf1
-	bl NARC_ctor
+	bl NARC_New
 	mov r2, #0
 	str r2, [sp]
 	ldr r1, [r5]
@@ -1677,7 +1678,7 @@ ov113_021E650C: ; 0x021E650C
 	mov r2, #0xf
 	bl ov113_021E64DC
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	ldrb r0, [r5, #0x19]
 	mov r1, #1
 	add r2, r1, #0
@@ -1749,17 +1750,17 @@ ov113_021E6680: ; 0x021E6680
 	mov r0, #0x10
 	ldr r2, [r4]
 	add r1, r0, #0
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r4, #0x48]
 	mov r0, #2
 	ldr r1, [r4]
 	lsl r0, r0, #8
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x4c]
 	mov r0, #2
 	ldr r1, [r4]
 	lsl r0, r0, #8
-	bl String_ctor
+	bl String_New
 	str r0, [r4, #0x50]
 	ldr r0, [r4, #0x44]
 	mov r1, #0
@@ -1771,7 +1772,7 @@ ov113_021E6680: ; 0x021E6680
 	str r0, [r4, #0x58]
 	ldr r0, [r4, #4]
 	ldr r0, [r0, #4]
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	ldr r1, [r4]
 	bl PlayerProfile_GetPlayerName_NewString
 	str r0, [r4, #0x5c]
@@ -1783,17 +1784,17 @@ ov113_021E66E4: ; 0x021E66E4
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x5c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x58]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x54]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x50]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x4c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r4, #0x48]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r4, #0x44]
 	bl DestroyMsgData
 	mov r0, #4
@@ -1824,7 +1825,7 @@ _021E6728:
 	cmp r6, #4
 	blt _021E6728
 	ldr r0, [r7]
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	add r7, #0xa8
 	str r0, [r7]
 	pop {r3, r4, r5, r6, r7, pc}
@@ -1850,7 +1851,7 @@ _021E675E:
 	blt _021E675E
 	add r6, #0xa8
 	ldr r0, [r6]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	pop {r4, r5, r6, pc}
 	thumb_func_end ov113_021E6754
 
@@ -1863,7 +1864,7 @@ ov113_021E677C: ; 0x021E677C
 	mov r0, #0x20
 	bl GF_CreateVramTransferManager
 	ldr r0, [r5]
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	add r1, r5, #0
 	add r1, #0xac
 	str r0, [r1]
@@ -1881,7 +1882,7 @@ ov113_021E677C: ; 0x021E677C
 	add r0, r5, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r1, r5, #0
 	add r1, #0xb0
 	str r0, [r1]
@@ -1914,7 +1915,7 @@ ov113_021E677C: ; 0x021E677C
 	add r0, r5, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	add r1, r5, #0
 	add r1, #0xb4
 	str r0, [r1]
@@ -1925,7 +1926,7 @@ ov113_021E677C: ; 0x021E677C
 	ldr r0, [r0]
 	ldr r1, [r1]
 	add r2, sp, #0x10
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	add r0, r5, #0
 	add r0, #0xb0
 	ldr r0, [r0]
@@ -1937,7 +1938,7 @@ ov113_021E677C: ; 0x021E677C
 	bl sub_0200E2B4
 	ldr r1, [r5]
 	mov r0, #0x14
-	bl NARC_ctor
+	bl NARC_New
 	add r1, r5, #0
 	add r1, #0xfc
 	str r0, [r1]
@@ -1959,7 +1960,7 @@ ov113_021E677C: ; 0x021E677C
 	ldr r0, [r0]
 	ldr r1, [r1]
 	ldr r2, [r2]
-	bl sub_0200D5D4
+	bl SpriteRenderer_LoadPlttResObjFromOpenNarc
 	bl sub_02074494
 	add r3, r0, #0
 	mov r0, #0
@@ -1975,7 +1976,7 @@ ov113_021E677C: ; 0x021E677C
 	ldr r0, [r0]
 	ldr r1, [r1]
 	ldr r2, [r2]
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	bl sub_020744A0
 	add r3, r0, #0
 	mov r0, #0
@@ -1989,7 +1990,7 @@ ov113_021E677C: ; 0x021E677C
 	ldr r0, [r0]
 	ldr r1, [r1]
 	mov r2, #0x14
-	bl sub_0200D704
+	bl SpriteRenderer_LoadAnimResObjFromNarcId
 	mov r4, #0
 	add r6, r4, #0
 	mov r7, #2
@@ -2012,7 +2013,7 @@ _021E68B4:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	ldr r2, [r2]
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	add r4, r4, #1
 	cmp r4, #7
 	blt _021E68B4
@@ -2038,7 +2039,7 @@ _021E68EA:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	ldr r2, [r2]
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	add r4, r4, #1
 	cmp r4, #0xe
 	blt _021E68EA
@@ -2060,14 +2061,14 @@ ov113_021E6930: ; 0x021E6930
 	add r1, #0xb4
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	add r0, r4, #0
 	add r1, r4, #0
 	add r0, #0xac
 	add r1, #0xb0
 	ldr r0, [r0]
 	ldr r1, [r1]
-	bl sub_0200D0E4
+	bl SpriteRenderer_RemoveGfxHandler
 	add r0, r4, #0
 	mov r1, #0
 	add r0, #0xb4
@@ -2078,11 +2079,11 @@ ov113_021E6930: ; 0x021E6930
 	add r0, r4, #0
 	add r0, #0xfc
 	ldr r0, [r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	add r0, r4, #0
 	add r0, #0xac
 	ldr r0, [r0]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	add r0, r4, #0
 	mov r1, #0
 	add r0, #0xac
@@ -2102,10 +2103,10 @@ ov113_021E6988: ; 0x021E6988
 	bl ov113_021E69CC
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r4, pc}
 	thumb_func_end ov113_021E6988
 
@@ -2115,10 +2116,10 @@ ov113_021E69A8: ; 0x021E69A8
 	add r4, r0, #0
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	bl ov113_021E6AB0
 	add r0, r4, #0
@@ -2143,7 +2144,7 @@ _021E69D8:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	add r2, r6, #0
-	bl sub_0200D2B4
+	bl SpriteRenderer_CreateSprite
 	add r1, r4, #0
 	add r1, #0xb8
 	str r0, [r1]
@@ -2161,7 +2162,7 @@ _021E69D8:
 	add r0, #0xb8
 	ldr r0, [r0]
 	mov r1, #2
-	bl sub_02024A04
+	bl Sprite_SetPriority
 	add r7, r7, #1
 	add r6, #0x28
 	add r4, r4, #4
@@ -2217,7 +2218,7 @@ _021E6A6E:
 	ldr r0, [r0]
 	ldr r1, [r1]
 	add r2, sp, #4
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	add r1, r6, #0
 	add r1, #0xc4
 	str r0, [r1]
@@ -2225,7 +2226,7 @@ _021E6A6E:
 	add r0, #0xc4
 	ldr r0, [r0]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [sp]
 	add r4, r4, #1
 	add r0, #0x18
@@ -2265,7 +2266,7 @@ _021E6AD0:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _021E6ADE
-	bl sub_02024758
+	bl Sprite_Delete
 _021E6ADE:
 	add r4, r4, #1
 	add r5, r5, #4

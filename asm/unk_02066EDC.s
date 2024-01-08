@@ -9,6 +9,7 @@
 #include "fielddata/script/scr_seq/event_D24R0204.h"
 #include "constants/party_menu.h"
 	.include "asm/macros.inc"
+	.include "unk_02066EDC.inc"
 	.include "global.inc"
 
 	.text
@@ -27,13 +28,13 @@ sub_02066EDC: ; 0x02066EDC
 	add r4, r0, #0
 	bl MI_CpuFill8
 	add r0, r7, #0
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #0xc]
 	add r0, r7, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [r4]
 	add r0, r7, #0
-	bl Sav2_Bag_get
+	bl Save_Bag_Get
 	str r0, [r4, #4]
 	add r0, r4, #0
 	mov r2, #0
@@ -92,7 +93,7 @@ _02066F64:
 	ldr r1, _02066F8C ; =_0210159C
 	add r0, r6, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	ldr r0, [r5, #0x14]
 	str r4, [r0]
 	mov r0, #1
@@ -106,7 +107,7 @@ sub_02066F90: ; 0x02066F90
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
 	add r0, r1, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _02066FA2
 	mov r0, #1
@@ -165,13 +166,13 @@ sub_02066FEC: ; 0x02066FEC
 	add r4, r0, #0
 	bl MI_CpuFill8
 	add r0, r5, #0
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	str r0, [r4, #4]
 	add r0, r5, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [r4]
 	add r0, r5, #0
-	bl SavArray_IsNatDexEnabled
+	bl SaveArray_IsNatDexEnabled
 	str r0, [r4, #0x1c]
 	add r0, r5, #0
 	bl sub_02088288
@@ -181,14 +182,14 @@ sub_02066FEC: ; 0x02066FEC
 	ldrb r0, [r6, #0xd]
 	strb r0, [r4, #0x14]
 	ldr r0, [r4]
-	bl GetPartyCount
+	bl Party_GetCount
 	strb r0, [r4, #0x13]
 	mov r0, #0
 	strh r0, [r4, #0x18]
 	ldrb r0, [r6, #9]
 	strb r0, [r4, #0x12]
 	add r0, r5, #0
-	bl Save_SpecialRibbons_get
+	bl Save_SpecialRibbons_Get
 	str r0, [r4, #0x20]
 	mov r0, #0x43
 	lsl r0, r0, #2
@@ -201,14 +202,14 @@ sub_02066FEC: ; 0x02066FEC
 	add r0, r4, #0
 	bl sub_02089D40
 	add r0, r5, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r1, r0, #0
 	add r0, r4, #0
 	bl sub_0208AD34
 	ldr r1, _02067084 ; =_02103A1C
 	add r0, r7, #0
 	add r2, r4, #0
-	bl Fsys_LaunchApplication
+	bl FieldSystem_LaunchApplication
 	ldr r0, [r6, #0x14]
 	str r4, [r0]
 	mov r0, #3
@@ -223,7 +224,7 @@ sub_02067088: ; 0x02067088
 	push {r4, lr}
 	add r4, r0, #0
 	add r0, r1, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _0206709A
 	mov r0, #3
@@ -245,10 +246,10 @@ _0206709A:
 sub_020670B0: ; 0x020670B0
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #4]
 	cmp r1, #4
@@ -303,7 +304,7 @@ sub_02067118: ; 0x02067118
 	add r5, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp]
 	mov r0, #0xb
 	mov r1, #0x18
@@ -362,7 +363,7 @@ sub_0206718C: ; 0x0206718C
 	push {r4, lr}
 	add r4, r0, #0
 	add r0, r1, #0
-	bl FieldSys_ApplicationIsRunning
+	bl FieldSystem_ApplicationIsRunning
 	cmp r0, #0
 	beq _0206719E
 	mov r0, #1
@@ -382,10 +383,10 @@ _0206719E:
 sub_020671B0: ; 0x020671B0
 	push {r3, r4, r5, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r5, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r4, r0, #0
 	ldr r1, [r4, #4]
 	cmp r1, #0
@@ -426,7 +427,7 @@ sub_02067200: ; 0x02067200
 	add r5, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	str r0, [sp]
 	mov r0, #0xb
 	mov r1, #0x18
@@ -452,10 +453,10 @@ _02067234: .word sub_020671B0
 sub_02067238: ; 0x02067238
 	push {r3, r4, r5, r6, r7, lr}
 	add r4, r0, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r6, r0, #0
 	add r0, r4, #0
-	bl TaskManager_GetEnv
+	bl TaskManager_GetEnvironment
 	add r5, r0, #0
 	bl sub_0203769C
 	mov r1, #1
@@ -507,7 +508,7 @@ sub_020672A4: ; 0x020672A4
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r1, #0
 	add r6, r2, #0
-	bl TaskManager_GetSys
+	bl TaskManager_GetFieldSystem
 	add r7, r0, #0
 	mov r0, #0xb
 	mov r1, #4
@@ -542,7 +543,7 @@ sub_020672D8: ; 0x020672D8
 	pop {r3, r4, r5, r6, r7, pc}
 _020672F2:
 	add r0, r4, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	mov r1, #0xd
 	mov r2, #0
 	add r4, r0, #0
@@ -639,7 +640,7 @@ sub_02067398: ; 0x02067398
 	pop {r4, r5, r6, r7, pc}
 _020673B6:
 	add r0, r4, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	mov r1, #0xd
 	mov r2, #0
 	add r7, r0, #0
@@ -789,12 +790,12 @@ _020674B8: .word 0x5D588B65
 sub_020674BC: ; 0x020674BC
 	push {r3, r4, r5, lr}
 	add r5, r0, #0
-	bl Save_FriendGroup_get
+	bl Save_FriendGroup_Get
 	bl sub_0202C7DC
 	bl sub_020674B0
 	add r4, r0, #0
 	add r0, r5, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	add r1, r4, #0
 	bl sub_0202D638
 	add r0, r4, #0
@@ -807,7 +808,7 @@ sub_020674E0: ; 0x020674E0
 	push {r3, r4, r5, r6, lr}
 	sub sp, #4
 	add r5, r0, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	add r6, r0, #0
 	bl sub_0202D63C
 	bl sub_020674B0
@@ -834,7 +835,7 @@ sub_0206751C: ; 0x0206751C
 	push {r3, r4, r5, r6, lr}
 	sub sp, #4
 	add r6, r0, #0
-	bl Save_FrontierData_get
+	bl Save_FrontierData_Get
 	add r4, r0, #0
 	add r0, r6, #0
 	bl sub_0202D908
@@ -901,11 +902,11 @@ sub_0206759C: ; 0x0206759C
 	str r1, [sp]
 	cmp r1, #0
 	ble _02067606
-	bl Save_TrainerCard_get
+	bl Save_TrainerCard_Get
 	bl TrainerCard_GetBadgeShininessArr
 	add r4, r0, #0
 	add r0, r5, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r7, r0, #0
 	ldr r0, [sp]
 	mov r1, #0xa

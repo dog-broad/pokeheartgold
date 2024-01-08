@@ -1,3 +1,4 @@
+#include "constants/events.h"
 #include "constants/scrcmd.h"
 #include "fielddata/script/scr_seq/event_D24R0216.h"
 #include "msgdata/msg/msg_0084_D24R0216.h"
@@ -29,7 +30,7 @@ _0035:
 	goto _0095
 
 _0059:
-	follower_poke_is_event_trigger 1, VAR_TEMP_x4005, VAR_TEMP_x4007
+	follower_poke_is_event_trigger EVENT_ARCEUS_HALL_OF_ORIGIN, VAR_TEMP_x4005, VAR_TEMP_x4007
 	compare VAR_TEMP_x4007, 1
 	call_if_eq _0097
 	nop_var_490 VAR_TEMP_x4005
@@ -37,7 +38,7 @@ _0059:
 	end
 
 _0077:
-	follower_poke_is_event_trigger 2, VAR_TEMP_x4005, VAR_TEMP_x4006
+	follower_poke_is_event_trigger EVENT_ARCEUS_MOVIE_GIFT, VAR_TEMP_x4005, VAR_TEMP_x4006
 	compare VAR_TEMP_x4006, 1
 	call_if_eq _0097
 	nop_var_490 VAR_TEMP_x4005
@@ -55,14 +56,14 @@ scr_seq_D24R0216_001:
 	scrcmd_609
 	lockall
 	apply_movement obj_D24R0216_suit, _0178
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _01C4
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0084_D24R0216_00001
 	closemsg
 	apply_movement obj_D24R0216_suit, _0184
@@ -100,12 +101,13 @@ scr_seq_D24R0216_001:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0178:
 	step 14, 4
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0184:
 	step 75, 1
 	step 63, 1
@@ -118,6 +120,7 @@ _0184:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _01AC:
 	step 35, 1
 	step 63, 1
@@ -126,21 +129,23 @@ _01AC:
 	step 33, 1
 	step_end
 
+	.balign 4, 0
 _01C4:
 	step 14, 4
 	step_end
+
 scr_seq_D24R0216_002:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_D24R0216_suit, _0230
 	apply_movement obj_player, _0260
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	apply_movement obj_player, _0258
 	wait_movement
 	npc_msg msg_0084_D24R0216_00004
@@ -157,7 +162,7 @@ scr_seq_D24R0216_002:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0230:
 	step 63, 1
 	step 34, 1
@@ -166,32 +171,37 @@ _0230:
 	step 18, 3
 	step_end
 
+	.balign 4, 0
 _0248:
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0250:
 	step 15, 10
 	step_end
 
+	.balign 4, 0
 _0258:
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0260:
 	step 15, 1
 	step_end
+
 scr_seq_D24R0216_003:
 	scrcmd_609
 	lockall
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0324
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	play_se SEQ_SE_GS_ZENIGAME_JOURO
 	fade_screen 6, 6, 0, RGB_BLACK
 	wait_fade
@@ -222,12 +232,13 @@ scr_seq_D24R0216_003:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0324:
 	step 14, 1
 	step 13, 1
 	step_end
 
+	.balign 4, 0
 _0330:
 	step 35, 1
 	step 63, 1
@@ -235,6 +246,7 @@ _0330:
 	step 63, 1
 	step 33, 1
 	step_end
+
 scr_seq_D24R0216_005:
 	scrcmd_609
 	lockall
@@ -254,11 +266,12 @@ scr_seq_D24R0216_006:
 	scrcmd_375 obj_player
 _0387:
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _038C:
 	step 68, 1
 	step_end
+
 scr_seq_D24R0216_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall

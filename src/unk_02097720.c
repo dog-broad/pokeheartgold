@@ -1,11 +1,12 @@
 #include "unk_02097720.h"
 #include "unk_0203E348.h"
+#include "unk_020552A4.h"
 
 static BOOL sub_02097754(TaskManager *taskManager);
 
 void sub_02097720(TaskManager *taskManager, u16* unknownPtr) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    UnkStruct_02097720 *data = AllocFromHeapAtEnd(11, sizeof(UnkStruct_02097720));
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    UnkStruct_02097720 *data = AllocFromHeapAtEnd(HEAP_ID_FIELD, sizeof(UnkStruct_02097720));
     MI_CpuClear8(data, sizeof(UnkStruct_02097720));
     data->unknown_0 = 0;
     data->unknown_4 = unknownPtr;
@@ -13,23 +14,23 @@ void sub_02097720(TaskManager *taskManager, u16* unknownPtr) {
 }
 
 BOOL sub_02097754(TaskManager *taskManager) {
-    FieldSystem *fsys = TaskManager_GetSys(taskManager);
-    UnkStruct_02097720* env = TaskManager_GetEnv(taskManager);
+    FieldSystem *fieldSystem = TaskManager_GetFieldSystem(taskManager);
+    UnkStruct_02097720* env = TaskManager_GetEnvironment(taskManager);
 
     switch (env->unknown_0) {
     case 0:
-        env->unknown_8 = sub_0203EB64(fsys);
+        env->unknown_8 = sub_0203EB64(fieldSystem);
         env->unknown_0++;
         break;
     case 1:
-        if (FieldSys_ApplicationIsRunning(fsys) == FALSE) {
+        if (FieldSystem_ApplicationIsRunning(fieldSystem) == FALSE) {
             *env->unknown_4 = env->unknown_8->unk1C;
             FreeToHeap(env->unknown_8);
             env->unknown_0++;
         }
         break;
     case 2:
-        sub_020552A4(taskManager);
+        CallTask_RestoreOverworld(taskManager);
         env->unknown_0++;
         break;
     case 3:

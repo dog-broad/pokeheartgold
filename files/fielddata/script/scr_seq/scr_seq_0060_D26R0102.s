@@ -1,5 +1,6 @@
 #include "constants/scrcmd.h"
 #include "fielddata/script/scr_seq/event_D26R0102.h"
+#include "fielddata/script/scr_seq/event_D36R0101.h"
 #include "msgdata/msg/msg_0091_D26R0102.h"
 	.include "asm/macros/script.inc"
 
@@ -61,9 +62,9 @@ scr_seq_D26R0102_002:
 	fade_screen 6, 1, 1, RGB_BLACK
 	wait_fade
 	move_person_facing obj_D26R0102_gantetsu, 36, 0, 7, DIR_WEST
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	get_player_facing VAR_SPECIAL_RESULT
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _00F7
@@ -76,9 +77,9 @@ _00F7:
 	apply_movement obj_player, _01DC
 _0107:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	npc_msg msg_0091_D26R0102_00000
 	closemsg
@@ -87,9 +88,9 @@ _0107:
 	setflag FLAG_BEAT_AZALEA_ROCKETS
 	setvar VAR_UNK_4075, 1
 	setvar VAR_UNK_4080, 2
-	setvar VAR_UNK_4099, 1
-	setvar VAR_UNK_409B, 1
-	setvar VAR_UNK_409E, 1
+	setvar VAR_FARFETCHD1_STICKS1, STICKS_ACTIVE
+	setvar VAR_FARFETCHD1_STICKS2, STICKS_ACTIVE
+	setvar VAR_FARFETCHD2_STICKS4, STICKS_ACTIVE
 	play_se SEQ_SE_DP_KAIDAN2
 	wait_se SEQ_SE_DP_KAIDAN2
 	fade_screen 6, 1, 0, RGB_BLACK
@@ -111,8 +112,8 @@ _0193:
 	white_out
 	releaseall
 	end
-	.byte 0x00, 0x00, 0x00
 
+	.balign 4, 0
 _019C:
 	step 14, 2
 	step 13, 2
@@ -124,6 +125,7 @@ _019C:
 	step 2, 1
 	step_end
 
+	.balign 4, 0
 _01C0:
 	step 15, 2
 	step 0, 1
@@ -133,6 +135,7 @@ _01C0:
 	step 3, 1
 	step_end
 
+	.balign 4, 0
 _01DC:
 	step 13, 1
 	step 15, 1

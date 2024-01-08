@@ -72,11 +72,12 @@ _00D7:
 _00E6:
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _00EC:
 	step 3, 1
 	step_end
+
 scr_seq_T11R0601_004:
 	scrcmd_609
 	lockall
@@ -93,14 +94,14 @@ _0116:
 	goto_if_ge _0163
 	npc_msg msg_0535_T11R0601_00002
 	closemsg
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _0184
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	releaseall
 	end
 
@@ -117,15 +118,17 @@ _0163:
 	setvar VAR_UNK_411F, 1
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _017C:
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0184:
 	step 13, 2
 	step_end
+
 scr_seq_T11R0601_007:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -187,16 +190,18 @@ _024F:
 	closemsg
 	releaseall
 	end
-	.byte 0x00, 0x00
 
+	.balign 4, 0
 _025C:
 	step 78, 5
 	step 77, 10
 	step_end
 
+	.balign 4, 0
 _0268:
 	step 77, 10
 	step_end
+
 scr_seq_T11R0601_001:
 	play_se SEQ_SE_DP_SELECT
 	lockall

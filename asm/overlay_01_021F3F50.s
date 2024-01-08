@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021F3F50.inc"
 	.include "global.inc"
 
 	.text
@@ -19,11 +20,11 @@ ov01_021F3F50: ; 0x021F3F50
 	ldr r4, [r1, #0xc]
 	add r5, r0, #0
 	add r0, r4, #0
-	bl Save_FlyPoints_get
-	bl FlyPoints_GetPosition
+	bl Save_LocalFieldData_Get
+	bl LocalFieldData_GetCurrentPosition
 	add r6, r0, #0
 	add r0, r4, #0
-	bl Sav2_Pokedex_get
+	bl Save_Pokedex_Get
 	add r7, r0, #0
 	ldr r0, [r6]
 	bl MapHeader_GetMapSec
@@ -40,10 +41,10 @@ _021F3F84:
 _021F3F86:
 	str r0, [r5]
 	add r0, r4, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	str r0, [r5, #8]
 	add r0, r4, #0
-	bl Sav2_PlayerData_GetIGTAddr
+	bl Save_PlayerData_GetIGTAddr
 	str r0, [r5, #0xc]
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -171,7 +172,7 @@ ov01_021F4048: ; 0x021F4048
 	add r3, r1, #0
 	bl AddTextPrinterParameterized
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	mov r0, #1
 	str r0, [sp, #0x10]
 	ldr r0, _021F4124 ; =ov01_02206AF4
@@ -202,7 +203,7 @@ _021F40A6:
 	add r3, r1, #0
 	bl AddTextPrinterParameterized
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 	sub r2, r7, #4
 	ldr r0, [r5, #0x14]
 	ldr r1, [r5, #0x18]
@@ -229,7 +230,7 @@ _021F40A6:
 	add r2, r6, #0
 	bl AddTextPrinterParameterized
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 _021F410E:
 	ldr r0, [sp, #0xc]
 	add r7, r7, #4
@@ -247,8 +248,8 @@ _021F4124: .word ov01_02206AF4
 _021F4128: .word ov01_02206AE4
 	thumb_func_end ov01_021F4048
 
-	thumb_func_start SaveStatsPrinter_Print
-SaveStatsPrinter_Print: ; 0x021F412C
+	thumb_func_start Field_SaveStatsPrinter_Print
+Field_SaveStatsPrinter_Print: ; 0x021F412C
 	push {r3, r4, lr}
 	sub sp, #0x14
 	add r4, r0, #0
@@ -301,10 +302,10 @@ SaveStatsPrinter_Print: ; 0x021F412C
 	.balign 4, 0
 _021F419C: .word 0x00000189
 _021F41A0: .word 0x000003D9
-	thumb_func_end SaveStatsPrinter_Print
+	thumb_func_end Field_SaveStatsPrinter_Print
 
-	thumb_func_start SaveStatsPrinter_RemoveFromScreen
-SaveStatsPrinter_RemoveFromScreen: ; 0x021F41A4
+	thumb_func_start Field_SaveStatsPrinter_RemoveFromScreen
+Field_SaveStatsPrinter_RemoveFromScreen: ; 0x021F41A4
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x10]
@@ -316,10 +317,10 @@ SaveStatsPrinter_RemoveFromScreen: ; 0x021F41A4
 	bl FreeToHeap
 	pop {r4, pc}
 	.balign 4, 0
-	thumb_func_end SaveStatsPrinter_RemoveFromScreen
+	thumb_func_end Field_SaveStatsPrinter_RemoveFromScreen
 
-	thumb_func_start Field_CreateSaveStatsPrinter
-Field_CreateSaveStatsPrinter: ; 0x021F41C0
+	thumb_func_start Field_SaveStatsPrinter_New
+Field_SaveStatsPrinter_New: ; 0x021F41C0
 	push {r3, r4, r5, r6, r7, lr}
 	add r5, r1, #0
 	add r6, r0, #0
@@ -334,7 +335,7 @@ Field_CreateSaveStatsPrinter: ; 0x021F41C0
 	ldr r0, [r6, #8]
 	str r0, [r4, #0xc]
 	add r0, r5, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x14]
 	ldr r2, _021F4218 ; =0x000001A7
 	mov r0, #1
@@ -360,20 +361,20 @@ Field_CreateSaveStatsPrinter: ; 0x021F41C0
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
 _021F4218: .word 0x000001A7
-	thumb_func_end Field_CreateSaveStatsPrinter
+	thumb_func_end Field_SaveStatsPrinter_New
 
-	thumb_func_start SaveStatsPrinter_Delete
-SaveStatsPrinter_Delete: ; 0x021F421C
+	thumb_func_start Field_SaveStatsPrinter_Delete
+Field_SaveStatsPrinter_Delete: ; 0x021F421C
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r4, #0x18]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x14]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
-	thumb_func_end SaveStatsPrinter_Delete
+	thumb_func_end Field_SaveStatsPrinter_Delete
 
 	thumb_func_start ov01_021F4234
 ov01_021F4234: ; 0x021F4234
@@ -462,9 +463,9 @@ _021F429C:
 	mov r0, #0
 	str r0, [sp, #0xc]
 	ldr r0, [r5, #0x10]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r6, #0
-	bl String_dtor
+	bl String_Delete
 _021F42E2:
 	add r7, r7, #1
 	add r4, #0x10
@@ -546,7 +547,7 @@ ov01_021F4360: ; 0x021F4360
 	ldr r0, [r6, #8]
 	str r0, [r4, #0xc]
 	add r0, r5, #0
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r4, #0x14]
 	ldr r2, _021F43CC ; =0x000001A7
 	mov r0, #1
@@ -587,7 +588,7 @@ ov01_021F43D0: ; 0x021F43D0
 	ldr r0, [r4, #0x18]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x14]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r4, #0
 	bl FreeToHeap
 	pop {r4, pc}
@@ -614,7 +615,7 @@ _021F43FE:
 ov01_021F4404: ; 0x021F4404
 	push {r4, lr}
 	add r4, r0, #0
-	bl Fsys_SyncMapObjectsToSave
+	bl FieldSystem_SyncMapObjectsToSave
 	add r0, r4, #0
 	mov r1, #4
 	mov r2, #0

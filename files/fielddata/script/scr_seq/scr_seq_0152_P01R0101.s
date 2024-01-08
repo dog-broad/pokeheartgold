@@ -29,15 +29,15 @@ scr_seq_P01R0101_002:
 	wait_movement
 	stop_bgm 0
 	play_bgm SEQ_GS_OHKIDO
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_P01R0101_ookido, _00EC
 	apply_movement obj_player, _0100
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	buffer_players_name 0
 	gender_msgbox msg_0255_P01R0101_00009, msg_0255_P01R0101_00010
 	closemsg
@@ -73,11 +73,12 @@ _00DE:
 	clearflag FLAG_HIDE_POKEATHLON_SUPREME_CUP_RECEPTIONIST
 	return
 
-
+	.balign 4, 0
 _00E4:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _00EC:
 	step 63, 1
 	step 14, 3
@@ -85,27 +86,32 @@ _00EC:
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0100:
 	step 63, 3
 	step 13, 3
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _0110:
 	step 34, 1
 	step 63, 2
 	step 34, 1
 	step_end
 
+	.balign 4, 0
 _0120:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _0128:
 	step 12, 2
 	step 14, 1
 	step 12, 1
 	step_end
+
 scr_seq_P01R0101_000:
 	play_se SEQ_SE_DP_SELECT
 	lockall
@@ -134,14 +140,14 @@ scr_seq_P01R0101_000:
 	closemsg
 	apply_movement obj_P01R0101_seaman_2, _038C
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _03AC
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	setvar VAR_TEMP_x4002, 1
 	setvar VAR_BOAT_DIRECTION, 1
 	setvar VAR_UNK_40DC, 0
@@ -156,35 +162,50 @@ _01FB:
 	compare VAR_SPECIAL_RESULT, 0
 	goto_if_ne _0218
 	goto _02EE
-	.byte 0x16, 0x00, 0x83, 0x00, 0x00, 0x00
+
+_0212:
+	goto _029B
+
 _0218:
 	compare VAR_SPECIAL_RESULT, 1
 	goto_if_ne _0231
 	goto _029B
-	.byte 0x16, 0x00, 0x6a, 0x00, 0x00
-	.byte 0x00
+
+_022B:
+	goto _029B
+
 _0231:
 	compare VAR_SPECIAL_RESULT, 2
 	goto_if_ne _024A
 	goto _02EE
-	.byte 0x16, 0x00, 0x51, 0x00, 0x00, 0x00
+
+_0244:
+	goto _029B
+
 _024A:
 	compare VAR_SPECIAL_RESULT, 3
 	goto_if_ne _0263
 	goto _02EE
-	.byte 0x16, 0x00, 0x38
-	.byte 0x00, 0x00, 0x00
+
+_025D:
+	goto _029B
+
 _0263:
 	compare VAR_SPECIAL_RESULT, 4
 	goto_if_ne _027C
 	goto _02EE
-	.byte 0x16, 0x00, 0x1f, 0x00, 0x00, 0x00
+
+_0276:
+	goto _029B
+
 _027C:
 	compare VAR_SPECIAL_RESULT, 5
 	goto_if_ne _0295
 	goto _029B
-	.byte 0x16
-	.byte 0x00, 0x06, 0x00, 0x00, 0x00
+
+_028F:
+	goto _029B
+
 _0295:
 	goto _02EE
 
@@ -193,14 +214,14 @@ _029B:
 	closemsg
 	apply_movement obj_P01R0101_seaman_2, _038C
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _03AC
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	setvar VAR_TEMP_x4002, 1
 	setvar VAR_BOAT_DIRECTION, 1
 	setvar VAR_UNK_40DC, 0
@@ -235,14 +256,14 @@ _02F9:
 _0320:
 	apply_movement obj_P01R0101_seaman_2, _03B4
 	wait_movement
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	apply_movement obj_player, _03D4
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	apply_movement obj_P01R0101_seaman_2, _03E0
 	wait_movement
 	releaseall
@@ -262,12 +283,13 @@ _0361:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _036C:
 	step 35, 1
 	step 1, 2
 	step_end
 
+	.balign 4, 0
 _0378:
 	step 50, 1
 	step 51, 1
@@ -275,6 +297,7 @@ _0378:
 	step 75, 1
 	step_end
 
+	.balign 4, 0
 _038C:
 	step 71, 1
 	step 13, 1
@@ -285,10 +308,12 @@ _038C:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _03AC:
 	step 13, 2
 	step_end
 
+	.balign 4, 0
 _03B4:
 	step 71, 1
 	step 12, 1
@@ -299,11 +324,13 @@ _03B4:
 	step 72, 1
 	step_end
 
+	.balign 4, 0
 _03D4:
 	step 63, 1
 	step 12, 4
 	step_end
 
+	.balign 4, 0
 _03E0:
 	step 14, 1
 	step 1, 2
@@ -311,9 +338,11 @@ _03E0:
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _03F4:
 	step 32, 1
 	step_end
+
 scr_seq_P01R0101_003:
 	simple_npc_msg msg_0255_P01R0101_00014
 	end

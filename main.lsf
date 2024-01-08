@@ -12,7 +12,7 @@ Static main
 	Object src/pm_version.o
 	Object src/main.o
 	Object src/list_menu.o
-	Object src/list_menu_2.o
+	Object src/list_menu_2d.o
 	Object src/string_util.o
 	Object asm/render_text.o
 	Object src/font.o
@@ -23,7 +23,7 @@ Static main
 	Object asm/unk_02005D10.o
 	Object src/sound_chatot.o
 	Object src/poke_overlay.o
-	Object asm/unk_02007200.o
+	Object src/systask_environment.o
 	Object src/overlay_manager.o
 	Object src/filesystem.o
 	Object src/gf_gfx_loader.o
@@ -32,14 +32,14 @@ Static main
 	Object src/unk_0200A090.o
 	Object asm/unk_0200ACF0.o
 	Object asm/unk_0200B150.o
-	Object asm/unk_0200B380.o
+	Object src/brightness.o
 	Object src/msgdata.o
-	Object src/msgfmt.o
-	Object asm/message_printer.o
+	Object src/message_format.o
+	Object src/message_printer.o
 	Object asm/unk_0200CE7C.o
-	Object asm/unk_0200CF18.o
+	Object src/unk_0200CF18.o
 	Object asm/unk_0200E320.o
-	Object asm/unk_0200E398.o
+	Object asm/render_window.o
 	Object asm/unk_0200FA24.o
 	Object asm/unk_0201010C.o
 	Object asm/unk_02012DD8.o
@@ -57,7 +57,7 @@ Static main
 	Object asm/unk_02016EDC.o
 	Object asm/unk_02017FAC.o
 	Object asm/unk_02018000.o
-	Object asm/unk_02018380.o
+	Object src/unk_02018380.o
 	Object asm/unk_020183F0.o
 	Object src/camera_translation.o
 	Object asm/unk_020192D0.o
@@ -68,7 +68,7 @@ Static main
 	Object asm/unk_0201F79C.o
 	Object src/string_control_code.o
 	Object src/math_util.o
-	Object asm/text.o
+	Object src/text.o
 	Object src/vram_transfer_manager.o
 	Object asm/unk_02020654.o
 	Object src/ascii_util.o
@@ -76,10 +76,10 @@ Static main
 	Object asm/unk_020210A0.o
 	Object asm/unk_020215A0.o
 	Object asm/unk_02022588.o
-	Object src/gx_layers.o
-	Object asm/unk_02022D74.o
+	Object src/gf_gfx_planes.o
+	Object src/camera.o
 	Object asm/unk_02023694.o
-	Object asm/unk_02025154.o
+	Object src/touchscreen.o
 	Object src/timer3.o
 	Object src/error_handling.o
 	Object src/unk_02025534.o
@@ -120,7 +120,7 @@ Static main
 	Object src/save_special_ribbons.o
 	Object src/roamer.o
 	Object asm/unk_0202DB34.o
-	Object asm/unk_0202DBA8.o
+	Object src/mystery_gift.o
 	Object src/hall_of_fame.o
 	Object asm/unk_0202E41C.o
 	Object asm/unk_0202E4B0.o
@@ -153,12 +153,12 @@ Static main
 	Object src/map_matrix.o
 	Object src/map_header.o
 	Object src/map_events.o
-	Object src/save_flypoints.o
+	Object src/save_local_field_data.o
 	Object asm/unk_0203BA5C.o
-	Object src/diamond_dust.o
+	Object src/field_system_rtc_weather.o
 	Object asm/unk_0203BC10.o
 	Object asm/unk_0203DB6C.o
-	Object asm/unk_0203DE74.o
+	Object src/field_system.o
 	Object asm/unk_0203E348.o
 	Object src/script.o
 	Object src/fieldmap.o
@@ -169,9 +169,11 @@ Static main
 	Object src/scrcmd_sound.o
 	Object src/scrcmd_battle.o
 	Object src/scrcmd_8.o
-	Object asm/scrcmd_9.o
+	Object src/scrcmd_9.o
+	Object src/unk_0204A3F4.o
+	Object src/unk_0204B538.o
 	Object src/scrcmd_apricorn.o
-	Object asm/scrcmd_11.o
+	Object src/scrcmd_mystery_gift.o
 	Object src/scrcmd_12.o
 	Object src/scrcmd_money.o
 	Object src/scrcmd_daycare.o
@@ -180,14 +182,15 @@ Static main
 	Object src/scrcmd_17.o
 	Object src/scrcmd_items.o
 	Object src/scrcmd_move_relearner.o
-	Object asm/scrcmd_20.o
-	Object asm/unk_0204F500.o
-	Object src/event_data.o
+	Object src/scrcmd_20.o
+	Object src/scrcmd_battle_castle.o
+	Object src/scrcmd_battle_arcade.o
+	Object src/save_vars_flags.o
 	Object src/task.o
-	Object asm/unk_02050660.o
+	Object src/encounter.o
 	Object asm/unk_020517A4.o
-	Object asm/unk_020518D8.o
-	Object src/field_black_out.o
+	Object src/battle/battle_setup.o
+	Object src/blackout.o
 	Object src/game_clear.o
 	Object src/field_warp_tasks.o
 	Object src/script_pokemon_util.o
@@ -197,7 +200,7 @@ Static main
 	Object asm/unk_020551B8.o
 	Object asm/unk_02055244.o
 	Object src/unk_02055418.o
-	Object asm/unk_020557E0.o
+	Object src/pal_park.o
 	Object asm/unk_02055BF0_data.o
 	Object src/unk_02055BF0.o
 	Object asm/unk_02056680.o
@@ -208,7 +211,7 @@ Static main
 	Object asm/unk_0205AC88.o
 	Object src/unk_0205B3DC.o
 	Object asm/text_0205B4EC.o
-	Object asm/unk_0205B6E8.o
+	Object src/metatile_behavior.o
 	Object asm/unk_0205BB1C.o
 	Object asm/unk_0205BFF0.o
 	Object src/field_player_avatar.o
@@ -232,7 +235,7 @@ Static main
 	Object asm/unk_02067A60.o
 	Object src/field_move.o
 	Object asm/unk_020689C8.o
-	Object asm/unk_02068DE0.o
+	Object src/gymmick_init.o
 	Object src/unk_02068F84.o
 	Object asm/unk_02068FC8.o
 	Object asm/unk_02069528.o
@@ -242,11 +245,11 @@ Static main
 	Object asm/unk_0206A360.o
 	Object asm/field_take_photo.o
 	Object asm/unk_0206B910.o
-	Object src/field_alph_checks.o
+	Object src/alph_checks.o
 	Object src/get_egg.o
-	Object asm/unk_0206D494.o
+	Object src/unk_0206D494.o
 	Object src/pokemon.o
-	Object src/waza.o
+	Object src/move.o
 	Object src/trainer_data.o
 	Object src/pokemon_storage_system.o
 	Object src/pokemon_icon_idx.o
@@ -281,7 +284,7 @@ Static main
 	Object asm/unk_0208C3E4.o
 	Object asm/unk_0208DE40.o
 	Object src/ribbon.o
-	Object asm/unk_0208E600.o
+	Object src/trainer_memo.o
 	Object asm/unk_0208F658.o
 	Object asm/unk_0208F814.o
 	Object asm/unk_0208FB64.o
@@ -305,7 +308,7 @@ Static main
 	Object asm/unk_02092BB8.o
 	Object src/unk_02092BE8.o
 	Object asm/unk_020931C4.o
-	Object asm/unk_020932A4.o
+	Object src/unk_020932A4.o
 	Object asm/unk_020932E0.o
 	Object asm/unk_020957B0.o
 	Object asm/unk_02095DF4.o
@@ -447,7 +450,7 @@ Overlay field
     Object asm/overlay_01_021EAFD4.o
     Object asm/overlay_01_021EB1E8.o
     Object asm/overlay_01_021EDAFC.o
-    Object asm/scrcmd_message.o
+    Object src/field/scrcmd_message.o
     Object asm/overlay_01_021EF7A0.o
     Object asm/overlay_01_021EFB38.o
     Object asm/overlay_01_021F1348.o
@@ -493,22 +496,21 @@ Overlay field
     Object asm/overlay_01_021FF6B0.o
     Object asm/overlay_01_021FF854.o
     Object asm/overlay_01_021FFC0C.o
-    Object src/overlay_01_021FFECC.o
+    Object src/field/overlay_01_021FFECC.o
     Object asm/overlay_01_02200040.o
     Object asm/overlay_01_022001E4.o
     Object asm/overlay_01_022006A8.o
     Object asm/overlay_01_02200858.o
-    Object asm/scrcmd_pokemon_misc_data.o
-    Object src/scrcmd_pokemon_misc.o
-    Object asm/scrcmd_move_tutor.o
-    Object src/scrcmd_moneybox.o
+    Object src/field/scrcmd_pokemon_misc.o
+    Object src/scrcmd_move_tutor.o
+    Object src/field/scrcmd_moneybox.o
     Object asm/overlay_01_022031C0.o
     Object asm/overlay_01_02203A18.o
     Object asm/overlay_01_02203E40.o
     Object asm/overlay_01_02204004.o
-    Object src/overlay_01_apricorn_tree_anim.o
-    Object src/overlay_01_rock_smash_item.o
-    Object asm/overlay_01_02204ED8.o
+    Object src/field/overlay_01_apricorn_tree_anim.o
+    Object src/field/overlay_01_rock_smash_item.o
+    Object src/overlay_01_02204ED8.o
     Object asm/overlay_01_022051EC.o
     Object asm/overlay_01_022053EC.o
 }
@@ -554,7 +556,8 @@ Overlay OVY_9
 Overlay OVY_10
 {
     After OVY_6
-    Object asm/overlay_10.o
+    Object src/battle/trainer_ai.o
+    Object asm/overlay_10_trainer_ai.o
 }
 Overlay OVY_11
 {
@@ -563,7 +566,25 @@ Overlay OVY_11
 Overlay OVY_12
 {
     After OVY_7
-    Object asm/overlay_12.o
+    Object src/battle/battle_022378C0.o
+    Object asm/overlay_12_022378C0.o
+    Object src/battle/battle_system.o
+    Object src/battle/battle_command.o
+    Object asm/overlay_12_battle_command.o
+    Object src/battle/battle_controller_player.o
+    Object asm/overlay_12_battle_controller_player.o
+    Object src/battle/overlay_12_0224E4FC.o
+    Object asm/overlay_12_battle_controller_opponent.o
+    Object src/battle/battle_02261FD4.o
+    Object asm/overlay_12_battle_controller.o
+    Object asm/overlay_12_hp_bar.o
+    Object asm/overlay_12_02265E28.o
+    Object src/battle/battle_input.o
+    Object asm/overlay_12_02266024.o
+    Object asm/overlay_12_0226ADE0.o
+    Object src/battle/battle_cursor.o
+    Object src/battle/battle_finger.o
+    Object src/battle/overlay_12_0226BEC4.o
 }
 Overlay OVY_13
 {
@@ -586,12 +607,14 @@ Overlay OVY_15
 Overlay OVY_16
 {
     After OVY_15
-    Object asm/overlay_16.o
+    Object src/overlay_16_022014A0.o
+    Object src/overlay_16_02201948.o
 }
 Overlay OVY_17
 {
     After OVY_16
-    Object asm/overlay_17.o
+    Object src/berry_pots_app.o
+    Object asm/berry_pots_app_rodata.o
 }
 Overlay OVY_18
 {
@@ -616,7 +639,7 @@ Overlay OVY_21
 Overlay OVY_22
 {
     After OVY_3
-    Object asm/overlay_22.o
+    Object src/overlay_22.o
 }
 Overlay npc_trade
 {
@@ -631,7 +654,7 @@ Overlay bug_contest
 Overlay OVY_25
 {
     After OVY_3
-    Object asm/overlay_25.o
+    Object src/overlay_25.o
 }
 Overlay OVY_26
 {
@@ -654,10 +677,10 @@ Overlay OVY_29
     After OVY_27
     Object asm/overlay_29.o
 }
-Overlay OVY_30
+Overlay touch_save_app
 {
     After OVY_27
-    Object asm/overlay_30.o
+    Object src/touch_save_app.o
 }
 Overlay OVY_31
 {
@@ -785,7 +808,7 @@ Overlay OVY_54
 Overlay OVY_55
 {
     After main
-    Object asm/overlay_55.o
+    Object src/overlay_55.o
 }
 Overlay OVY_56
 {
@@ -890,18 +913,18 @@ Overlay OVY_75
 Overlay credits
 {
     After main
-    Object src/overlay_credits_data.o
-    Object src/overlay_credits.o
-    Object src/overlay_credits_data2.o
+    Object src/credits/data1.o
+    Object src/credits/credits.o
+    Object src/credits/data2.o
 }
 Overlay OVY_77
 {
     After main
 }
-Overlay OVY_78
+Overlay certificates_app
 {
     After main
-    Object asm/overlay_78.o
+    Object src/certificates_app.o
 }
 Overlay OVY_79
 {
@@ -910,7 +933,38 @@ Overlay OVY_79
 Overlay OVY_80
 {
     After OVY_42
-    Object asm/overlay_80.o
+    Object asm/overlay_80_02229EE0.o
+    Object asm/overlay_80_0222A84C.o
+    Object asm/overlay_80_0222AB40.o
+    Object asm/overlay_80_0222ACA0.o
+    Object asm/overlay_80_0222AEF8.o
+    Object asm/overlay_80_0222BDF4.o
+    Object asm/overlay_80_0222F608.o
+    Object asm/overlay_80_0222FD08.o
+    Object asm/overlay_80_02230B8C.o
+    Object asm/overlay_80_022310C4.o
+    Object asm/overlay_80_02231BF8.o
+    Object asm/overlay_80_022324C4.o
+    Object asm/overlay_80_02233688.o
+    Object asm/overlay_80_022340E8.o
+    Object asm/overlay_80_02235390.o
+    Object asm/overlay_80_02235438.o
+    Object asm/overlay_80_022357B4.o
+    Object asm/overlay_80_02235900.o
+    Object asm/overlay_80_02235FC8.o
+    Object asm/overlay_80_02236450.o
+    Object asm/overlay_80_02236B78.o
+    Object asm/overlay_80_022372D8.o
+    Object asm/overlay_80_02237A70.o
+    Object asm/overlay_80_02238034.o
+    Object asm/overlay_80_022384D8.o
+    Object asm/overlay_80_02238648.o
+    Object asm/overlay_80_02239960.o
+    Object asm/overlay_80_02239AF8.o
+    Object asm/overlay_80_02239BF0.o
+    Object asm/overlay_80_02239D74.o
+    Object asm/overlay_80_0223A00C.o
+    Object asm/overlay_80_0223AC24.o
 }
 Overlay OVY_81
 {
@@ -930,7 +984,8 @@ Overlay OVY_83
 Overlay OVY_84
 {
     After OVY_80
-    Object asm/overlay_84.o
+    Object src/battle_arcade_game_board.o
+    Object asm/battle_arcade_game_board_data.o
 }
 Overlay OVY_85
 {
@@ -1061,7 +1116,7 @@ Overlay OVY_109
 Overlay OVY_110
 {
     After main
-    Object asm/overlay_110.o
+    Object src/alph_puzzle.o
 }
 Overlay OVY_111
 {
@@ -1118,10 +1173,18 @@ Overlay OVY_121
     After main
     Object asm/overlay_121.o
 }
-Overlay OVY_122
+Overlay voltorb_flip
 {
     After main
-    Object asm/overlay_122.o
+    Object src/voltorb_flip/voltorb_flip.o
+    Object src/voltorb_flip/voltorb_flip_workflow.o
+    Object src/voltorb_flip/voltorb_flip_game.o
+    Object src/voltorb_flip/voltorb_flip_input.o
+    Object src/voltorb_flip/voltorb_flip_data1.o
+    Object src/voltorb_flip/voltorb_flip_data2.o
+    Object src/voltorb_flip/voltorb_flip_data3.o
+    Object src/voltorb_flip/voltorb_flip_data4.o
+    Object src/voltorb_flip/voltorb_flip_data5.o
 }
 Overlay OVY_123
 {

@@ -5,17 +5,17 @@
 #include "unk_0203E348.h"
 #include "math_util.h"
 
-BOOL ScrCmd_683(SCRIPTCONTEXT *ctx) {
-    u32 *unkC = FieldSysGetAttrAddr(ctx->fsys, SCRIPTENV_0C);
-    u16 *var0 = ScriptGetVarPointer(ctx);
-    *var0 = *unkC;
+BOOL ScrCmd_GetStaticEncounterOutcomeFlag(ScriptContext *ctx) {
+    u32 *winFlag = FieldSysGetAttrAddr(ctx->fieldSystem, SCRIPTENV_BATTLE_WIN_FLAG);
+    u16 *variable = ScriptGetVarPointer(ctx);
+    *variable = *winFlag;
     return TRUE;
 }
 
-BOOL ScrCmd_465(SCRIPTCONTEXT *ctx) {
-    MSGFMT **msg = FieldSysGetAttrAddr(ctx->fsys, SCRIPTENV_MSGFMT);
-    SAV_FRIEND_GRP *group = Save_FriendGroup_get(ctx->fsys->savedata);
-    SAVEDATA *save = ctx->fsys->savedata;
+BOOL ScrCmd_465(ScriptContext *ctx) {
+    MessageFormat **msg = FieldSysGetAttrAddr(ctx->fieldSystem, SCRIPTENV_MESSAGE_FORMAT);
+    SAV_FRIEND_GRP *group = Save_FriendGroup_Get(ctx->fieldSystem->saveData);
+    SaveData *save = ctx->fieldSystem->saveData;
 
     u16 var = ScriptReadHalfword(ctx);
     switch (var) {
@@ -46,7 +46,7 @@ BOOL ScrCmd_465(SCRIPTCONTEXT *ctx) {
     case 4: {
         u16 *r5 = sub_0202C7E0(group, 0, 0);
         u16 *retPtr = ScriptGetVarPointer(ctx);
-        CreateNamingScreen(ctx->taskman, NAMINGSCREEN_GROUP, 0, OT_NAME_LENGTH, 0, r5, retPtr);
+        CreateNamingScreen(ctx->taskman, NAMINGSCREEN_GROUP, 0, PLAYER_NAME_LENGTH, 0, r5, retPtr);
         return TRUE;
     }
     case 5: {
@@ -56,14 +56,14 @@ BOOL ScrCmd_465(SCRIPTCONTEXT *ctx) {
         return FALSE;
     }
     case 6: {
-        STRING *str = String_ctor(64, 32);
-        PLAYERPROFILE *profile = Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata);
+        String *str = String_New(64, HEAP_ID_32);
+        PlayerProfile *profile = Save_PlayerData_GetProfileAddr(ctx->fieldSystem->saveData);
         PlayerName_FlatToString(profile, str);
         sub_0202C7F8(group, 0, 1, str);
         sub_0202C824(group, 0, PlayerProfile_GetTrainerGender(profile));
         sub_0202C848(group, 0, 2);
         sub_0202C7C0(group, 0, MTRandom());
-        String_dtor(str);
+        String_Delete(str);
         sub_0202C738(group, 0, 1);
         break;
     }

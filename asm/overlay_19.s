@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_19.inc"
 	.include "global.inc"
 
 	.text
@@ -269,7 +270,7 @@ _02259AB8: .word gSystem
 ov19_02259ABC: ; 0x02259ABC
 	push {r3, lr}
 	ldr r0, _02259AD4 ; =ov19_0225A05E
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	mov r1, #0
 	mvn r1, r1
 	cmp r0, r1
@@ -397,7 +398,7 @@ ov19_02259BC0: ; 0x02259BC0
 	add r5, r0, #0
 	ldr r1, [r5]
 	mov r0, #0xab
-	bl NARC_ctor
+	bl NARC_New
 	mov r3, #0
 	str r3, [sp]
 	ldr r1, [r5]
@@ -462,7 +463,7 @@ ov19_02259BC0: ; 0x02259BC0
 	add r0, r6, #0
 	bl FreeToHeap
 	add r0, r4, #0
-	bl NARC_dtor
+	bl NARC_Delete
 	add sp, #0x14
 	pop {r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -490,11 +491,11 @@ ov19_02259C68: ; 0x02259C68
 	ldr r2, [r6]
 	mov r0, #6
 	mov r1, #0x16
-	bl ScrStrBufs_new_custom
+	bl MessageFormat_New_Custom
 	str r0, [r6, #0x28]
 	ldr r1, [r6]
 	mov r0, #0x80
-	bl String_ctor
+	bl String_New
 	str r0, [r6, #0x2c]
 	ldr r0, [r6, #0x24]
 	mov r1, #0
@@ -523,17 +524,17 @@ ov19_02259CBC: ; 0x02259CBC
 	add r5, r6, #0
 _02259CC4:
 	ldr r0, [r5, #0x34]
-	bl String_dtor
+	bl String_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #2
 	blt _02259CC4
 	ldr r0, [r6, #0x30]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x2c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [r6, #0x28]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	ldr r0, [r6, #0x24]
 	bl DestroyMsgData
 	mov r0, #4
@@ -666,7 +667,7 @@ _02259DD4:
 _02259DE0:
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r3, r4, r5, r6, r7, pc}
 	nop
 _02259DEC: .word ov19_0225A040
@@ -683,7 +684,7 @@ ov19_02259DF4: ; 0x02259DF4
 	lsl r6, r6, #6
 _02259E00:
 	ldr r0, [r5, r6]
-	bl sub_02024758
+	bl Sprite_Delete
 	add r4, r4, #1
 	add r5, r5, #4
 	cmp r4, #3
@@ -693,7 +694,7 @@ _02259E00:
 	bl ov01_021E8194
 	mov r0, #0x10
 	mov r1, #0
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	pop {r3, r4, r5, r6, r7, pc}
 	thumb_func_end ov19_02259DF4
 
@@ -711,7 +712,7 @@ ov19_02259E20: ; 0x02259E20
 	ldrb r1, [r2, r1]
 	bl Set2dSpriteAnimSeqNo
 	ldr r0, [r5, r4]
-	bl sub_02024964
+	bl Sprite_ResetAnimCtrlState
 	pop {r3, r4, r5, pc}
 	.balign 4, 0
 _02259E40: .word _0225A03C
@@ -727,7 +728,7 @@ ov19_02259E44: ; 0x02259E44
 	lsl r2, r2, #2
 	add r0, r0, r2
 	ldr r0, [r0, r1]
-	bl sub_02024B68
+	bl Sprite_IsCellAnimationFinished
 	cmp r0, #0
 	bne _02259E60
 	mov r0, #1
@@ -746,7 +747,7 @@ ov19_02259E64: ; 0x02259E64
 	add r4, r1, #0
 	add r6, r2, #0
 	add r7, r3, #0
-	bl Sav2_PlayerData_GetProfileAddr
+	bl Save_PlayerData_GetProfileAddr
 	add r2, r0, #0
 	add r0, r4, #0
 	mov r1, #0
@@ -888,7 +889,7 @@ ov19_02259F64: ; 0x02259F64
 	ldr r2, [r4, #0x30]
 	add r0, #0x3c
 	mov r1, #4
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	add r0, #0x3c
 	bl ScheduleWindowCopyToVram
@@ -928,7 +929,7 @@ _02259FD4:
 	add r0, r4, #0
 	ldr r2, [r4, #0x2c]
 	add r0, #0x4c
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, #0
 	add r0, #0x4c
 	bl ScheduleWindowCopyToVram

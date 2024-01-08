@@ -1,4 +1,5 @@
 	.include "asm/macros.inc"
+	.include "overlay_89.inc"
 	.include "global.inc"
 
 	.text
@@ -12,8 +13,8 @@ ov89_02258800: ; 0x02258800
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
 	bl HBlankInterruptDisable
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	mov r1, #1
 	lsl r1, r1, #0x1a
 	ldr r0, [r1]
@@ -79,7 +80,7 @@ ov89_02258800: ; 0x02258800
 	bl ov89_02259D70
 	str r0, [r5, #0x14]
 	mov r0, #0x7d
-	bl sub_020030E8
+	bl PaletteData_Init
 	str r0, [r5, #0xc]
 	mov r1, #1
 	bl sub_02003B50
@@ -127,7 +128,7 @@ ov89_02258800: ; 0x02258800
 	mov r1, #0x7d
 	bl FontID_Alloc
 	mov r0, #0x7d
-	bl ScrStrBufs_new
+	bl MessageFormat_New
 	str r0, [r5, #0x2c]
 	ldr r2, _02258AE0 ; =0x000002F2
 	mov r0, #0
@@ -141,13 +142,13 @@ ov89_02258800: ; 0x02258800
 	str r0, [r5, #0x10]
 	mov r0, #0xd2
 	mov r1, #0x7d
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x16
 	lsl r1, r1, #4
 	str r0, [r5, r1]
 	mov r0, #0x45
 	mov r1, #0x7d
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x59
 	lsl r1, r1, #2
 	str r0, [r5, r1]
@@ -167,12 +168,12 @@ ov89_02258800: ; 0x02258800
 	mov r0, #1
 	lsl r0, r0, #8
 	mov r1, #0x7d
-	bl String_ctor
+	bl String_New
 	add r1, r5, #0
 	add r1, #0xc4
 	str r0, [r1]
 	mov r0, #0x7d
-	bl sub_0200CF18
+	bl SpriteRenderer_Create
 	ldr r1, _02258AE4 ; =ov89_0225CA58
 	ldr r2, _02258AE8 ; =ov89_0225C9EC
 	mov r3, #0x20
@@ -184,7 +185,7 @@ ov89_02258800: ; 0x02258800
 	mov r0, #1
 	bl sub_0200A080
 	ldr r0, [r5, #0x1c]
-	bl sub_0200CF38
+	bl SpriteRenderer_CreateGfxHandler
 	str r0, [r5, #0x20]
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
@@ -193,9 +194,9 @@ ov89_02258800: ; 0x02258800
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	ldr r2, _02258AF0 ; =ov89_0225CA00
-	bl sub_0200D3F8
+	bl SpriteRenderer_Init2DGfxResManagersFromCountsArray
 	ldr r0, [r5, #0x1c]
-	bl sub_0200CF6C
+	bl SpriteRenderer_GetG2dRendererPtr
 	mov r2, #0x11
 	mov r1, #0
 	lsl r2, r2, #0x10
@@ -224,7 +225,7 @@ ov89_02258800: ; 0x02258800
 	add r0, r5, #0
 	bl ov89_022598D0
 	mov r0, #0x7d
-	bl sub_0201660C
+	bl YesNoPrompt_Create
 	str r0, [r5, #0x24]
 	mov r0, #6
 	str r0, [sp]
@@ -245,33 +246,33 @@ ov89_02258800: ; 0x02258800
 _02258A4A:
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #8
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #2
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	ldr r0, _02258AF4 ; =gSystem + 0x60
 	mov r1, #1
 	strb r1, [r0, #9]
-	bl GX_SwapDisplay
-	bl GX_BothDispOn
+	bl GfGfx_SwapDisplay
+	bl GfGfx_BothDispOn
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineBToggleLayers
+	bl GfGfx_EngineBTogglePlanes
 	mov r0, #1
 	bl TextFlags_SetCanABSpeedUpPrint
 	mov r0, #0
@@ -492,7 +493,7 @@ _02258C56:
 	mov r1, #2
 	bl ReadMsgDataIntoString
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	mov r3, #0
 	str r3, [sp]
@@ -536,7 +537,7 @@ _02258CAC:
 	strb r1, [r0, #0x13]
 	ldr r0, [r4, #0x24]
 	add r1, sp, #0xc
-	bl sub_020166FC
+	bl YesNoPrompt_InitFromTemplate
 	add r0, r4, #0
 	mov r1, #1
 	add r0, #0x28
@@ -552,7 +553,7 @@ _02258CF0:
 	mov r3, #0x40
 	bl sub_020032A4
 	ldr r0, [r4, #0x24]
-	bl sub_020168F4
+	bl YesNoPrompt_HandleInput
 	cmp r0, #1
 	beq _02258D0C
 	cmp r0, #2
@@ -628,7 +629,7 @@ _02258D7A:
 	mov r1, #3
 	bl ReadMsgDataIntoString
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetTextFrameDelay
 	mov r3, #0
 	str r3, [sp]
@@ -805,7 +806,7 @@ ov89_02258F00: ; 0x02258F00
 	add r0, r4, #0
 	bl ov89_022598A8
 	ldr r0, [r4, #0x24]
-	bl sub_02016624
+	bl YesNoPrompt_Destroy
 	mov r0, #0x65
 	lsl r0, r0, #2
 	add r0, r4, r0
@@ -813,7 +814,7 @@ ov89_02258F00: ; 0x02258F00
 	add r0, r4, #0
 	add r0, #0xc4
 	ldr r0, [r0]
-	bl String_dtor
+	bl String_Delete
 	mov r0, #2
 	bl FontID_Release
 	ldr r0, [r4, #0x10]
@@ -821,7 +822,7 @@ ov89_02258F00: ; 0x02258F00
 	ldr r0, [r4, #0x30]
 	bl DestroyMsgData
 	ldr r0, [r4, #0x2c]
-	bl ScrStrBufs_delete
+	bl MessageFormat_Delete
 	add r0, r4, #0
 	bl ov89_02259D50
 	ldr r0, [r4, #8]
@@ -830,9 +831,9 @@ ov89_02258F00: ; 0x02258F00
 	bl FreeToHeap
 	ldr r0, [r4, #0x1c]
 	ldr r1, [r4, #0x20]
-	bl sub_0200D998
+	bl SpriteRenderer_UnloadResourcesAndRemoveGfxHandler
 	ldr r0, [r4, #0x1c]
-	bl sub_0200D108
+	bl SpriteRenderer_Delete
 	ldr r0, [r4, #0xc]
 	mov r1, #0
 	bl PaletteData_FreeBuffers
@@ -846,7 +847,7 @@ ov89_02258F00: ; 0x02258F00
 	mov r1, #3
 	bl PaletteData_FreeBuffers
 	ldr r0, [r4, #0xc]
-	bl sub_02003104
+	bl PaletteData_Free
 	add r0, r4, #0
 	bl ov89_02259C00
 	add r0, r4, #0
@@ -856,11 +857,11 @@ ov89_02258F00: ; 0x02258F00
 	mov r0, #0x16
 	lsl r0, r0, #4
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #0x59
 	lsl r0, r0, #2
 	ldr r0, [r4, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	mov r0, #0
 	add r1, r0, #0
 	bl Main_SetVBlankIntrCB
@@ -912,11 +913,11 @@ ov89_0225901C: ; 0x0225901C
 	add r0, r4, r0
 	bl ov89_0225A760
 	bl GF_RunVramTransferTasks
-	bl sub_0200D034
+	bl thunk_OamManager_ApplyAndResetBuffers
 	ldr r0, [r4, #0xc]
 	bl sub_0200398C
 	ldr r0, [r4, #8]
-	bl BgConfig_HandleScheduledScrollAndTransferOps
+	bl DoScheduledBgGpuUpdates
 	ldr r3, _02259054 ; =0x027E0000
 	ldr r1, _02259058 ; =0x00003FF8
 	mov r0, #1
@@ -935,8 +936,8 @@ ov89_0225905C: ; 0x0225905C
 	push {r3, r4, r5, lr}
 	sub sp, #0xe0
 	add r4, r0, #0
-	bl GX_DisableEngineALayers
-	bl GX_DisableEngineBLayers
+	bl GfGfx_DisableEngineAPlanes
+	bl GfGfx_DisableEngineBPlanes
 	ldr r5, _0225921C ; =ov89_0225CA78
 	add r3, sp, #0x10
 	mov r2, #5
@@ -946,7 +947,7 @@ _02259070:
 	sub r2, r2, #1
 	bne _02259070
 	add r0, sp, #0x10
-	bl GX_SetBanks
+	bl GfGfx_SetBanks
 	mov r1, #6
 	mov r2, #2
 	mov r0, #0
@@ -1053,7 +1054,7 @@ _022590D0:
 	strh r0, [r1]
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r5, _0225922C ; =ov89_0225CC6C
 	add r3, sp, #0x38
 	mov r2, #0xa
@@ -1280,7 +1281,7 @@ _022592FE:
 	lsl r2, r2, #0xa
 	bl MIi_CpuClear16
 	ldr r0, [r4, #4]
-	bl Sav2_PlayerData_GetOptionsAddr
+	bl Save_PlayerData_GetOptionsAddr
 	bl Options_GetFrame
 	add r5, r0, #0
 	bl sub_0200E640
@@ -1384,7 +1385,7 @@ ov89_02259408: ; 0x02259408
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #4
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _02259574 ; =0x00002712
@@ -1393,7 +1394,7 @@ ov89_02259408: ; 0x02259408
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #5
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _02259574 ; =0x00002712
@@ -1402,7 +1403,7 @@ ov89_02259408: ; 0x02259408
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #6
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	mov r4, #0
 	add r7, r4, #0
 _02259474:
@@ -1416,7 +1417,7 @@ _02259474:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0x10
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	add r4, r4, #1
 	cmp r4, #6
 	blt _02259474
@@ -1428,7 +1429,7 @@ _02259474:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0xf
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _0225956C ; =0x00002711
@@ -1437,7 +1438,7 @@ _02259474:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0xe
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	str r6, [sp]
 	mov r0, #3
 	str r0, [sp, #4]
@@ -1484,7 +1485,7 @@ _022594E8:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #2
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _02259580 ; =0x00002713
@@ -1493,7 +1494,7 @@ _022594E8:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #1
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r3, #0
 	ldr r0, _02259580 ; =0x00002713
 	str r3, [sp]
@@ -1501,7 +1502,7 @@ _022594E8:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	add r2, r6, #0
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	mov r0, #0xd2
 	str r0, [sp]
 	mov r0, #0x1a
@@ -1558,17 +1559,17 @@ _022595A6:
 	ldr r0, [r7, #0x1c]
 	ldr r1, [r7, #0x20]
 	add r2, sp, #0x18
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	ldr r1, _022596BC ; =0x00000924
 	str r0, [r5, r1]
 	add r0, r1, #0
 	ldr r0, [r5, r0]
 	add r1, r6, #0
-	bl sub_0200DC4C
+	bl UnkImageStruct_SetSpriteAnimSeqNo
 	ldr r0, _022596BC ; =0x00000924
 	ldr r0, [r5, r0]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 	add r6, r6, #1
 	add r4, #0x20
 	add r5, r5, #4
@@ -1595,17 +1596,17 @@ _022595F2:
 	ldr r0, [r7, #0x1c]
 	ldr r1, [r7, #0x20]
 	add r2, sp, #0x18
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	ldr r1, _022596C4 ; =0x0000093C
 	str r0, [r5, r1]
 	add r0, r1, #0
 	ldr r0, [r5, r0]
 	add r1, r6, #0
-	bl sub_0200DC4C
+	bl UnkImageStruct_SetSpriteAnimSeqNo
 	ldr r0, _022596C4 ; =0x0000093C
 	ldr r0, [r5, r0]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 	add r6, r6, #1
 	add r4, #0x20
 	add r5, r5, #4
@@ -1635,13 +1636,13 @@ _0225963E:
 	str r0, [sp, #0x2c]
 	ldr r0, [r7, #0x1c]
 	ldr r1, [r7, #0x20]
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	ldr r1, _022596D0 ; =0x00000954
 	str r0, [r4, r1]
 	add r0, r1, #0
 	ldr r0, [r4, r0]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 	add r5, r5, #1
 	add r6, #0x20
 	add r4, r4, #4
@@ -1676,7 +1677,7 @@ _0225963E:
 	mov r1, #1
 	bl sub_020137C0
 	add r0, r4, #0
-	bl String_dtor
+	bl String_Delete
 	add sp, #0x4c
 	pop {r4, r5, r6, r7, pc}
 	nop
@@ -1768,7 +1769,7 @@ ov89_02259734: ; 0x02259734
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #9
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _022597EC ; =0x00002714
@@ -1777,7 +1778,7 @@ ov89_02259734: ; 0x02259734
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #8
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _022597EC ; =0x00002714
@@ -1786,7 +1787,7 @@ ov89_02259734: ; 0x02259734
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #7
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	mov r4, #0
 	add r7, r4, #0
 _022597A2:
@@ -1800,7 +1801,7 @@ _022597A2:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0xd
-	bl sub_0200D504
+	bl SpriteRenderer_LoadCharResObjFromOpenNarc
 	add r4, r4, #1
 	cmp r4, #8
 	blt _022597A2
@@ -1812,7 +1813,7 @@ _022597A2:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0xc
-	bl sub_0200D6EC
+	bl SpriteRenderer_LoadCellResObjFromOpenNarc
 	mov r0, #0
 	str r0, [sp]
 	ldr r0, _022597F8 ; =0x00002715
@@ -1821,7 +1822,7 @@ _022597A2:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	mov r3, #0xb
-	bl sub_0200D71C
+	bl SpriteRenderer_LoadAnimResObjFromOpenNarc
 	add sp, #0x18
 	pop {r3, r4, r5, r6, r7, pc}
 	.balign 4, 0
@@ -1839,16 +1840,16 @@ ov89_022597FC: ; 0x022597FC
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	ldr r2, _02259894 ; =ov89_0225CAA0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	ldr r1, _02259898 ; =0x0000096C
 	str r0, [r5, r1]
 	ldr r0, [r5, r1]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 	ldr r0, _02259898 ; =0x0000096C
 	mov r1, #0
 	ldr r0, [r5, r0]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r4, _0225989C ; =ov89_0225CAD4
 	add r3, sp, #0
 	mov r2, #6
@@ -1871,7 +1872,7 @@ _0225983E:
 	str r0, [sp, #0x14]
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	add r3, r0, #0
 	lsl r2, r4, #2
 	mov r0, #0x97
@@ -1885,19 +1886,19 @@ _0225983E:
 	ldrsh r2, [r3, r2]
 	mov r3, #0x11
 	lsl r3, r3, #0x10
-	bl sub_0200DDF4
+	bl UnkImageStruct_SetSpritePositionXY_CustomScreenYOffset
 	lsl r0, r4, #2
 	add r1, r5, r0
 	mov r0, #0x97
 	lsl r0, r0, #4
 	ldr r0, [r1, r0]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 	lsl r0, r4, #2
 	add r0, r5, r0
 	ldr r0, [r0, r7]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r4, r4, #1
 _0225988A:
 	cmp r4, #8
@@ -1970,17 +1971,17 @@ _0225990C:
 	ldr r0, [sp, #0x1c]
 	ldr r0, [r0, r1]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r1, _02259A28 ; =0x0000093C
 	ldr r0, [sp, #0x1c]
 	ldr r0, [r0, r1]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r1, _02259A2C ; =0x00000954
 	ldr r0, [sp, #0x1c]
 	ldr r0, [r0, r1]
 	mov r1, #0
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r0, [sp, #0x18]
 	ldr r5, _02259A30 ; =_0225C9B0
 	lsl r0, r0, #0x18
@@ -2217,7 +2218,7 @@ ov89_02259B00: ; 0x02259B00
 	ldr r0, [r3]
 	str r0, [r2]
 	mov r0, #0x7d
-	bl GF_Camera_Create
+	bl Camera_New
 	add r1, r5, #0
 	add r1, #0xcc
 	str r0, [r1]
@@ -2233,7 +2234,7 @@ ov89_02259B00: ; 0x02259B00
 	ldr r3, _02259B98 ; =0x00000FA4
 	add r0, sp, #0x14
 	lsl r1, r1, #0xe
-	bl GF_Camera_InitFromTargetDistanceAndAngle
+	bl Camera_Init_FromTargetDistanceAndAngle
 	add r2, r5, #0
 	add r2, #0xcc
 	mov r0, #1
@@ -2241,20 +2242,20 @@ ov89_02259B00: ; 0x02259B00
 	ldr r2, [r2]
 	lsl r0, r0, #0xc
 	lsl r1, r1, #0xe
-	bl GF_Camera_SetClipBounds
+	bl Camera_SetPerspectiveClippingPlane
 	add r0, r5, #0
 	add r0, #0xcc
 	ldr r0, [r0]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add r0, r5, #0
 	add r0, #0xcc
 	ldr r0, [r0]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	add r4, r0, #0
 	add r0, r5, #0
 	add r0, #0xcc
 	ldr r0, [r0]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	add r0, sp, #0xc
 	str r0, [sp]
@@ -2280,12 +2281,12 @@ _02259B9C: .word 0x00001555
 
 	thumb_func_start ov89_02259BA0
 ov89_02259BA0: ; 0x02259BA0
-	ldr r3, _02259BA8 ; =sub_02023120
+	ldr r3, _02259BA8 ; =Camera_Delete
 	add r0, #0xcc
 	ldr r0, [r0]
 	bx r3
 	.balign 4, 0
-_02259BA8: .word sub_02023120
+_02259BA8: .word Camera_Delete
 	thumb_func_end ov89_02259BA0
 
 	thumb_func_start ov89_02259BAC
@@ -2360,13 +2361,13 @@ ov89_02259C0C: ; 0x02259C0C
 	add r0, r4, #0
 	add r0, #0xcc
 	ldr r0, [r0]
-	bl GF_Camera_RegisterToStaticPtr
+	bl Camera_SetStaticPtr
 	add r1, r4, #0
 	add r1, #0xcc
 	ldr r1, [r1]
 	mov r0, #0
-	bl sub_020233D8
-	bl sub_02023154
+	bl Camera_ApplyPerspectiveType
+	bl Camera_PushLookAtToNNSGlb
 	mov r0, #0
 	ldr r2, _02259CBC ; =0xFFFFF000
 	add r1, r0, #0
@@ -2528,7 +2529,7 @@ ov89_02259D8C: ; 0x02259D8C
 	push {r3, lr}
 	mov r0, #1
 	add r1, r0, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _02259DF8 ; =0x04000008
 	mov r1, #3
 	ldrh r2, [r0]
@@ -2643,9 +2644,9 @@ ov89_02259E50: ; 0x02259E50
 	mov r2, #0x48
 	bl MI_CpuFill8
 	add r0, r4, #0
-	bl SavArray_PlayerParty_get
+	bl SaveArray_Party_Get
 	str r0, [sp, #4]
-	bl GetPartyCount
+	bl Party_GetCount
 	add r7, r0, #0
 	mov r6, #0
 	cmp r7, #0
@@ -2653,7 +2654,7 @@ ov89_02259E50: ; 0x02259E50
 _02259E78:
 	ldr r0, [sp, #4]
 	add r1, r6, #0
-	bl GetPartyMonByIndex
+	bl Party_GetMonByIndex
 	mov r1, #0xae
 	mov r2, #0
 	add r4, r0, #0
@@ -2762,7 +2763,7 @@ _02259F20:
 	ldr r0, [sp, #0x10]
 	mov r1, #1
 	ldr r0, [r7, r0]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	add r0, r6, #0
 	add r0, #0x21
 	lsl r0, r0, #0x10
@@ -2886,7 +2887,7 @@ _0225A036:
 	add r0, r6, r0
 	sub r2, #0x2c
 	ldr r0, [r0, r2]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 	ldr r3, _0225A130 ; =ov89_0225CBD8
 	lsl r4, r7, #3
 	add r0, r3, r4
@@ -2935,11 +2936,11 @@ _0225A09C:
 	mov r3, #0x11
 	ldr r0, [r6, r0]
 	lsl r3, r3, #0x10
-	bl sub_0200DDF4
+	bl UnkImageStruct_SetSpritePositionXY_CustomScreenYOffset
 	ldr r0, _0225A13C ; =0x0000096C
 	mov r1, #1
 	ldr r0, [r6, r0]
-	bl sub_0200DCE8
+	bl UnkImageStruct_SetSpriteVisibleFlag
 _0225A0CC:
 	ldr r1, [sp, #0x28]
 	lsl r0, r7, #2
@@ -3061,7 +3062,7 @@ _0225A18E:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r5, #0x20]
 	add r2, sp, #0
-	bl sub_0200D734
+	bl SpriteRenderer_LoadResourcesAndCreateSprite
 	lsl r1, r4, #2
 	add r2, r5, r1
 	mov r1, #0x99
@@ -3148,7 +3149,7 @@ _0225A248:
 	lsl r0, r0, #4
 	ldr r0, [r5, r0]
 	ldr r0, [r0]
-	bl sub_0200DC0C
+	bl TickSpriteAnimation1Frame
 _0225A254:
 	add r4, r4, #1
 	add r5, r5, #4
@@ -3204,7 +3205,7 @@ _0225A278:
 	ldr r2, [sp, #0x18]
 	add r0, sp, #0x38
 	str r3, [sp, #0x14]
-	bl AddTextPrinterParameterized3
+	bl AddTextPrinterParameterizedWithColorAndSpacing
 	add r0, sp, #0x38
 	mov r1, #1
 	mov r2, #0x7d
@@ -3370,7 +3371,7 @@ _0225A3F2:
 	asr r1, r1, #0x10
 	add r2, r7, #0
 	lsl r3, r3, #0x10
-	bl sub_0200DDF4
+	bl UnkImageStruct_SetSpritePositionXY_CustomScreenYOffset
 	add r6, r6, #1
 	add r4, #0x20
 	add r5, r5, #4
@@ -7069,7 +7070,7 @@ _0225BF4C: ; jump table
 	.short _0225BFA4 - _0225BF4C - 2 ; case 3
 _0225BF54:
 	add r0, r5, #0
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	str r0, [r4]
 	ldrb r0, [r4, #6]
 	add r0, r0, #1
@@ -7079,7 +7080,7 @@ _0225BF54:
 _0225BF68:
 	ldr r0, _0225BFDC ; =0xFFFFE556
 	add r1, r5, #0
-	bl sub_020235FC
+	bl Camera_AdjustDistance
 	mov r0, #4
 	ldrsh r1, [r4, r0]
 	add r1, r1, #1
@@ -7110,7 +7111,7 @@ _0225BF8A:
 _0225BFA4:
 	ldr r0, _0225BFE0 ; =0x00008555
 	add r1, r5, #0
-	bl sub_020235FC
+	bl Camera_AdjustDistance
 	mov r0, #4
 	ldrsh r1, [r4, r0]
 	add r1, r1, #1
@@ -7119,14 +7120,14 @@ _0225BFA4:
 	cmp r0, #6
 	bge _0225BFC6
 	add r0, r5, #0
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	ldr r1, [r4]
 	cmp r0, r1
 	blt _0225BFD2
 _0225BFC6:
 	ldr r0, [r4]
 	add r1, r5, #0
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 _0225BFD2:
@@ -7224,7 +7225,7 @@ _0225C054:
 _0225C078:
 	add r0, r5, #0
 	add r1, r4, #0
-	bl GF_Camera_SetBindTarget
+	bl Camera_SetLookAtCamUp
 	b _0225C086
 _0225C082:
 	mov r0, #1
@@ -7266,7 +7267,7 @@ _0225C0B8: ; jump table
 _0225C0C0:
 	add r0, sp, #0
 	add r1, r5, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4]
@@ -7295,7 +7296,7 @@ _0225C0EA:
 	str r0, [r4, #8]
 	add r0, sp, #8
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	mov r0, #2
 	ldrh r1, [r4, #2]
 	lsl r0, r0, #0xc
@@ -7330,14 +7331,14 @@ _0225C130:
 	add r1, r2, r1
 	str r1, [r4, #8]
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	ldrh r0, [r4, #2]
 	ldr r1, [r4, #8]
 	cmp r1, r0
 	blt _0225C15E
 	add r0, r4, #0
 	add r1, r5, #0
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	add sp, #0x10
 	mov r0, #1
 	pop {r3, r4, r5, pc}
@@ -7379,7 +7380,7 @@ _0225C190: ; jump table
 _0225C198:
 	add r0, sp, #0
 	add r1, r5, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4]
@@ -7408,7 +7409,7 @@ _0225C1C2:
 	str r0, [r4, #8]
 	add r0, sp, #8
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	mov r0, #2
 	ldrh r1, [r4, #2]
 	lsl r0, r0, #0xc
@@ -7443,14 +7444,14 @@ _0225C208:
 	sub r1, r2, r1
 	str r1, [r4, #8]
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	ldrh r0, [r4, #2]
 	ldr r1, [r4, #8]
 	cmp r1, r0
 	bgt _0225C236
 	add r0, r4, #0
 	add r1, r5, #0
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	add sp, #0x10
 	mov r0, #1
 	pop {r3, r4, r5, pc}
@@ -7492,7 +7493,7 @@ _0225C268: ; jump table
 _0225C270:
 	add r0, sp, #0
 	add r1, r5, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4]
@@ -7520,7 +7521,7 @@ _0225C29A:
 	str r0, [r4, #8]
 	add r0, sp, #8
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	mov r0, #2
 	ldrh r1, [r4]
 	lsl r0, r0, #0xc
@@ -7555,14 +7556,14 @@ _0225C2DE:
 	sub r1, r2, r1
 	str r1, [r4, #8]
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	ldrh r0, [r4]
 	ldr r1, [r4, #8]
 	cmp r1, r0
 	bgt _0225C30C
 	add r0, r4, #0
 	add r1, r5, #0
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	add sp, #0x10
 	mov r0, #1
 	pop {r3, r4, r5, pc}
@@ -7597,7 +7598,7 @@ ov89_0225C31C: ; 0x0225C31C
 _0225C33E:
 	add r0, sp, #0
 	add r1, r5, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4]
@@ -7667,7 +7668,7 @@ _0225C396:
 	strh r2, [r1, #0xa]
 	add r0, r3, #0
 	add r1, r5, #0
-	bl sub_02023534
+	bl Camera_SetAngleTarget
 	b _0225C3DC
 _0225C3D6:
 	add sp, #0x10
@@ -7703,7 +7704,7 @@ _0225C402: ; jump table
 	.short _0225C45A - _0225C402 - 2 ; case 3
 _0225C40A:
 	add r0, r5, #0
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	str r0, [r4]
 	ldrb r0, [r4, #6]
 	add r0, r0, #1
@@ -7713,7 +7714,7 @@ _0225C40A:
 _0225C41E:
 	ldr r0, _0225C490 ; =0x00001AAA
 	add r1, r5, #0
-	bl sub_020235FC
+	bl Camera_AdjustDistance
 	mov r0, #4
 	ldrsh r1, [r4, r0]
 	add r1, r1, #1
@@ -7744,7 +7745,7 @@ _0225C440:
 _0225C45A:
 	ldr r0, _0225C494 ; =0xFFFF7AAB
 	add r1, r5, #0
-	bl sub_020235FC
+	bl Camera_AdjustDistance
 	mov r0, #4
 	ldrsh r1, [r4, r0]
 	add r1, r1, #1
@@ -7753,14 +7754,14 @@ _0225C45A:
 	cmp r0, #6
 	bge _0225C47C
 	add r0, r5, #0
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	ldr r1, [r4]
 	cmp r0, r1
 	bgt _0225C488
 _0225C47C:
 	ldr r0, [r4]
 	add r1, r5, #0
-	bl GF_Camera_SetDistance
+	bl Camera_SetDistance
 	mov r0, #1
 	pop {r3, r4, r5, pc}
 _0225C488:
@@ -7793,7 +7794,7 @@ ov89_0225C498: ; 0x0225C498
 _0225C4B8:
 	add r0, sp, #0xc
 	add r1, r5, #0
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r3, sp, #0xc
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -7803,7 +7804,7 @@ _0225C4B8:
 	add r1, r5, #0
 	str r0, [r2]
 	add r0, sp, #0
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #0
 	ldmia r3!, {r0, r1}
 	add r2, r4, #0
@@ -7860,14 +7861,14 @@ _0225C520:
 	str r1, [sp, #0x18]
 	add r0, r4, #0
 	add r1, r5, #0
-	bl sub_0202365C
+	bl Camera_SetLookAtCamTarget
 	add r4, #0xc
 	add r0, r4, #0
 	add r1, r5, #0
-	bl sub_0202366C
+	bl Camera_SetLookAtCamPos
 	add r0, sp, #0x18
 	add r1, r5, #0
-	bl GF_Camera_ShiftBy
+	bl Camera_OffsetLookAtPosAndTarget
 	b _0225C564
 _0225C55E:
 	add sp, #0x24
@@ -7902,7 +7903,7 @@ ov89_0225C570: ; 0x0225C570
 _0225C590:
 	add r0, sp, #0xc
 	add r1, r5, #0
-	bl sub_02023640
+	bl Camera_GetLookAtCamPos
 	add r3, sp, #0xc
 	add r2, r4, #0
 	ldmia r3!, {r0, r1}
@@ -7912,7 +7913,7 @@ _0225C590:
 	add r1, r5, #0
 	str r0, [r2]
 	add r0, sp, #0
-	bl GF_Camera_GetTarget
+	bl Camera_GetLookAtCamTarget
 	add r3, sp, #0
 	ldmia r3!, {r0, r1}
 	add r2, r4, #0
@@ -7969,14 +7970,14 @@ _0225C5F8:
 	str r1, [sp, #0x1c]
 	add r0, r4, #0
 	add r1, r5, #0
-	bl sub_0202365C
+	bl Camera_SetLookAtCamTarget
 	add r4, #0xc
 	add r0, r4, #0
 	add r1, r5, #0
-	bl sub_0202366C
+	bl Camera_SetLookAtCamPos
 	add r0, sp, #0x18
 	add r1, r5, #0
-	bl GF_Camera_ShiftBy
+	bl Camera_OffsetLookAtPosAndTarget
 	b _0225C63C
 _0225C636:
 	add sp, #0x24
@@ -8020,7 +8021,7 @@ _0225C670: ; jump table
 _0225C678:
 	add r0, sp, #0
 	add r1, r5, #0
-	bl GF_Camera_GetAngle
+	bl Camera_GetAngle
 	add r0, sp, #0
 	ldrh r1, [r0]
 	strh r1, [r4]
@@ -8048,7 +8049,7 @@ _0225C6A2:
 	str r0, [r4, #8]
 	add r0, sp, #8
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	mov r0, #2
 	ldrh r1, [r4]
 	lsl r0, r0, #0xc
@@ -8083,14 +8084,14 @@ _0225C6E6:
 	add r1, r2, r1
 	str r1, [r4, #8]
 	add r1, r5, #0
-	bl sub_020235A8
+	bl Camera_AdjustAnglePos
 	ldrh r0, [r4]
 	ldr r1, [r4, #8]
 	cmp r1, r0
 	blt _0225C714
 	add r0, r4, #0
 	add r1, r5, #0
-	bl GF_Camera_SetAngle
+	bl Camera_SetAnglePos
 	add sp, #0x10
 	mov r0, #1
 	pop {r3, r4, r5, pc}
@@ -8137,7 +8138,7 @@ ov89_0225C724: ; 0x0225C724
 	pop {r3, r4, r5, r6, r7, pc}
 _0225C768:
 	mov r0, #0x7d
-	bl PlayerProfile_new
+	bl PlayerProfile_New
 	add r6, r0, #0
 	add r0, r7, #0
 	add r1, r6, #0
@@ -8164,7 +8165,7 @@ _0225C768:
 	str r0, [sp, #0x20]
 	mov r0, #0x40
 	mov r1, #0x7d
-	bl String_ctor
+	bl String_New
 	add r7, r0, #0
 	ldr r0, [sp, #0x14]
 	ldr r2, [sp, #0x20]
@@ -8192,15 +8193,15 @@ _0225C7D8:
 	add r2, r7, #0
 	add r3, r1, #0
 	str r1, [sp, #0xc]
-	bl AddTextPrinterParameterized2
+	bl AddTextPrinterParameterizedWithColor
 	add r0, r4, r5
 	bl CopyWindowToVram
 	ldr r0, [sp, #0x1c]
-	bl String_dtor
+	bl String_Delete
 	ldr r0, [sp, #0x20]
-	bl String_dtor
+	bl String_Delete
 	add r0, r7, #0
-	bl String_dtor
+	bl String_Delete
 	add r0, r6, #0
 	bl FreeToHeap
 _0225C80A:
@@ -8250,7 +8251,7 @@ ov89_0225C84C: ; 0x0225C84C
 	ldr r0, _0225C888 ; =ov89_0225CE50
 	add r6, r1, #0
 	mov r4, #0xff
-	bl sub_02025224
+	bl TouchscreenHitbox_FindRectAtTouchNew
 	cmp r0, #6
 	bge _0225C87A
 	cmp r6, r0

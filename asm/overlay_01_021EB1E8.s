@@ -9,6 +9,7 @@
 #include "msgdata/msg/msg_0096_D31R0201.h"
 #include "msgdata/msg/msg_0066_D23R0102.h"
 	.include "asm/macros.inc"
+	.include "overlay_01_021EB1E8.inc"
 	.include "global.inc"
 
 	.text
@@ -52,7 +53,7 @@ _021EB208:
 	str r0, [r4, #0x10]
 	mov r0, #0x10
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	add r0, r4, #0
 	pop {r3, r4, r5, pc}
 	thumb_func_end ov01_021EB1F4
@@ -541,7 +542,7 @@ _021EB5AC:
 	add r0, r6, #0
 	add r0, #0xf4
 	ldr r0, [r0]
-	bl sub_02024504
+	bl SpriteList_Delete
 	add r0, r6, #0
 	mov r1, #0
 	add r0, #0xf4
@@ -597,7 +598,7 @@ _021EB62E:
 _021EB638:
 	add r0, r5, #0
 	add r1, r4, #0
-	bl sub_020247D4
+	bl Sprite_SetMatrix
 	pop {r3, r4, r5, pc}
 	nop
 _021EB644: .word 0x0013F000
@@ -625,7 +626,7 @@ ov01_021EB64C: ; 0x021EB64C
 	ldr r0, _021EB688 ; =ov01_0220675C
 	str r0, [r4, #4]
 	mov r0, #0x3f ; NARC_a_0_6_3
-	bl NARC_ctor
+	bl NARC_New
 	mov r1, #0x42
 	lsl r1, r1, #2
 	str r0, [r4, r1]
@@ -672,7 +673,7 @@ _021EB69A:
 	strh r0, [r1]
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, [r4]
 	add r0, #8
 	bl ov01_021EB5A4
@@ -680,7 +681,7 @@ _021EB69A:
 	ldr r1, [r4]
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
-	bl NARC_dtor
+	bl NARC_Delete
 	ldr r1, [r4]
 	mov r0, #4
 	bl FreeToHeapExplicit
@@ -1247,7 +1248,7 @@ _021EBAFE:
 	beq _021EBB28
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r2, _021EBB3C ; =0x0400000C
 	mov r1, #3
 	ldrh r3, [r2]
@@ -1335,7 +1336,7 @@ ov01_021EBB90: ; 0x021EBB90
 	beq _021EBBCE
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _021EBC90 ; =0x0400000C
 	mov r2, #3
 	ldrh r3, [r0]
@@ -1462,7 +1463,7 @@ ov01_021EBCA4: ; 0x021EBCA4
 	beq _021EBCD8
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _021EBD0C ; =0x0400000C
 	mov r2, #3
 	ldrh r3, [r0]
@@ -1968,7 +1969,7 @@ _021EC060:
 	ldr r0, [r5, #0x4c]
 	cmp r0, #0
 	beq _021EC06C
-	bl sub_02024758
+	bl Sprite_Delete
 	str r6, [r5, #0x4c]
 _021EC06C:
 	add r4, r4, #1
@@ -2070,7 +2071,7 @@ ov01_021EC114: ; 0x021EC114
 	beq _021EC1B4
 	mov r0, #4
 	mov r1, #0
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	mov r1, #0xc
 	mov r0, #0x42
 	lsl r0, r0, #2
@@ -2339,7 +2340,7 @@ ov01_021EC304: ; 0x021EC304
 	push {r4, lr}
 	add r4, r0, #0
 	ldr r0, [r1, #4]
-	bl sub_020248AC
+	bl Sprite_GetMatrixPtr
 	add r2, r0, #0
 	ldmia r2!, {r0, r1}
 	stmia r4!, {r0, r1}
@@ -2381,14 +2382,14 @@ ov01_021EC31C: ; 0x021EC31C
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	ldr r0, [r0, #0x24]
-	bl GF_Camera_GetPerspectiveAngle
+	bl Camera_GetPerspectiveAngle
 	str r0, [sp, #0xc]
 	mov r0, #0x41
 	ldr r1, [r5]
 	lsl r0, r0, #2
 	ldr r0, [r1, r0]
 	ldr r0, [r0, #0x24]
-	bl GF_Camera_GetDistance
+	bl Camera_GetDistance
 	add r1, r0, #0
 	add r0, sp, #0x10
 	str r0, [sp]
@@ -3554,7 +3555,7 @@ _021ECBC6:
 	lsl r1, r5, #0x10
 	ldr r0, [r6, #4]
 	lsr r1, r1, #0x10
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	add r0, r7, #0
 	mov r1, #0x14
 	bl _u32_div_f
@@ -3670,7 +3671,7 @@ _021ECCC8:
 	str r0, [r5]
 	ldr r0, [r6, #4]
 	mov r1, #3
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 _021ECCD8:
 	add r4, r4, #1
 	cmp r4, #2
@@ -4071,7 +4072,7 @@ _021ECFBE:
 	lsl r1, r7, #0x10
 	ldr r0, [r4, #4]
 	lsr r1, r1, #0x10
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	add r0, r7, #1
 	neg r1, r0
 	str r1, [r5, #0x10]
@@ -4599,7 +4600,7 @@ _021ED42E:
 	ldr r0, [r4, #4]
 	lsl r1, r1, #0x10
 	lsr r1, r1, #0x10
-	bl sub_020249D4
+	bl Sprite_SetAnimCtrlCurrentFrame
 	ldr r0, [sp, #0xc]
 	add r1, r0, #1
 	ldr r0, [sp, #4]
@@ -4837,7 +4838,7 @@ _021ED5B2:
 	bl ov01_021EB818
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _021ED70C ; =0x00000F62
 	mov r1, #1
 	add sp, #0x10
@@ -4888,7 +4889,7 @@ _021ED656:
 	bl ov01_021EB818
 	mov r0, #4
 	mov r1, #1
-	bl GX_EngineAToggleLayers
+	bl GfGfx_EngineATogglePlanes
 	ldr r0, _021ED70C ; =0x00000F62
 	mov r1, #3
 	add sp, #0x10

@@ -45,18 +45,21 @@ scr_seq_R30_000:
 	releaseall
 	end
 
-
+	.balign 4, 0
 _0088:
 	step 48, 3
 	step_end
 
+	.balign 4, 0
 _0090:
 	step 49, 2
 	step_end
 
+	.balign 4, 0
 _0098:
 	step 32, 1
 	step_end
+
 scr_seq_R30_002:
 	scrcmd_609
 	lockall
@@ -75,9 +78,9 @@ scr_seq_R30_002:
 	npc_msg msg_0375_R30_00005
 	closemsg
 	get_player_coords VAR_TEMP_x4000, VAR_TEMP_x4001
-	scrcmd_602 0
-	scrcmd_603
-	scrcmd_604 55
+	toggle_following_pokemon_movement 0
+	wait_following_pokemon_movement
+	following_pokemon_movement 55
 	compare VAR_TEMP_x4000, 558
 	goto_if_ne _010A
 	apply_movement obj_player, _01D4
@@ -99,9 +102,9 @@ _0140:
 	apply_movement obj_player, _0210
 _0148:
 	wait_movement
-	scrcmd_603
-	scrcmd_602 1
-	scrcmd_604 48
+	wait_following_pokemon_movement
+	toggle_following_pokemon_movement 1
+	following_pokemon_movement 48
 	npc_msg msg_0375_R30_00006
 	giveitem_no_check ITEM_APRICORN_BOX, 1
 	npc_msg msg_0375_R30_00008
@@ -123,24 +126,28 @@ _0148:
 	setvar VAR_SCENE_ROUTE_30_OW, 1
 	end
 
-
+	.balign 4, 0
 _01B0:
 	step 13, 1
 	step_end
 
+	.balign 4, 0
 _01B8:
 	step 12, 1
 	step 69, 1
 	step_end
 
+	.balign 4, 0
 _01C4:
 	step 35, 1
 	step_end
 
+	.balign 4, 0
 _01CC:
 	step 32, 1
 	step_end
 
+	.balign 4, 0
 _01D4:
 	step 13, 2
 	step 34, 1
@@ -148,6 +155,7 @@ _01D4:
 	step 14, 2
 	step_end
 
+	.balign 4, 0
 _01E8:
 	step 13, 2
 	step 34, 1
@@ -155,6 +163,7 @@ _01E8:
 	step 14, 3
 	step_end
 
+	.balign 4, 0
 _01FC:
 	step 13, 2
 	step 34, 1
@@ -162,12 +171,14 @@ _01FC:
 	step 14, 4
 	step_end
 
+	.balign 4, 0
 _0210:
 	step 13, 2
 	step 34, 1
 	step 63, 2
 	step 14, 5
 	step_end
+
 scr_seq_R30_003:
 	simple_npc_msg msg_0375_R30_00013
 	end

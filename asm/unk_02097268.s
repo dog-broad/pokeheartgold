@@ -4,6 +4,7 @@
 #include "constants/moves.h"
 #include "constants/species.h"
 	.include "asm/macros.inc"
+	.include "unk_02097268.inc"
 	.include "global.inc"
 
 	.text
@@ -122,7 +123,7 @@ sub_0209730C: ; 0x0209730C
 	bl SaveData_GetMomsSavingsAddr
 	str r0, [sp, #0x2c]
 	add r0, r4, #0
-	bl Save_SafariZone_get
+	bl Save_SafariZone_Get
 	str r0, [sp, #0x28]
 	mov r1, #0
 	bl SafariZone_GetAreaSet
@@ -138,8 +139,8 @@ _0209733A:
 	b _020974BC
 _0209733C:
 	add r0, r4, #0
-	bl SavArray_Flags_get
-	bl ScriptState_CheckSafariSysFlag
+	bl Save_VarsFlags_Get
+	bl Save_VarsFlags_CheckSafariSysFlag
 	cmp r0, #0
 	beq _02097364
 	ldr r0, [sp, #0x28]
